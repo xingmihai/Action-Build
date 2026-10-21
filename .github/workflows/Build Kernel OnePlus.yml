@@ -1593,7 +1593,6 @@ jobs:
           fi
 
           # ---- zsmalloc.ko：zram.ko 的硬依赖（depends: zsmalloc）----
-          # 缺失时 insmod 会报 Unknown symbol zs_create_pool 等，模块永远加载失败
           echo "查找 zsmalloc.ko 依赖模块..."
           zsmalloc_path=""
           for path in "${search_paths[@]}"; do
@@ -1612,10 +1611,10 @@ jobs:
             echo "⚠️ 未找到 zsmalloc.ko（可能已内置 =y），跳过"
           fi
 
-          # ---- 覆写 service.sh（base64 内嵌，避免 heredoc 破坏 YAML 缩进）----
-          # 逻辑：预加载 zsmalloc+zram（失败自动回退厂商驱动）、
-          #       两级注册重压缩（zstdn priority=1 / zstdn_o priority=2）、
-          #       每 30 分钟检测 huge 页，超过 40000 则重压并前后记录 mm_stat
+          # ---- 覆写 service.sh（base64 内嵌）----
+          # 两级重压缩(zstdn p1 + zstdn_o p2)、每 30 分钟检查 huge，
+          # >40000 触发重压并记 BEFORE/AFTER，否则记 skip 行，
+          # 每次检查另写单行 status 便于快速确认循环存活
           : > "ZRAM-Module/service.sh.b64"
           echo 'TU9ERElSPSR7MCUvKn0KQ09ORklHX0ZJTEU9IiRNT0RESVIvY29uZmlnLnByb3AiCkxPRz0iJE1PRERJUi96cmFtX21vZHVsZS5s' > "ZRAM-Module/service.sh.b64"
           echo 'b2ciCgojIOWmguaenOmFjee9ruaWh+S7tuS4jeWtmOWcqOWImemAgOWHugppZiBbICEgLWYgIiRDT05GSUdfRklMRSIgXTsgdGhl' >> "ZRAM-Module/service.sh.b64"
@@ -1655,16 +1654,19 @@ jobs:
           echo 'aG0gLS0tIiA+PiAiJExPRyIKICBjYXQgL3N5cy9ibG9jay96cmFtMC9jb21wX2FsZ29yaXRobSA+PiAiJExPRyIgMj4mMQoKICAj' >> "ZRAM-Module/service.sh.b64"
           echo 'IOiHquWKqOmHjeWOi+e8qeW+queOrwogICgKICBSTE9HPSIkTU9ERElSL3JlY29tcHJlc3MubG9nIgogIDogPiAiJFJMT0ciCiAg' >> "ZRAM-Module/service.sh.b64"
           echo 'd2hpbGUgdHJ1ZTsgZG8KICAgIHNsZWVwIDE4MDAKICAgIGh1Z2U9JChhd2sgJ3twcmludCAkOH0nIC9zeXMvYmxvY2svenJhbTAv' >> "ZRAM-Module/service.sh.b64"
-          echo 'bW1fc3RhdCkKICAgIGlmIFsgIiRodWdlIiAtZ3QgNDAwMDAgXTsgdGhlbgogICAgICBlY2hvICI9PT0gJChkYXRlICcrJUYgJUg6' >> "ZRAM-Module/service.sh.b64"
-          echo 'JU06JVMnKSA9PT0iID4+ICIkUkxPRyIKICAgICAgZWNobyAiQkVGT1JFOiAkKGNhdCAvc3lzL2Jsb2NrL3pyYW0wL21tX3N0YXQp' >> "ZRAM-Module/service.sh.b64"
-          echo 'IiA+PiAiJFJMT0ciCiAgICAgIGVjaG8gInR5cGU9aHVnZSIgPiAvc3lzL2Jsb2NrL3pyYW0wL3JlY29tcHJlc3MKICAgICAgZWNo' >> "ZRAM-Module/service.sh.b64"
-          echo 'byAiQUZURVIgOiAkKGNhdCAvc3lzL2Jsb2NrL3pyYW0wL21tX3N0YXQpIiA+PiAiJFJMT0ciCiAgICAgIHRhaWwgLW4gMjAwICIk' >> "ZRAM-Module/service.sh.b64"
-          echo 'UkxPRyIgPiAiJFJMT0cudG1wIiAmJiBtdiAiJFJMT0cudG1wIiAiJFJMT0ciCiAgICBmaQogIGRvbmUKICApICYKZWxzZQogIGVj' >> "ZRAM-Module/service.sh.b64"
-          echo 'aG8gInpyYW0wIG5vdCBmb3VuZCwgZmFpbGVkIHRvIGluaXRpYWxpemUgc3dhcCIKICBleGl0IDEKZmkK' >> "ZRAM-Module/service.sh.b64"
+          echo 'bW1fc3RhdCkKICAgIHRzPSQoZGF0ZSAnKyVGICVIOiVNOiVTJykKICAgIGlmIFsgIiRodWdlIiAtZ3QgNDAwMDAgXTsgdGhlbgog' >> "ZRAM-Module/service.sh.b64"
+          echo 'ICAgICBlY2hvICI9PT0gJHRzID09PSIgPj4gIiRSTE9HIgogICAgICBlY2hvICJCRUZPUkU6ICQoY2F0IC9zeXMvYmxvY2svenJh' >> "ZRAM-Module/service.sh.b64"
+          echo 'bTAvbW1fc3RhdCkiID4+ICIkUkxPRyIKICAgICAgZWNobyAidHlwZT1odWdlIiA+IC9zeXMvYmxvY2svenJhbTAvcmVjb21wcmVz' >> "ZRAM-Module/service.sh.b64"
+          echo 'cwogICAgICBlY2hvICJBRlRFUiA6ICQoY2F0IC9zeXMvYmxvY2svenJhbTAvbW1fc3RhdCkiID4+ICIkUkxPRyIKICAgIGVsc2UK' >> "ZRAM-Module/service.sh.b64"
+          echo 'ICAgICAgIyDmnKrop6blj5HkuZ/nlZnnl5XvvIzkvr/kuo7noa7orqTlvqrnjq/lrZjmtLsgKyDop4Llr58gaHVnZSDniKzljYfp' >> "ZRAM-Module/service.sh.b64"
+          echo 'gJ/luqYKICAgICAgZWNobyAiJHRzIGh1Z2U9JGh1Z2Ugc2tpcCg8NDAwMDApIiA+PiAiJFJMT0ciCiAgICBmaQogICAgZWNobyAi' >> "ZRAM-Module/service.sh.b64"
+          echo 'JHRzIGh1Z2U9JGh1Z2UiID4gIiRNT0RESVIvc3RhdHVzIgogICAgdGFpbCAtbiAzMDAgIiRSTE9HIiA+ICIkUkxPRy50bXAiICYm' >> "ZRAM-Module/service.sh.b64"
+          echo 'IG12ICIkUkxPRy50bXAiICIkUkxPRyIKICBkb25lCiAgKSAmCmVsc2UKICBlY2hvICJ6cmFtMCBub3QgZm91bmQsIGZhaWxlZCB0' >> "ZRAM-Module/service.sh.b64"
+          echo 'byBpbml0aWFsaXplIHN3YXAiCiAgZXhpdCAxCmZpCg==' >> "ZRAM-Module/service.sh.b64"
           base64 -d "ZRAM-Module/service.sh.b64" > "ZRAM-Module/service.sh"
           rm -f "ZRAM-Module/service.sh.b64"
           chmod 0755 "ZRAM-Module/service.sh"
-          echo "✅ service.sh 已覆写（3285 字节）"
+          echo "✅ service.sh 已覆写（3481 字节）"
 
       - name: Upload ZRAM Module
         if: startsWith(github.event.inputs.ZRAM, '1/') && steps.zram_find.outputs.upload != 'false'
