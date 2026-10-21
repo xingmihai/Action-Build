@@ -1613,7 +1613,8 @@ jobs:
           fi
 
           # ---- 覆写 service.sh（base64 内嵌，避免 heredoc 破坏 YAML 缩进）----
-          # 逻辑：预加载 zsmalloc+zram（失败自动回退厂商驱动）、注册 zstdn 重压缩、
+          # 逻辑：预加载 zsmalloc+zram（失败自动回退厂商驱动）、
+          #       两级注册重压缩（zstdn priority=1 / zstdn_o priority=2）、
           #       每 30 分钟检测 huge 页，超过 40000 则重压并前后记录 mm_stat
           : > "ZRAM-Module/service.sh.b64"
           echo 'TU9ERElSPSR7MCUvKn0KQ09ORklHX0ZJTEU9IiRNT0RESVIvY29uZmlnLnByb3AiCkxPRz0iJE1PRERJUi96cmFtX21vZHVsZS5s' > "ZRAM-Module/service.sh.b64"
@@ -1641,24 +1642,29 @@ jobs:
           echo 'dGhlbgogIHNsZWVwIDUKICBlY2hvICcxJyA+IC9zeXMvYmxvY2svenJhbTAvcmVzZXQKICBlY2hvICcwJyA+IC9zeXMvYmxvY2sv' >> "ZRAM-Module/service.sh.b64"
           echo 'enJhbTAvZGlza3NpemUKICBlY2hvICc4JyA+IC9zeXMvYmxvY2svenJhbTAvbWF4X2NvbXBfc3RyZWFtcwogIGVjaG8gIiR7WlJB' >> "ZRAM-Module/service.sh.b64"
           echo 'TV9BTEdPfSIgPiAvc3lzL2Jsb2NrL3pyYW0wL2NvbXBfYWxnb3JpdGhtCgogICMg5rOo5YaM5qyh57qn77yI6YeN5Y6L57yp77yJ' >> "ZRAM-Module/service.sh.b64"
-          echo '566X5rOV77yM5b+F6aG75ZyoIGRpc2tzaXplIOS5i+WJjQogIGVjaG8gImFsZ289enN0ZG4gcHJpb3JpdHk9MSIgPiAvc3lzL2Js' >> "ZRAM-Module/service.sh.b64"
-          echo 'b2NrL3pyYW0wL3JlY29tcF9hbGdvcml0aG0KICBlY2hvICJyZWNvbXBfYWxnb3JpdGhtIHN0b3JlIHJjPSQ/IiA+PiAiJExPRyIK' >> "ZRAM-Module/service.sh.b64"
-          echo 'CiAgZWNobyAiJHtaUkFNX1NJWkV9IiA+IC9zeXMvYmxvY2svenJhbTAvZGlza3NpemUKICBta3N3YXAgL2Rldi9ibG9jay96cmFt' >> "ZRAM-Module/service.sh.b64"
-          echo 'MCA+IC9kZXYvbnVsbCAyPiYxCiAgc3dhcG9uIC9kZXYvYmxvY2svenJhbTAgPiAvZGV2L251bGwgMj4mMQogIGVjaG8gInpyYW0w' >> "ZRAM-Module/service.sh.b64"
-          echo 'IGlzIG5vdyBhY3RpdmUgd2l0aCAke1pSQU1fQUxHT30gYW5kIHNpemUgJHtaUkFNX1NJWkV9IgoKICBlY2hvICItLS0gcmVjb21w' >> "ZRAM-Module/service.sh.b64"
-          echo 'X2FsZ29yaXRobSAtLS0iID4+ICIkTE9HIgogIGNhdCAvc3lzL2Jsb2NrL3pyYW0wL3JlY29tcF9hbGdvcml0aG0gPj4gIiRMT0ci' >> "ZRAM-Module/service.sh.b64"
-          echo 'IDI+JjEKCiAgIyDoh6rliqjph43ljovnvKnlvqrnjq8KICAoCiAgUkxPRz0iJE1PRERJUi9yZWNvbXByZXNzLmxvZyIKICA6ID4g' >> "ZRAM-Module/service.sh.b64"
-          echo 'IiRSTE9HIgogIHdoaWxlIHRydWU7IGRvCiAgICBzbGVlcCAxODAwCiAgICBodWdlPSQoYXdrICd7cHJpbnQgJDh9JyAvc3lzL2Js' >> "ZRAM-Module/service.sh.b64"
-          echo 'b2NrL3pyYW0wL21tX3N0YXQpCiAgICBpZiBbICIkaHVnZSIgLWd0IDQwMDAwIF07IHRoZW4KICAgICAgZWNobyAiPT09ICQoZGF0' >> "ZRAM-Module/service.sh.b64"
-          echo 'ZSAnKyVGICVIOiVNOiVTJykgPT09IiA+PiAiJFJMT0ciCiAgICAgIGVjaG8gIkJFRk9SRTogJChjYXQgL3N5cy9ibG9jay96cmFt' >> "ZRAM-Module/service.sh.b64"
-          echo 'MC9tbV9zdGF0KSIgPj4gIiRSTE9HIgogICAgICBlY2hvICJ0eXBlPWh1Z2UiID4gL3N5cy9ibG9jay96cmFtMC9yZWNvbXByZXNz' >> "ZRAM-Module/service.sh.b64"
-          echo 'CiAgICAgIGVjaG8gIkFGVEVSIDogJChjYXQgL3N5cy9ibG9jay96cmFtMC9tbV9zdGF0KSIgPj4gIiRSTE9HIgogICAgICB0YWls' >> "ZRAM-Module/service.sh.b64"
-          echo 'IC1uIDIwMCAiJFJMT0ciID4gIiRSTE9HLnRtcCIgJiYgbXYgIiRSTE9HLnRtcCIgIiRSTE9HIgogICAgZmkKICBkb25lCiAgKSAm' >> "ZRAM-Module/service.sh.b64"
-          echo 'CmVsc2UKICBlY2hvICJ6cmFtMCBub3QgZm91bmQsIGZhaWxlZCB0byBpbml0aWFsaXplIHN3YXAiCiAgZXhpdCAxCmZpCg==' >> "ZRAM-Module/service.sh.b64"
+          echo '566X5rOV77yM5b+F6aG75ZyoIGRpc2tzaXplIOS5i+WJjQogICMg5Lik57qn5Liy6IGU77ya5LiA57qnIHpzdGRuIOWOi+S4jeWK' >> "ZRAM-Module/service.sh.b64"
+          echo 'qOeahOmhteS6pOe7meS6jOe6pyB6c3Rkbl9vIOWGjeivlQogICMg5LqM57qn5Zyo6YOo5YiG5YaF5qC4L+acuuWei+S4iuS4jeWt' >> "ZRAM-Module/service.sh.b64"
+          echo 'mOWcqO+8jOazqOWGjOWksei0peS7heiusOW9le+8jOS4jeW9seWTjeS4gOe6pwogIGVjaG8gImFsZ289enN0ZG4gcHJpb3JpdHk9' >> "ZRAM-Module/service.sh.b64"
+          echo 'MSIgPiAvc3lzL2Jsb2NrL3pyYW0wL3JlY29tcF9hbGdvcml0aG0KICBlY2hvICJyZWNvbXAgcDEoenN0ZG4pIHJjPSQ/IiA+PiAi' >> "ZRAM-Module/service.sh.b64"
+          echo 'JExPRyIKCiAgZWNobyAiYWxnbz16c3Rkbl9vIHByaW9yaXR5PTIiID4gL3N5cy9ibG9jay96cmFtMC9yZWNvbXBfYWxnb3JpdGht' >> "ZRAM-Module/service.sh.b64"
+          echo 'CiAgZWNobyAicmVjb21wIHAyKHpzdGRuX28pIHJjPSQ/IiA+PiAiJExPRyIKCiAgZWNobyAiJHtaUkFNX1NJWkV9IiA+IC9zeXMv' >> "ZRAM-Module/service.sh.b64"
+          echo 'YmxvY2svenJhbTAvZGlza3NpemUKICBta3N3YXAgL2Rldi9ibG9jay96cmFtMCA+IC9kZXYvbnVsbCAyPiYxCiAgc3dhcG9uIC9k' >> "ZRAM-Module/service.sh.b64"
+          echo 'ZXYvYmxvY2svenJhbTAgPiAvZGV2L251bGwgMj4mMQogIGVjaG8gInpyYW0wIGlzIG5vdyBhY3RpdmUgd2l0aCAke1pSQU1fQUxH' >> "ZRAM-Module/service.sh.b64"
+          echo 'T30gYW5kIHNpemUgJHtaUkFNX1NJWkV9IgoKICBlY2hvICItLS0gcmVjb21wX2FsZ29yaXRobSAtLS0iID4+ICIkTE9HIgogIGNh' >> "ZRAM-Module/service.sh.b64"
+          echo 'dCAvc3lzL2Jsb2NrL3pyYW0wL3JlY29tcF9hbGdvcml0aG0gPj4gIiRMT0ciIDI+JjEKICBlY2hvICItLS0gY29tcF9hbGdvcml0' >> "ZRAM-Module/service.sh.b64"
+          echo 'aG0gLS0tIiA+PiAiJExPRyIKICBjYXQgL3N5cy9ibG9jay96cmFtMC9jb21wX2FsZ29yaXRobSA+PiAiJExPRyIgMj4mMQoKICAj' >> "ZRAM-Module/service.sh.b64"
+          echo 'IOiHquWKqOmHjeWOi+e8qeW+queOrwogICgKICBSTE9HPSIkTU9ERElSL3JlY29tcHJlc3MubG9nIgogIDogPiAiJFJMT0ciCiAg' >> "ZRAM-Module/service.sh.b64"
+          echo 'd2hpbGUgdHJ1ZTsgZG8KICAgIHNsZWVwIDE4MDAKICAgIGh1Z2U9JChhd2sgJ3twcmludCAkOH0nIC9zeXMvYmxvY2svenJhbTAv' >> "ZRAM-Module/service.sh.b64"
+          echo 'bW1fc3RhdCkKICAgIGlmIFsgIiRodWdlIiAtZ3QgNDAwMDAgXTsgdGhlbgogICAgICBlY2hvICI9PT0gJChkYXRlICcrJUYgJUg6' >> "ZRAM-Module/service.sh.b64"
+          echo 'JU06JVMnKSA9PT0iID4+ICIkUkxPRyIKICAgICAgZWNobyAiQkVGT1JFOiAkKGNhdCAvc3lzL2Jsb2NrL3pyYW0wL21tX3N0YXQp' >> "ZRAM-Module/service.sh.b64"
+          echo 'IiA+PiAiJFJMT0ciCiAgICAgIGVjaG8gInR5cGU9aHVnZSIgPiAvc3lzL2Jsb2NrL3pyYW0wL3JlY29tcHJlc3MKICAgICAgZWNo' >> "ZRAM-Module/service.sh.b64"
+          echo 'byAiQUZURVIgOiAkKGNhdCAvc3lzL2Jsb2NrL3pyYW0wL21tX3N0YXQpIiA+PiAiJFJMT0ciCiAgICAgIHRhaWwgLW4gMjAwICIk' >> "ZRAM-Module/service.sh.b64"
+          echo 'UkxPRyIgPiAiJFJMT0cudG1wIiAmJiBtdiAiJFJMT0cudG1wIiAiJFJMT0ciCiAgICBmaQogIGRvbmUKICApICYKZWxzZQogIGVj' >> "ZRAM-Module/service.sh.b64"
+          echo 'aG8gInpyYW0wIG5vdCBmb3VuZCwgZmFpbGVkIHRvIGluaXRpYWxpemUgc3dhcCIKICBleGl0IDEKZmkK' >> "ZRAM-Module/service.sh.b64"
           base64 -d "ZRAM-Module/service.sh.b64" > "ZRAM-Module/service.sh"
           rm -f "ZRAM-Module/service.sh.b64"
           chmod 0755 "ZRAM-Module/service.sh"
-          echo "✅ service.sh 已覆写（2920 字节）"
+          echo "✅ service.sh 已覆写（3285 字节）"
 
       - name: Upload ZRAM Module
         if: startsWith(github.event.inputs.ZRAM, '1/') && steps.zram_find.outputs.upload != 'false'
