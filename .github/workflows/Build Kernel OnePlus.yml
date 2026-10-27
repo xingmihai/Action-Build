@@ -89,6 +89,7 @@ on:
         options:
           - OLD
           - NEW
+          - KPTOOLS
       KPM_SKEY:
         type: string
         description: "KPM超级密钥(留空则用工具默认)//KPM superkey (leave blank for tool default)"
@@ -765,6 +766,8 @@ jobs:
           if [ "${{ github.event.inputs.KPM_VER }}" = "OLD" ]; then
             echo "KPM_VER=OLD: 锁定 SukiSU_patch 至 547ae94bc (2026-03-15, 已验证可开机)"
             git -C SukiSU_patch checkout 547ae94bc || echo "⚠️ 锁定失败，继续使用最新"
+          elif [ "${{ github.event.inputs.KPM_VER }}" = "KPTOOLS" ]; then
+            echo "KPM_VER=KPTOOLS: 不使用仓库内 patch_linux，改用官方 0.14.0 release 的 kptools+kpimg 注入"
           else
             echo "KPM_VER=NEW: 使用 SukiSU_patch 最新 (需配合新版 kpimg)"
           fi
@@ -1452,7 +1455,36 @@ jobs:
           if [ "${{ github.event.inputs.KPM }}" = "KPM" ]; then
             cp "${KPM_DIR}/patch_linux" .
             chmod +x patch_linux
-            if [ "${{ github.event.inputs.KPM_VER }}" = "NEW" ]; then
+            if [ "${{ github.event.inputs.KPM_VER }}" = "KPTOOLS" ]; then
+              echo "KPTOOLS 模式：保留 CONFIG_KPM=y，改用官方 0.14.0 的 kptools+kpimg 注入（绕开坏掉的 patch_linux）"
+              echo "0.14.0 的 kpimg 配套新内核 SUKISU_KPM_ABI_VERSION=2；旧版 kpimg 会导致 KPM 全部 -EOPNOTSUPP"
+              KP_REL="https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/releases/download/0.14.0"
+              curl -fsSL -o ./kpimg "$KP_REL/kpimg" || { echo "❌ kpimg 下载失败"; exit 14; }
+              curl -fsSL -o ./kptools-linux "$KP_REL/kptools-linux" || { echo "❌ kptools-linux 下载失败"; exit 15; }
+              chmod +x ./kptools-linux
+              ls -l ./kpimg ./kptools-linux
+              echo "--- 期望：kpimg 约 294384 字节(0x47df0)，非 16 字节空壳 ---"
+              SKEY="${{ github.event.inputs.KPM_SKEY }}"
+              set +e
+              if [ -n "$SKEY" ]; then
+                ./kptools-linux -p -i ./Image -k ./kpimg -o ./oImage -s "$SKEY"
+                rc=$?
+              else
+                ./kptools-linux -p -i ./Image -k ./kpimg -o ./oImage
+                rc=$?
+              fi
+              set -e
+              if [ $rc -ne 0 ]; then
+                if [ -n "$SKEY" ]; then
+                  echo "⚠️ 带 -s 调用失败(rc=$rc)，该 kptools 可能不支持 -s，回退为不带 superkey"
+                  ./kptools-linux -p -i ./Image -k ./kpimg -o ./oImage
+                else
+                  echo "❌ kptools 修补失败 rc=$rc"; exit 16
+                fi
+              fi
+              ./kptools-linux -l -i ./oImage || true
+              echo "--- 请核对上面 kpimg 长度是否约 0x47df0(294384)，若为 0x10 则本包不可用 ---"
+            elif [ "${{ github.event.inputs.KPM_VER }}" = "NEW" ]; then
               echo "NEW 模式：显式指定仓库内 kpimg，避免内嵌空 payload"
               test -f "${KPM_DIR}/kpimg" || { echo "❌ 未找到 ${KPM_DIR}/kpimg"; exit 13; }
               cp "${KPM_DIR}/kpimg" ./kpimg
