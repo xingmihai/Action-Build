@@ -219,13 +219,23 @@ jobs:
           git config --global user.name "Numbersf"
           git config --global user.email "263623064@qq.com"
           mkdir kernel_workspace && cd kernel_workspace
+          set +e
           git clone https://github.com/Numbersf/Action-Build.git -b SukiSU-Ultra
+          clone_rc=$?
+          set -e
+          echo "::error::DIAG clone_rc=$clone_rc | 上游scripts: $(ls "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts" 2>/dev/null | tr '\n' ' ' | cut -c1-250) | 本仓库scripts: $(ls "$GITHUB_WORKSPACE/scripts" 2>/dev/null | tr '\n' ' ' | cut -c1-250)"
+          [ "$clone_rc" -eq 0 ] || exit "$clone_rc"
           # 上游已将 scripts/PatchFakePatches.kts 重命名为 SusfsCompat.kts，而本工作流仍按旧名调用。
           # 缺失时从本仓库(自有分支)回补，保持与既有流程一致的行为。
           if [ ! -f "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" ]; then
-            echo "⚠️ 上游缺少 PatchFakePatches.kts，从本仓库回补"
-            mkdir -p "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts"
-            cp "$GITHUB_WORKSPACE/scripts/PatchFakePatches.kts" "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts"
+            echo "⚠️ 上游缺少 PatchFakePatches.kts，尝试从本仓库回补"
+            mkdir -p "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts" || true
+            if [ -f "$GITHUB_WORKSPACE/scripts/PatchFakePatches.kts" ]; then
+              cp "$GITHUB_WORKSPACE/scripts/PatchFakePatches.kts" "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" || true
+              echo "✅ 已回补 PatchFakePatches.kts"
+            else
+              echo "::error::本仓库也缺少 scripts/PatchFakePatches.kts，FakePatches 步骤将失败"
+            fi
           fi
 
       - name: Extract Manifest Info
