@@ -220,6 +220,13 @@ jobs:
           git config --global user.email "263623064@qq.com"
           mkdir kernel_workspace && cd kernel_workspace
           git clone https://github.com/Numbersf/Action-Build.git -b SukiSU-Ultra
+          # 上游已将 scripts/PatchFakePatches.kts 重命名为 SusfsCompat.kts，而本工作流仍按旧名调用。
+          # 缺失时从本仓库(自有分支)回补，保持与既有流程一致的行为。
+          if [ ! -f "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" ]; then
+            echo "⚠️ 上游缺少 PatchFakePatches.kts，从本仓库回补"
+            mkdir -p "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts"
+            cp "$GITHUB_WORKSPACE/scripts/PatchFakePatches.kts" "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts"
+          fi
 
       - name: Extract Manifest Info
         id: extract_info
