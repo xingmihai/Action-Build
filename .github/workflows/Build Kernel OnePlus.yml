@@ -227,16 +227,21 @@ jobs:
           [ "$clone_rc" -eq 0 ] || exit "$clone_rc"
           # 上游已将 scripts/PatchFakePatches.kts 重命名为 SusfsCompat.kts，而本工作流仍按旧名调用。
           # 缺失时从本仓库(自有分支)回补，保持与既有流程一致的行为。
-          if [ ! -f "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" ]; then
-            echo "⚠️ 上游缺少 PatchFakePatches.kts，尝试从本仓库回补"
-            mkdir -p "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts" || true
+          FP="$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts"
+          if [ ! -f "$FP" ]; then
+            echo "⚠️ 上游缺少 PatchFakePatches.kts(已重命名为 SusfsCompat.kts)，尝试回补"
+            mkdir -p "$(dirname "$FP")" || true
             if [ -f "$GITHUB_WORKSPACE/scripts/PatchFakePatches.kts" ]; then
-              cp "$GITHUB_WORKSPACE/scripts/PatchFakePatches.kts" "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" || true
-              echo "✅ 已回补 PatchFakePatches.kts"
+              cp "$GITHUB_WORKSPACE/scripts/PatchFakePatches.kts" "$FP" || true
+              echo "✅ 已从本仓库回补 PatchFakePatches.kts"
             else
-              echo "::error::本仓库也缺少 scripts/PatchFakePatches.kts，FakePatches 步骤将失败"
+              echo "⚠️ 本仓库 checkout 无 scripts/，改用 raw 下载回补"
+              curl -fsSL -o "$FP" "https://raw.githubusercontent.com/xingmihai/Action-Build/SukiSU-Ultra/scripts/PatchFakePatches.kts" \
+                && echo "✅ 已通过 raw 回补 PatchFakePatches.kts" \
+                || echo "::error::回补失败，FakePatches 步骤可能失败"
             fi
           fi
+          ls -l "$FP" 2>/dev/null || echo "⚠️ 回补后仍无 PatchFakePatches.kts"
 
       - name: Extract Manifest Info
         id: extract_info
@@ -788,6 +793,10 @@ jobs:
       - name: Apply Fake Patches
         if: ${{ github.event.inputs.SUSFS_META != '-1' }}
         run: |
+          if [ ! -f "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" ]; then
+            echo "⚠️ 缺少 PatchFakePatches.kts，跳过本步骤(android15-6.6 且 SUBLEVEL>92 时该脚本为 no-op)"
+            exit 0
+          fi
           set +e
           kotlinc -script "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" apply "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/common" 2>&1 | tee /tmp/fakepatch.log
           rc=${PIPESTATUS[0]}
@@ -870,6 +879,10 @@ jobs:
       - name: Revert Fake Patches
         if: ${{ github.event.inputs.SUSFS_META != '-1' }}
         run: |
+          if [ ! -f "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" ]; then
+            echo "⚠️ 缺少 PatchFakePatches.kts，跳过 revert"
+            exit 0
+          fi
           kotlinc -script "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" revert "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/common"
 
       # OGKI转换GKI，无需修改 dtbo 开机
