@@ -1287,6 +1287,15 @@ jobs:
           exec > >(tee /tmp/fast_build.log) 2>&1
           trap 'rc=$?; [ "$rc" -eq 0 ] && exit 0; echo "::error::FAST-BUILD 失败 rc=$rc，关键错误摘要："; grep -nE "error:|Error [0-9]|undefined reference|ld.lld: error|No rule to make" /tmp/fast_build.log | head -25 | cut -c1-260 | while IFS= read -r l; do echo "::error::BK: $l"; done; echo "::error::BK-TAIL: $(tail -5 /tmp/fast_build.log | tr "\n" " " | cut -c1-300)"; exit $rc' ERR
 
+          # Ubuntu 26 的新版 clang 会把 host 工具(libbpf/resolve_btfids)的告警升级为错误并中断构建。
+          # host 工具只是构建期辅助程序，去掉 -Werror 不影响内核本体。
+          TOOLS_DIR="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/common/tools"
+          if [ -d "$TOOLS_DIR" ]; then
+            for f in $(grep -rl -- "-Werror" "$TOOLS_DIR" 2>/dev/null | grep -E '(Makefile|Makefile\..*|\.mk)$'); do
+              sed -i 's/-Werror//g' "$f" && echo "已去掉 host 工具 $f 中的 -Werror"
+            done
+          fi
+
           # 自动检测 LLVM_IAS
           if [[ -f ./common/build.config.arm ]] && grep -q '^LLVM_IAS=1' ./common/build.config.arm; then
             USE_LLVM_IAS=true
