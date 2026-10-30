@@ -420,7 +420,11 @@ jobs:
             if apt-cache show "$p" >/dev/null 2>&1; then SIGSEGV_PKG="$p"; break; fi
           done
           echo "提供 libsigsegv.so.2 的包: ${SIGSEGV_PKG:-<未解析到>}"
-          export APT_PACKAGES="python3 git curl libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync unzip gawk dos2unix kmod libdw-dev elfutils dwarves kotlin ${SIGSEGV_PKG}"
+          # 选择实际可安装的 lz4 命令行包(Ubuntu 26 上 liblz4-tool 装不上，回退 lz4)
+          LZ4_PKG="liblz4-tool"
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends liblz4-tool >/dev/null 2>&1 || LZ4_PKG="lz4"
+          echo "使用 lz4 命令行包: $LZ4_PKG"
+          export APT_PACKAGES="python3 git curl libelf-dev build-essential flex bison libssl-dev libncurses-dev zlib1g-dev libxml2-utils rsync unzip gawk dos2unix kmod libdw-dev elfutils dwarves kotlin ${SIGSEGV_PKG} ${LZ4_PKG}"
           # 诊断: 逐个探测候选包是否存在，结果写入 annotation 便于定位
           MISSING=""
           for p in $APT_PACKAGES; do
@@ -767,7 +771,15 @@ jobs:
       - name: Apply Fake Patches
         if: ${{ github.event.inputs.SUSFS_META != '-1' }}
         run: |
-          kotlinc -script "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" apply "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/common"
+          set +e
+          kotlinc -script "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" apply "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/common" 2>&1 | tee /tmp/fakepatch.log
+          rc=${PIPESTATUS[0]}
+          set -e
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::FakePatches 退出码 $rc，末尾输出如下"
+            tail -25 /tmp/fakepatch.log | sed 's/^/  /' | while IFS= read -r l; do echo "::error::FP: $l"; done
+            exit "$rc"
+          fi
 
       - name: Apply Patches SukiSU Ultra
         env:
