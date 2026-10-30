@@ -410,8 +410,15 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          export APT_PACKAGES="python3 git curl libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync unzip gawk dos2unix kmod libdw-dev elfutils dwarves kotlin"
+          export APT_PACKAGES="python3 git curl libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync unzip gawk dos2unix kmod libdw-dev elfutils dwarves kotlin libsigsegv2"
           bash "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/cache_apt_pkgs.sh" ~/.apt-pkg-cache
+          # 自检: gawk 依赖 libsigsegv.so.2，缓存不完整时在此暴露(换 runner 镜像后易触发)
+          if ! awk 'BEGIN{ }' >/dev/null 2>&1; then
+            echo "⚠️ awk 不可用(常见原因: 缓存缺少 libsigsegv2)，清除 APT 缓存后重新安装"
+            rm -rf ~/.apt-pkg-cache
+            bash "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/cache_apt_pkgs.sh" ~/.apt-pkg-cache
+          fi
+          awk 'BEGIN{ print "✅ awk 自检通过" }'
 
       - name: Install Ccache-ECS
         run: |
