@@ -1283,6 +1283,10 @@ jobs:
         run: |
           cd kernel_workspace/kernel_platform
 
+          # 诊断：把本步骤全部输出留档，失败时把关键错误写成注解(便于定位编译失败原因)
+          exec > >(tee /tmp/fast_build.log) 2>&1
+          trap 'rc=$?; [ "$rc" -eq 0 ] && exit 0; echo "::error::FAST-BUILD 失败 rc=$rc，关键错误摘要："; grep -nE "error:|Error [0-9]|undefined reference|ld.lld: error|No rule to make" /tmp/fast_build.log | head -25 | cut -c1-260 | while IFS= read -r l; do echo "::error::BK: $l"; done; echo "::error::BK-TAIL: $(tail -5 /tmp/fast_build.log | tr "\n" " " | cut -c1-300)"; exit $rc' ERR
+
           # 自动检测 LLVM_IAS
           if [[ -f ./common/build.config.arm ]] && grep -q '^LLVM_IAS=1' ./common/build.config.arm; then
             USE_LLVM_IAS=true
