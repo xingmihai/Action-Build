@@ -874,21 +874,42 @@ jobs:
             echo "susfs_patch完成"
           fi
 
-          # ---- SukiSU-Ultra / SUSFS 新接口兼容 ----
-          # builtin 近期在 manager/pkg_observer.c 与 supercall/dispatch.c 调用了
+          # ---- SukiSU-Ultra / SUSFS priority uid filter 接口兼容（修正版）----
+          # builtin 在 manager/pkg_observer.c 与 supercall/dispatch.c 直接调用
           # susfs_parse_priority_app_strings() / susfs_set_priority_uid_filter()，
-          # 但部分 SUSFS 补丁版本的 susfs.h 未提供声明与实现，导致 -Wimplicit-function-declaration。
-          # 补齐声明 + weak 兜底实现：SUSFS 有真实实现时被 strong 覆盖，没有实现时为空操作。
-          if [ -f include/linux/susfs.h ]; then
-            if ! grep -q "susfs_parse_priority_app_strings" include/linux/susfs.h; then
-              printf '%s\n' '' '/* SukiSU-Ultra compat: priority uid filter declarations */' '#ifndef SUKISU_SUSFS_PRIORITY_COMPAT' '#define SUKISU_SUSFS_PRIORITY_COMPAT' 'void susfs_parse_priority_app_strings(void);' 'int susfs_set_priority_uid_filter(void *arg);' '#endif' >> include/linux/susfs.h
-              echo "✅ 已补齐 SUSFS priority uid filter 声明"
-            fi
-          fi
-          if [ -f drivers/kernelsu/Makefile ]; then
-            printf '%s\n' '// Weak fallbacks for SukiSU-Ultra priority uid filter hooks.' '#include <linux/types.h>' '' '__attribute__((weak)) void susfs_parse_priority_app_strings(void) { }' '__attribute__((weak)) int susfs_set_priority_uid_filter(void *arg) { return 0; }' > drivers/kernelsu/susfs_priority_compat.c
-            if ! grep -q "susfs_priority_compat" drivers/kernelsu/Makefile; then
-              echo 'ksu-y += susfs_priority_compat.o' >> drivers/kernelsu/Makefile
+          # 但这两个是片段文件、不 include <linux/susfs.h>；把声明加进
+          # common/include/linux/susfs.h 对它们无效，仍会 -Wimplicit-function-declaration。
+          # 正确做法：定位 KernelSU 源码真实目录，在调用点文件顶部补 extern 声明，
+          # 并在同一 Makefile 追加 weak 兜底实现（SUSFS 有真实实现时被 strong 覆盖）。
+          KSU_SRC=""
+          for d in \
+            "${GITHUB_WORKSPACE}/kernel_workspace/kernel_platform/common/drivers/kernelsu" \
+            "${GITHUB_WORKSPACE}/kernel_workspace/kernel_platform/drivers/kernelsu" \
+            "${GITHUB_WORKSPACE}/kernel_workspace/kernel_platform/KernelSU/kernel"; do
+            if [ -f "$d/manager/pkg_observer.c" ]; then KSU_SRC="$d"; break; fi
+          done
+          if [ -z "$KSU_SRC" ]; then
+            echo "⚠️ 未定位到 KernelSU 源码目录，跳过 priority uid filter 兼容"
+          else
+            echo "KSU_SRC=$KSU_SRC"
+            printf '%s\n' \
+              '/* SukiSU compat: priority uid filter hook declarations */' \
+              'extern void susfs_parse_priority_app_strings(void);' \
+              'extern int susfs_set_priority_uid_filter(void *arg);' > /tmp/ksu_priority_decl.h
+            for f in "$KSU_SRC/manager/pkg_observer.c" "$KSU_SRC/supercall/dispatch.c"; do
+              if [ -f "$f" ] && ! grep -q "extern void susfs_parse_priority_app_strings" "$f"; then
+                cat /tmp/ksu_priority_decl.h "$f" > /tmp/ksu_priority_f.c
+                mv /tmp/ksu_priority_f.c "$f"
+                echo "✅ 已补声明: $f"
+              fi
+            done
+            printf '%s\n' \
+              '#include <linux/types.h>' \
+              '__attribute__((weak)) void susfs_parse_priority_app_strings(void) { }' \
+              '__attribute__((weak)) int susfs_set_priority_uid_filter(void *arg) { return 0; }' \
+              > "$KSU_SRC/susfs_priority_compat.c"
+            if [ -f "$KSU_SRC/Makefile" ] && ! grep -q "susfs_priority_compat" "$KSU_SRC/Makefile"; then
+              echo 'ksu-y += susfs_priority_compat.o' >> "$KSU_SRC/Makefile"
             fi
             echo "✅ 已注入 weak 兜底实现"
           fi
