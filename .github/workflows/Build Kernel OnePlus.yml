@@ -873,6 +873,42 @@ jobs:
             patch -p1 < 50_add_susfs_in_gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch || true
             echo "susfs_patch完成"
           fi
+
+          # ---- SukiSU-Ultra / SUSFS 新接口兼容 ----
+          # builtin 近期在 manager/pkg_observer.c 与 supercall/dispatch.c 调用了
+          # susfs_parse_priority_app_strings() / susfs_set_priority_uid_filter()，
+          # 但部分 SUSFS 补丁版本的 susfs.h 未提供声明与实现，导致 -Wimplicit-function-declaration。
+          # 这里补齐声明，并追加 weak 兜底实现：SUSFS 有真实实现时被 strong 覆盖，
+          # 没有实现时为空操作，保证编译与链接均可通过。
+          if [ -f include/linux/susfs.h ]; then
+            if ! grep -q "susfs_parse_priority_app_strings" include/linux/susfs.h; then
+              cat >> include/linux/susfs.h <<'EOF'
+
+/* SukiSU-Ultra compat: priority uid filter declarations */
+#ifndef SUKISU_SUSFS_PRIORITY_COMPAT
+#define SUKISU_SUSFS_PRIORITY_COMPAT
+void susfs_parse_priority_app_strings(void);
+int susfs_set_priority_uid_filter(void *arg);
+#endif
+EOF
+              echo "✅ 已补齐 SUSFS priority uid filter 声明"
+            fi
+          fi
+          if [ -f drivers/kernelsu/Makefile ]; then
+            cat > drivers/kernelsu/susfs_priority_compat.c <<'EOF'
+// Weak fallbacks for SukiSU-Ultra priority uid filter hooks.
+// Overridden automatically when SUSFS provides the real implementation.
+#include <linux/types.h>
+
+__attribute__((weak)) void susfs_parse_priority_app_strings(void) { }
+__attribute__((weak)) int susfs_set_priority_uid_filter(void *arg) { return 0; }
+EOF
+            if ! grep -q "susfs_priority_compat" drivers/kernelsu/Makefile; then
+              echo 'ksu-y += susfs_priority_compat.o' >> drivers/kernelsu/Makefile
+            fi
+            echo "✅ 已注入 weak 兜底实现"
+          fi
+
           source $REJ_CHECKER
           check_rejects .
 
