@@ -1,0 +1,179 @@
+name: Publish CI Output
+
+# 构建结束后，把「本次 run 的全量日志 + 产物」发布到 ci-output 分支。
+# 该分支走 github.com / raw.githubusercontent.com，外部可直接读取；
+# 而 Actions 自带的 artifact 下载域名在部分网络环境不可达。
+on:
+  workflow_run:
+    workflows: ["Build All OnePlus Kernels"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "要收集的 run id（留空=最近一次完成的构建）"
+        required: false
+        default: ""
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect logs and artifacts, publish to ci-output
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          IN_RUN_ID: ${{ github.event.inputs.run_id }}
+          WR_RUN_ID: ${{ github.event.workflow_run.id }}
+          WR_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          WR_SHA: ${{ github.event.workflow_run.head_sha }}
+          WR_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          WR_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        run: |
+          # GitHub 默认以 bash -e 执行；这里改为「尽量都发布、关键处显式判错」
+          set +e
+          set -uo pipefail
+          API="https://api.github.com"
+          H=(-H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28")
+
+          # ---------- 1. 确定目标 run ----------
+          RUN_ID="${IN_RUN_ID:-}"
+          [ -n "$RUN_ID" ] || RUN_ID="${WR_RUN_ID:-}"
+          if [ -z "$RUN_ID" ]; then
+            curl -fsSL --max-time 60 "${H[@]}" "$API/repos/$REPO/actions/runs?per_page=30" -o /tmp/runs.json || true
+            RUN_ID=$(python3 - <<'PY'
+          import json
+          try:
+              d = json.load(open('/tmp/runs.json'))
+          except Exception:
+              d = {}
+          for r in d.get('workflow_runs', []):
+              if r.get('name') == 'Build All OnePlus Kernels' and r.get('status') == 'completed':
+                  print(r['id']); break
+          PY
+            )
+          fi
+          if [ -z "$RUN_ID" ]; then
+            echo "::error::无法确定 run_id"
+            exit 1
+          fi
+          echo "目标 run_id=$RUN_ID  (attempt=${WR_ATTEMPT:-?}, conclusion=${WR_CONCLUSION:-manual})"
+
+          OUT="$RUNNER_TEMP/ciout"
+          rm -rf "$OUT"
+          mkdir -p "$OUT/logs" "$OUT/artifacts" "$OUT/meta"
+
+          # ---------- 2. 全量日志 ----------
+          LOG_OK=0
+          for i in 1 2 3; do
+            if curl -fsSL --max-time 240 "${H[@]}" "$API/repos/$REPO/actions/runs/$RUN_ID/logs" -o "$OUT/logs/run_logs.zip" && [ -s "$OUT/logs/run_logs.zip" ]; then
+              LOG_OK=1
+              break
+            fi
+            echo "日志下载重试 $i ..."
+            sleep 10
+          done
+          if [ "$LOG_OK" = "1" ]; then
+            (cd "$OUT/logs" && unzip -o -q run_logs.zip) || true
+            TMPTXT=$(mktemp)
+            find "$OUT/logs" -type f -name '*.txt' -print0 | sort -z | xargs -0 -r cat > "$TMPTXT" 2>/dev/null || true
+            [ -s "$TMPTXT" ] || echo "(日志压缩包内未找到 txt)" > "$TMPTXT"
+            mv "$TMPTXT" "$OUT/logs/build_log.txt"
+            echo "✅ 日志 OK"
+          else
+            echo "⚠️ 日志下载失败（可能已过期）" > "$OUT/logs/build_log.txt"
+            rm -f "$OUT/logs/run_logs.zip"
+          fi
+
+          # ---------- 3. 产物 ----------
+          if curl -fsSL --max-time 120 "${H[@]}" "$API/repos/$REPO/actions/runs/$RUN_ID/artifacts?per_page=100" -o "$OUT/meta/artifacts.json"; then
+            python3 - "$OUT" <<'PY' || true
+          import json, os, subprocess, sys
+          out = sys.argv[1]
+          tok = os.environ['GH_TOKEN']
+          try:
+              d = json.load(open(out + '/meta/artifacts.json'))
+          except Exception:
+              d = {'artifacts': []}
+          for a in d.get('artifacts', []):
+              if a.get('expired'):
+                  continue
+              name = str(a['name']).replace('/', '_')
+              dest = os.path.join(out, 'artifacts', name + '.zip')
+              rc = subprocess.run([
+                  'curl', '-fsSL', '--max-time', '300',
+                  '-H', 'Authorization: Bearer ' + tok,
+                  '-H', 'Accept: application/vnd.github+json',
+                  '-o', dest, a['archive_download_url']
+              ]).returncode
+              ok = rc == 0 and os.path.exists(dest) and os.path.getsize(dest) > 0
+              print(('OK   ' if ok else 'FAIL ') + name)
+              if not ok and os.path.exists(dest):
+                  os.remove(dest)
+          PY
+          else
+            echo '{"artifacts":[]}' > "$OUT/meta/artifacts.json"
+            echo "⚠️ 产物列表获取失败"
+          fi
+
+          # ---------- 4. 清单 ----------
+          {
+            echo "# CI Output"
+            echo "run_id=$RUN_ID"
+            echo "run_url=https://github.com/$REPO/actions/runs/$RUN_ID"
+            echo "conclusion=${WR_CONCLUSION:-manual}"
+            echo "head_sha=${WR_SHA:-}"
+            echo "head_branch=${WR_BRANCH:-}"
+            echo "collected_utc=$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+            echo
+            echo "## artifacts"
+            find "$OUT/artifacts" -maxdepth 1 -type f -printf '%f  %s bytes\n' | sort
+            echo
+            echo "## logs"
+            find "$OUT/logs" -maxdepth 2 -type f -printf '%f  %s bytes\n' | sort
+          } > "$OUT/meta/manifest.txt"
+          cat "$OUT/meta/manifest.txt"
+
+          # ---------- 5. 推到 ci-output 分支 ----------
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global http."https://github.com/".extraheader "AUTHORIZATION: bearer ${GH_TOKEN}"
+          WORK="$RUNNER_TEMP/pubrepo"
+          rm -rf "$WORK"
+          # 始终以默认分支建 orphan 分支：历史每次清空，
+          # 既避免浅克隆 push 被服务端拒绝，也不让仓库体积随构建次数累积。
+          # 需要旧 run 时，手动 dispatch 本工作流并填 run_id 重新收集即可。
+          git clone --quiet --depth 1 --branch SukiSU-Ultra "https://github.com/${REPO}.git" "$WORK"
+          cd "$WORK"
+          git checkout --quiet --orphan ci-output
+          git rm -rf --quiet . > /dev/null 2>&1 || true
+
+          mkdir -p latest
+          cp -a "$OUT/logs" "$OUT/artifacts" "$OUT/meta" latest/
+          cp -a "$OUT/meta/manifest.txt" ./manifest.txt
+
+          cat > README.md <<EOF
+          # CI 输出（自动发布）
+
+          由 \`Publish CI Output\` 工作流在每次构建结束后生成，\`latest/\` 每次覆盖。
+
+          - \`manifest.txt\` / \`latest/meta/manifest.txt\` 运行信息与文件清单
+          - \`latest/logs/build_log.txt\` 全量构建日志（合并纯文本，可直接阅读）
+          - \`latest/logs/run_logs.zip\` 原始日志包
+          - \`latest/artifacts/*.zip\` 产物（AnyKernel3 / ZRAM 模块）
+
+          本次 run: https://github.com/$REPO/actions/runs/$RUN_ID
+          旧 run：Actions -> Publish CI Output -> Run workflow，填 run_id 即可重新收集。
+          EOF
+
+          git add -f -A
+          git commit -q -m "ci: publish logs & artifacts for run $RUN_ID" || echo "（无变更，跳过 commit）"
+          if ! git push --force --quiet origin ci-output; then
+            echo "::error::推送 ci-output 分支失败"
+            exit 1
+          fi
+          echo "✅ 已发布：https://github.com/$REPO/tree/ci-output"
+          echo "   直接读日志：https://raw.githubusercontent.com/$REPO/ci-output/latest/logs/build_log.txt"
