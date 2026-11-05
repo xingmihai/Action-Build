@@ -137,43 +137,84 @@ jobs:
           } > "$OUT/meta/manifest.txt"
           cat "$OUT/meta/manifest.txt"
 
-          # ---------- 5. 推到 ci-output 分支 ----------
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global http."https://github.com/".extraheader "AUTHORIZATION: bearer ${GH_TOKEN}"
-          WORK="$RUNNER_TEMP/pubrepo"
-          rm -rf "$WORK"
-          # 始终以默认分支建 orphan 分支：历史每次清空，
-          # 既避免浅克隆 push 被服务端拒绝，也不让仓库体积随构建次数累积。
-          # 需要旧 run 时，手动 dispatch 本工作流并填 run_id 重新收集即可。
-          git clone --quiet --depth 1 --branch SukiSU-Ultra "https://github.com/${REPO}.git" "$WORK"
-          cd "$WORK"
-          git checkout --quiet --orphan ci-output
-          git rm -rf --quiet . > /dev/null 2>&1 || true
+          # ---------- 5. 用 GitHub REST API 发布到 ci-output 分支 ----------
+          # 全程只用 api.github.com，不依赖 git 命令 / git smart http，
+          # 避免部分网络环境拦截 git 端点。每次创建一个无父提交的 root commit
+          # 并 force 更新 ref，历史不会累积，仓库体积恒定。
+          OUTDIR="$OUT" RUN_ID="$RUN_ID" python3 - <<'PY'
+          import os, json, base64, urllib.request, urllib.error
 
-          mkdir -p latest
-          cp -a "$OUT/logs" "$OUT/artifacts" "$OUT/meta" latest/
-          cp -a "$OUT/meta/manifest.txt" ./manifest.txt
+          repo = os.environ['REPO']
+          tok = os.environ['GH_TOKEN']
+          run_id = str(os.environ['RUN_ID'])
+          out = os.environ['OUTDIR']
+          API = 'https://api.github.com/repos/' + repo
 
-          cat > README.md <<EOF
-          # CI 输出（自动发布）
+          def req(method, path, data=None, timeout=180):
+              body = json.dumps(data).encode() if data is not None else None
+              r = urllib.request.Request(API + path, data=body, method=method, headers={
+                  'Authorization': 'Bearer ' + tok,
+                  'Accept': 'application/vnd.github+json',
+                  'X-GitHub-Api-Version': '2022-11-28',
+                  'Content-Type': 'application/json',
+                  'User-Agent': 'ci-output-publisher'
+              })
+              with urllib.request.urlopen(r, timeout=timeout) as resp:
+                  raw = resp.read()
+                  return json.loads(raw) if raw else {}
 
-          由 \`Publish CI Output\` 工作流在每次构建结束后生成，\`latest/\` 每次覆盖。
+          files = {}
+          for sub in ('logs', 'artifacts', 'meta'):
+              for root, dirs, names in os.walk(os.path.join(out, sub)):
+                  for n in names:
+                      p = os.path.join(root, n)
+                      files['latest/' + os.path.relpath(p, out).replace(os.sep, '/')] = p
+          files['manifest.txt'] = os.path.join(out, 'meta', 'manifest.txt')
 
-          - \`manifest.txt\` / \`latest/meta/manifest.txt\` 运行信息与文件清单
-          - \`latest/logs/build_log.txt\` 全量构建日志（合并纯文本，可直接阅读）
-          - \`latest/logs/run_logs.zip\` 原始日志包
-          - \`latest/artifacts/*.zip\` 产物（AnyKernel3 / ZRAM 模块）
+          readme = (
+              '# CI 输出（自动发布）\n\n'
+              '由 `Publish CI Output` 工作流在每次构建结束后生成，`latest/` 每次覆盖。\n\n'
+              '- `manifest.txt` 运行信息与文件清单\n'
+              '- `latest/logs/build_log.txt` 全量构建日志（合并纯文本，可直接阅读）\n'
+              '- `latest/logs/run_logs.zip` 原始日志包\n'
+              '- `latest/artifacts/*.zip` 产物（AnyKernel3 / ZRAM 模块）\n\n'
+              '本次 run: https://github.com/' + repo + '/actions/runs/' + run_id + '\n'
+              '旧 run：Actions -> Publish CI Output -> Run workflow，填 run_id 即可重新收集。\n'
+          )
 
-          本次 run: https://github.com/$REPO/actions/runs/$RUN_ID
-          旧 run：Actions -> Publish CI Output -> Run workflow，填 run_id 即可重新收集。
-          EOF
+          tree = []
+          items = [(k, v) for k, v in sorted(files.items()) if os.path.isfile(v)]
+          items.append(('README.md', None))
+          for rel, disk in items:
+              raw = readme.encode() if disk is None else open(disk, 'rb').read()
+              if not raw:
+                  continue
+              b = req('POST', '/git/blobs',
+                      {'content': base64.b64encode(raw).decode(), 'encoding': 'base64'},
+                      timeout=300)
+              tree.append({'path': rel, 'mode': '100644', 'type': 'blob', 'sha': b['sha']})
+              print('  blob %-58s %d bytes' % (rel, len(raw)))
 
-          git add -f -A
-          git commit -q -m "ci: publish logs & artifacts for run $RUN_ID" || echo "（无变更，跳过 commit）"
-          if ! git push --force --quiet origin ci-output; then
-            echo "::error::推送 ci-output 分支失败"
+          t = req('POST', '/git/trees', {'tree': tree})
+          c = req('POST', '/git/commits',
+                  {'message': 'ci: logs & artifacts for run ' + run_id,
+                   'tree': t['sha'], 'parents': []})
+          sha = c['sha']
+          try:
+              req('PATCH', '/git/refs/heads/ci-output', {'sha': sha, 'force': True})
+              print('  ci-output 分支已更新')
+          except urllib.error.HTTPError as e:
+              if e.code in (404, 422):
+                  req('POST', '/git/refs', {'ref': 'refs/heads/ci-output', 'sha': sha})
+                  print('  ci-output 分支已创建')
+              else:
+                  raise
+          print('OK  https://github.com/' + repo + '/tree/ci-output')
+          print('RAW https://raw.githubusercontent.com/' + repo + '/ci-output/latest/logs/build_log.txt')
+          PY
+          PUB_RC=$?
+          if [ "$PUB_RC" != "0" ]; then
+            echo "::error::发布失败 (rc=$PUB_RC)"
             exit 1
           fi
           echo "✅ 已发布：https://github.com/$REPO/tree/ci-output"
-          echo "   直接读日志：https://raw.githubusercontent.com/$REPO/ci-output/latest/logs/build_log.txt"
