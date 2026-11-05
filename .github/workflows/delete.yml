@@ -67,7 +67,7 @@ permissions:
 
 jobs:
   cleanup-workflow:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     if: >-
       ${{ inputs.cancel_all
        || inputs.delete_failed
@@ -234,7 +234,7 @@ jobs:
           echo "✅ 批量删除完成，共删除 $TOTAL_DELETED 条（上限: $COUNT）。"
 
   cleanup-caches:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     if: ${{ inputs.cache_mode != 'none' }}
     permissions:
       actions: write
@@ -292,7 +292,7 @@ jobs:
             }
 
   cleanup-self-workflow:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     if: always()
     env:
       CURRENT_RUN_ID: ${{ github.run_id }}
