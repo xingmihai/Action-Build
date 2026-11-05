@@ -188,6 +188,11 @@ on:
         description: "是否停用此次缓存？//Disable caching for this build?"
         required: true
         default: false
+      BLOCK_MODULES:
+        type: string
+        description: "屏蔽内核模块(构建时填,逗号分隔,留空不启用)//Block kernel modules (comma-separated, leave empty to disable)"
+        required: false
+        default: ""
 
 jobs:
   build:
@@ -357,6 +362,7 @@ jobs:
         env:
           BUILD_TIME: ${{ github.event.inputs.BUILD_TIME }}
           SUFFIX: ${{ github.event.inputs.SUFFIX }}
+          BLOCK_MODULES: ${{ github.event.inputs.BLOCK_MODULES }}
         run: |
           echo "------------------------------"
 
@@ -365,6 +371,7 @@ jobs:
           echo "Selected ANDROID_VERSION: ${{ env.ANDROID_VERSION }}"
           echo "Selected BUILD_METHOD: ${{ env.BUILD_METHOD }}"
           echo "Selected FILE: ${{ github.event.inputs.FILE }}"
+          echo "Selected BLOCK_MODULES: $BLOCK_MODULES"
           echo "Selected SUSFS_CI: ${{ github.event.inputs.SUSFS_CI }}"
           if [ "${{ github.event.inputs.SUSFS_CI }}" != "N/A" ]; then
             echo "::warning title=SUSFS Not Required::当前管理器已自带附加模块，无需启用 SUSFS 模块，强制启用可能导致不开机。"
@@ -1111,6 +1118,8 @@ jobs:
 
       # 配置信息，带*为附加项目，具有一定危险性和不确定性
       - name: Add Configuration Settings
+        env:
+          BLOCK_MODULES: ${{ github.event.inputs.BLOCK_MODULES }}
         run: |
           cd kernel_workspace/kernel_platform/common
           CONFIG_FILE=./arch/arm64/configs/gki_defconfig
@@ -1153,6 +1162,37 @@ jobs:
             echo "CONFIG_FAKE_DISABLE=${HIDE_CONFIGS[*]}" >> "$GITHUB_ENV"
           }
           trap 'inject_fake_config' EXIT
+
+          # 内核模块黑名单：block_modules= 由 SukiSU 在第二阶段 init 合并进原生
+          # module_blacklist，避开 first stage init 遇到模块加载失败即 fatal 的问题。
+          # 仅在构建时填写了模块名才写入，留空则完全保持原有配置不变。
+          block_modules="$(printf '%s' "${BLOCK_MODULES:-}" | tr -d '[:space:]')"
+          if [ -n "$block_modules" ]; then
+            if ! printf '%s' "$block_modules" | grep -qE '^[A-Za-z0-9_,]+$'; then
+              echo "::error::BLOCK_MODULES 只能包含字母、数字、下划线和逗号"
+              exit 1
+            fi
+            case "$block_modules" in ,*|*,,|*,)
+              echo "::error::BLOCK_MODULES 含有空条目"
+              exit 1 ;;
+            esac
+            IFS=',' read -ra _bm_names <<< "$block_modules"
+            for _bm in "${_bm_names[@]}"; do
+              if [ "${#_bm}" -gt 64 ]; then
+                echo "::error::模块名 $_bm 超过 64 字符"
+                exit 1
+              fi
+            done
+            if [ "${#block_modules}" -gt 255 ]; then
+              echo "::error::BLOCK_MODULES 超过内核 255 字节上限"
+              exit 1
+            fi
+            set_config "CONFIG_CMDLINE=\"block_modules=$block_modules\""
+            set_config "CONFIG_CMDLINE_EXTEND=y"
+            # CMDLINE_* 属于 choice，清掉默认的 FROM_BOOTLOADER，交给 olddefconfig 归一
+            sed -i '/^CONFIG_CMDLINE_FROM_BOOTLOADER=y$/d' "$CONFIG_FILE"
+            echo "已配置 CONFIG_CMDLINE: block_modules=$block_modules"
+          fi
 
           # SukiSU Ultra配置
           set_config "CONFIG_KSU=y"
