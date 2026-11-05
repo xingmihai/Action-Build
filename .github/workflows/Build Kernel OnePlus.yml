@@ -190,7 +190,7 @@ on:
         default: false
       BLOCK_MODULES:
         type: string
-        description: "屏蔽内核模块(构建时填,逗号分隔,留空不启用)//Block kernel modules (comma-separated, leave empty to disable)"
+        description: "屏蔽内核模块(构建时填,逗号分隔,留空不启用;写入内核原生 module_blacklist=)//Block kernel modules via native module_blacklist= (comma-separated, empty to disable)"
         required: false
         default: ""
 
@@ -1163,8 +1163,10 @@ jobs:
           }
           trap 'inject_fake_config' EXIT
 
-          # 内核模块黑名单：block_modules= 由 SukiSU 在第二阶段 init 合并进原生
-          # module_blacklist，避开 first stage init 遇到模块加载失败即 fatal 的问题。
+          # 内核模块黑名单：直接写入内核原生 module_blacklist=（core_param, 0400），
+          # 不依赖所集成的 SukiSU 分支是否带 feature/module_blacklist.c。
+          # 该参数在启动早期即生效：仅可屏蔽第二阶段 vendor_dlkm 加载的模块；
+          # 若模块出现在 first stage 的 modules.load 中，加载失败会 fatal 卡开机。
           # 仅在构建时填写了模块名才写入，留空则完全保持原有配置不变。
           block_modules="$(printf '%s' "${BLOCK_MODULES:-}" | tr -d '[:space:]')"
           if [ -n "$block_modules" ]; then
@@ -1183,15 +1185,16 @@ jobs:
                 exit 1
               fi
             done
+            # 保守上限（沿用原 SukiSU block_modules 256 字节缓冲）；原生 charp 参数无此硬限制
             if [ "${#block_modules}" -gt 255 ]; then
-              echo "::error::BLOCK_MODULES 超过内核 255 字节上限"
+              echo "::error::BLOCK_MODULES 超过 255 字节，请精简"
               exit 1
             fi
-            set_config "CONFIG_CMDLINE=\"block_modules=$block_modules\""
+            set_config "CONFIG_CMDLINE=\"module_blacklist=$block_modules\""
             set_config "CONFIG_CMDLINE_EXTEND=y"
             # CMDLINE_* 属于 choice，清掉默认的 FROM_BOOTLOADER，交给 olddefconfig 归一
             sed -i '/^CONFIG_CMDLINE_FROM_BOOTLOADER=y$/d' "$CONFIG_FILE"
-            echo "已配置 CONFIG_CMDLINE: block_modules=$block_modules"
+            echo "已配置 CONFIG_CMDLINE: module_blacklist=$block_modules"
           fi
 
           # SukiSU Ultra配置
