@@ -2,67 +2,6 @@ name: Build All OnePlus Kernels
 on:
   workflow_dispatch:
     inputs:
-      FILE:
-        type: choice
-        description: "配置文件//Configuration file"
-        required: true
-        default: oneplus_ace2_pro_b
-        options:
-          - oneplus_nord_n30_se_5g_v
-          - oneplus_10r_v
-          - oneplus_nord_3_b
-          - oneplus_ace_v
-          - oneplus_ace_race_v
-          - oneplus_10_pro_b
-          - oneplus_10t_v
-          - oneplus_11r_b
-          - oneplus_ace2_b
-          - oneplus_pad_lite_b
-          - oneplus_pad_mt6983_b
-          - oneplus_ace_2v_b
-          - oneplus_ace_pro_v
-          - oneplus_11_b
-          - oneplus_12r_b
-          - oneplus_ace2_pro_b
-          - oneplus_ace3_b
-          - oneplus_open_b
-          - oneplus_nord_ce4_b
-          - oneplus_n6_b
-          - oneplus_12_b
-          - oneplus_pad_go_2_b
-          - oneplus_turbo_6x_b
-          - oneplus_nord_ce4_lite_5g_b
-          - oneplus_nord_ce6_lite_b
-          - oneplus_turbo_6v
-          - oneplus_nord_4_b
-          - oneplus_ace_3v_b
-          - oneplus_pad_mt6897_b
-          - oneplus_13r_b
-          - oneplus_ace3_pro_b
-          - oneplus_ace5_b
-          - oneplus_pad_pro_b
-          - oneplus_pad2_b
-          - oneplus_nord_ce5_b
-          - oneplus_nord_5_b
-          - oneplus_ace5_pro_b
-          - oneplus_13_b
-          - oneplus_13t_b
-          - oneplus_13s_b
-          - oneplus_pad_2_pro_b
-          - oneplus_pad_3_b
-          - oneplus_ace5_race_b
-          - oneplus_ace5_ultra_b
-          - oneplus_pad2_mt6991_b
-          - oneplus_ace_6
-          - oneplus_turbo_6
-          - oneplus_nord_6
-          - oneplus_ace_6t
-          - oneplus_15r
-          - oneplus_15
-          - oneplus_15t
-          - oneplus_pad_3_pro
-          - oneplus_pad_4
-          - oneplus_ace6_ultra
       SUSFS_CI:
         type: choice
         description: "SUSFS模块下载调用方向//SUSFS module branch"
@@ -196,7 +135,7 @@ on:
 
 jobs:
   build:
-    name: ${{ github.event.inputs.FAST_BUILD == 'true' && ' [FAST]' || '' }}${{ contains(github.event.inputs.FILE, '_aosp') && ' [AOSP]' || '' }}${{ github.event.inputs.KPM == 'KPM' && github.event.inputs.KPM_VER == 'NEW' && ' [KPM-NEW]' || github.event.inputs.KPM == 'KPM' && ' [KPM]' || github.event.inputs.KPM == 'KPN' && ' [KPN]' || '' }}${{ github.event.inputs.LSM_BBG == 'true' && ' [BBG]' || '' }}${{ github.event.inputs.SCHED_HMBIRD == 'true' && ' [HMBIRD]' || '' }}${{ github.event.inputs.DROID_SPACES == 'true' && ' [DS]' || '' }}${{ startsWith(github.event.inputs.ZRAM, '1/') && ' [ZRAM]' || '' }}${{ github.event.inputs.RE_KERNEL == 'true' && ' [REKER]' || '' }}${{ github.event.inputs.LZ4_UPDATE == 'true' && ' [LZ4UPD]' || '' }}For ${{ github.event.inputs.FILE }} ${{ github.event.inputs.SUFFIX }}
+    name: ${{ github.event.inputs.FAST_BUILD == 'true' && ' [FAST]' || '' }}${{ github.event.inputs.KPM == 'KPM' && github.event.inputs.KPM_VER == 'NEW' && ' [KPM-NEW]' || github.event.inputs.KPM == 'KPM' && ' [KPM]' || github.event.inputs.KPM == 'KPN' && ' [KPN]' || '' }}${{ github.event.inputs.LSM_BBG == 'true' && ' [BBG]' || '' }}${{ github.event.inputs.SCHED_HMBIRD == 'true' && ' [HMBIRD]' || '' }}${{ github.event.inputs.DROID_SPACES == 'true' && ' [DS]' || '' }}${{ startsWith(github.event.inputs.ZRAM, '1/') && ' [ZRAM]' || '' }}${{ github.event.inputs.RE_KERNEL == 'true' && ' [REKER]' || '' }}${{ github.event.inputs.LZ4_UPDATE == 'true' && ' [LZ4UPD]' || '' }}For oneplus_ace_6 ${{ github.event.inputs.SUFFIX }}
     runs-on: ubuntu-26.04
     env:
       CCACHE_COMPILERCHECK: "none"
@@ -251,7 +190,7 @@ jobs:
       - name: Extract Manifest Info
         id: extract_info
         env:
-          FILE: ${{ github.event.inputs.FILE }}
+          FILE: oneplus_ace_6
         run: |
           set -e
           cd "$GITHUB_WORKSPACE"
@@ -370,7 +309,7 @@ jobs:
           echo "Selected CPUD: ${{ env.CPUD }}"
           echo "Selected ANDROID_VERSION: ${{ env.ANDROID_VERSION }}"
           echo "Selected BUILD_METHOD: ${{ env.BUILD_METHOD }}"
-          echo "Selected FILE: ${{ github.event.inputs.FILE }}"
+          echo "Selected FILE: oneplus_ace_6"
           echo "Selected BLOCK_MODULES: $BLOCK_MODULES"
           echo "Selected SUSFS_CI: ${{ github.event.inputs.SUSFS_CI }}"
           if [ "${{ github.event.inputs.SUSFS_CI }}" != "N/A" ]; then
@@ -412,9 +351,9 @@ jobs:
       - name: Set Cache Environment
         if: ${{ github.event.inputs.BUILD_NOCACHE == 'false' }}
         run: |
-          echo "CCACHE_DIR=$HOME/.ccache_${{ github.event.inputs.FILE }}" >> $GITHUB_ENV
-          mkdir -p "$HOME/.ccache_${{ github.event.inputs.FILE }}"
-          echo "set: $HOME/.ccache_${{ github.event.inputs.FILE }}"
+          echo "CCACHE_DIR=$HOME/.ccache_oneplus_ace_6" >> $GITHUB_ENV
+          mkdir -p "$HOME/.ccache_oneplus_ace_6"
+          echo "set: $HOME/.ccache_oneplus_ace_6"
 
       - name: Fork Check
         run: |
@@ -490,7 +429,7 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.event.inputs.FILE }}-${{ env.BUILD_METHOD }}-${{ github.event.inputs.FAST_BUILD == 'true' && 'alpha' || 'beta' }}-16.8
+          key: ccache-${{ runner.os }}-${{ github.ref_name }}-oneplus_ace_6-${{ env.BUILD_METHOD }}-${{ github.event.inputs.FAST_BUILD == 'true' && 'alpha' || 'beta' }}-16.8
 
       - name: Restore ThinLTO Cache
         if: ${{ github.event.inputs.BUILD_NOCACHE == 'false' && github.event.inputs.FAST_BUILD == 'true' }}
@@ -498,7 +437,7 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ${{ github.workspace }}/kernel_workspace/.thinlto-cache
-          key: thinlto-${{ runner.os }}-${{ github.ref_name }}-${{ github.event.inputs.FILE }}-16.8
+          key: thinlto-${{ runner.os }}-${{ github.ref_name }}-oneplus_ace_6-16.8
 
       - name: Initialize Ccache
         if: ${{ github.event.inputs.BUILD_NOCACHE == 'false' }}
@@ -527,7 +466,7 @@ jobs:
 
       - name: Initialize Repo and Sync
         env:
-          FILE: ${{ github.event.inputs.FILE }}
+          FILE: oneplus_ace_6
         run: |
           cd kernel_workspace
           mkdir -p .repo/manifests
@@ -817,7 +756,7 @@ jobs:
 
       - name: Apply Patches SukiSU Ultra
         env:
-          FILE: ${{ github.event.inputs.FILE }}
+          FILE: oneplus_ace_6
         run: |
           cd kernel_workspace
           if [ "${{ github.event.inputs.SUSFS_META }}" != "-1" ]; then
@@ -980,7 +919,7 @@ jobs:
 
       - name: Apply DROID_SPACES
         env:
-          FILE: ${{ github.event.inputs.FILE }}
+          FILE: oneplus_ace_6
         if: ${{ github.event.inputs.DROID_SPACES == 'true' }}
         run: |
           PATCH_DIR="${GITHUB_WORKSPACE}/kernel_workspace/Action-Build/patches"
@@ -1074,7 +1013,7 @@ jobs:
 
       - name: Apply SCHED_HMBIRD
         env:
-          FILE: ${{ github.event.inputs.FILE }}
+          FILE: oneplus_ace_6
         if: ${{ github.event.inputs.SCHED_HMBIRD == 'true' }}
         run: |
           cd kernel_workspace/kernel_platform/common
@@ -1919,14 +1858,14 @@ jobs:
         uses: actions/cache/save@v5
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.event.inputs.FILE }}-${{ env.BUILD_METHOD }}-${{ github.event.inputs.FAST_BUILD == 'true' && 'alpha' || 'beta' }}-16.8
+          key: ccache-${{ runner.os }}-${{ github.ref_name }}-oneplus_ace_6-${{ env.BUILD_METHOD }}-${{ github.event.inputs.FAST_BUILD == 'true' && 'alpha' || 'beta' }}-16.8
 
       - name: Save ThinLTO Cache
         if: ${{ github.event.inputs.BUILD_NOCACHE == 'false' && github.event.inputs.FAST_BUILD == 'true' && steps.cache_size_check.outputs.thinlto_save == 'true' && steps.restore-thinlto.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v5
         with:
           path: ${{ github.workspace }}/kernel_workspace/.thinlto-cache
-          key: thinlto-${{ runner.os }}-${{ github.ref_name }}-${{ github.event.inputs.FILE }}-16.8
+          key: thinlto-${{ runner.os }}-${{ github.ref_name }}-oneplus_ace_6-16.8
 
       - name: Post-build Disk Check
         run: df -h
