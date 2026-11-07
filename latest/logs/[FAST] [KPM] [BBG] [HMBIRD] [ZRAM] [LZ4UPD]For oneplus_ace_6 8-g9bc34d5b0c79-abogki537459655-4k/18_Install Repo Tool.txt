@@ -1,0 +1,31 @@
+﻿2026-11-07T15:06:43.7559830Z ##[group]Run curl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo
+2026-11-07T15:06:43.7560552Z [36;1mcurl https://storage.googleapis.com/git-repo-downloads/repo > ~/repo[0m
+2026-11-07T15:06:43.7560997Z [36;1mchmod a+x ~/repo[0m
+2026-11-07T15:06:43.7561274Z [36;1msudo mv ~/repo /usr/local/bin/repo[0m
+2026-11-07T15:06:43.7609608Z shell: /usr/bin/bash -e {0}
+2026-11-07T15:06:43.7609890Z env:
+2026-11-07T15:06:43.7610108Z   CCACHE_COMPILERCHECK: none
+2026-11-07T15:06:43.7610375Z   CCACHE_NOHASHDIR: true
+2026-11-07T15:06:43.7610629Z   CCACHE_NOHARDLINK: true
+2026-11-07T15:06:43.7610879Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T15:06:43.7611141Z   CCACHE_MAXSIZE: 5G
+2026-11-07T15:06:43.7611367Z   FILE_CONF: oneplus_ace_6
+2026-11-07T15:06:43.7611605Z   FILE_BASE: OnePlusAce6
+2026-11-07T15:06:43.7611851Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T15:06:43.7612581Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T15:06:43.7612869Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T15:06:43.7613124Z   CPU: sm8750
+2026-11-07T15:06:43.7613409Z   ANDROID_VERSION: 16.0.0
+2026-11-07T15:06:43.7613667Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T15:06:43.7613901Z   CPUD: sun
+2026-11-07T15:06:43.7614090Z   BUILD_METHOD: perf
+2026-11-07T15:06:43.7614348Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T15:06:43.7614944Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T15:06:43.7615502Z ##[endgroup]
+2026-11-07T15:06:43.7743251Z   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+2026-11-07T15:06:43.7744532Z                                  Dload  Upload  Total   Spent   Left   Speed
+2026-11-07T15:06:43.7745285Z 
+2026-11-07T15:06:43.7944354Z   0      0   0      0   0      0      0      0                              0
+2026-11-07T15:06:43.7945196Z 100  47710 100  47710   0      0  2.24M      0                              0
+2026-11-07T15:06:43.7945911Z 100  47710 100  47710   0      0  2.24M      0                              0
+2026-11-07T15:06:43.7946632Z 100  47710 100  47710   0      0  2.23M      0                              0

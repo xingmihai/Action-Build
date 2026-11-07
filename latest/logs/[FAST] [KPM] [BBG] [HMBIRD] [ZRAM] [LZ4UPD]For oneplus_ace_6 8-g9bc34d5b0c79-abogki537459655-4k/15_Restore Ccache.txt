@@ -1,0 +1,33 @@
+﻿2026-11-07T15:06:39.9941276Z ##[group]Run actions/cache/restore@v5
+2026-11-07T15:06:39.9941592Z with:
+2026-11-07T15:06:39.9941815Z   path: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T15:06:39.9942472Z   key: ccache-Linux-SukiSU-Ultra-oneplus_ace_6-perf-alpha-16.8
+2026-11-07T15:06:39.9942864Z   enableCrossOsArchive: false
+2026-11-07T15:06:39.9943122Z   fail-on-cache-miss: false
+2026-11-07T15:06:39.9943355Z   lookup-only: false
+2026-11-07T15:06:39.9943562Z env:
+2026-11-07T15:06:39.9943761Z   CCACHE_COMPILERCHECK: none
+2026-11-07T15:06:39.9943996Z   CCACHE_NOHASHDIR: true
+2026-11-07T15:06:39.9944220Z   CCACHE_NOHARDLINK: true
+2026-11-07T15:06:39.9944458Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T15:06:39.9944704Z   CCACHE_MAXSIZE: 5G
+2026-11-07T15:06:39.9944915Z   FILE_CONF: oneplus_ace_6
+2026-11-07T15:06:39.9945294Z   FILE_BASE: OnePlusAce6
+2026-11-07T15:06:39.9945691Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T15:06:39.9946149Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T15:06:39.9946617Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T15:06:39.9946979Z   CPU: sm8750
+2026-11-07T15:06:39.9947227Z   ANDROID_VERSION: 16.0.0
+2026-11-07T15:06:39.9947481Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T15:06:39.9947727Z   CPUD: sun
+2026-11-07T15:06:39.9947923Z   BUILD_METHOD: perf
+2026-11-07T15:06:39.9948182Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T15:06:39.9948761Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T15:06:39.9949313Z ##[endgroup]
+2026-11-07T15:06:40.2127685Z Cache hit for: ccache-Linux-SukiSU-Ultra-oneplus_ace_6-perf-alpha-16.8
+2026-11-07T15:06:41.2718449Z Received 222298112 of 359996161 (61.8%), 211.8 MBs/sec
+2026-11-07T15:06:41.9847193Z Received 359996161 of 359996161 (100.0%), 200.3 MBs/sec
+2026-11-07T15:06:41.9850670Z Cache Size: ~343 MB (359996161 B)
+2026-11-07T15:06:41.9919439Z [command]/usr/bin/tar -xf /home/runner/work/_temp/912ee976-7a4c-4f20-b995-963e1d8f2e4c/cache.tzst -P -C /home/runner/work/Action-Build/Action-Build --use-compress-program unzstd
+2026-11-07T15:06:43.4586722Z Cache restored successfully
+2026-11-07T15:06:43.4818730Z Cache restored from key: ccache-Linux-SukiSU-Ultra-oneplus_ace_6-perf-alpha-16.8

@@ -1,0 +1,92 @@
+﻿2026-11-07T15:04:52.0822537Z ##[group]Run actions/checkout@v6
+2026-11-07T15:04:52.0823711Z with:
+2026-11-07T15:04:52.0824197Z   repository: xingmihai/Action-Build
+2026-11-07T15:04:52.0827967Z   token: ***
+2026-11-07T15:04:52.0828390Z   ssh-strict: true
+2026-11-07T15:04:52.0828826Z   ssh-user: git
+2026-11-07T15:04:52.0829265Z   persist-credentials: true
+2026-11-07T15:04:52.0829744Z   clean: true
+2026-11-07T15:04:52.0830180Z   sparse-checkout-cone-mode: true
+2026-11-07T15:04:52.0830701Z   fetch-depth: 1
+2026-11-07T15:04:52.0831127Z   fetch-tags: false
+2026-11-07T15:04:52.0831562Z   show-progress: true
+2026-11-07T15:04:52.0832283Z   lfs: false
+2026-11-07T15:04:52.0832707Z   submodules: false
+2026-11-07T15:04:52.0833173Z   set-safe-directory: true
+2026-11-07T15:04:52.0833666Z   allow-unsafe-pr-checkout: false
+2026-11-07T15:04:52.0834468Z env:
+2026-11-07T15:04:52.0834899Z   CCACHE_COMPILERCHECK: none
+2026-11-07T15:04:52.0835406Z   CCACHE_NOHASHDIR: true
+2026-11-07T15:04:52.0835881Z   CCACHE_NOHARDLINK: true
+2026-11-07T15:04:52.0836369Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T15:04:52.0836919Z   CCACHE_MAXSIZE: 5G
+2026-11-07T15:04:52.0837350Z ##[endgroup]
+2026-11-07T15:04:52.3549016Z Syncing repository: xingmihai/Action-Build
+2026-11-07T15:04:52.3552259Z ##[group]Getting Git version info
+2026-11-07T15:04:52.3553652Z Working directory is '/home/runner/work/Action-Build/Action-Build'
+2026-11-07T15:04:52.3555440Z [command]/usr/bin/git version
+2026-11-07T15:04:52.3570338Z git version 2.56.0
+2026-11-07T15:04:52.3611104Z ##[endgroup]
+2026-11-07T15:04:52.3621117Z Temporarily overriding HOME='/home/runner/work/_temp/bad8f242-aa63-4230-8531-26baa81516c0' before making global git config changes
+2026-11-07T15:04:52.3624357Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-07T15:04:52.3643962Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Action-Build/Action-Build
+2026-11-07T15:04:52.3708415Z Deleting the contents of '/home/runner/work/Action-Build/Action-Build'
+2026-11-07T15:04:52.3714028Z ##[group]Determining repository object format
+2026-11-07T15:04:52.3723633Z ##[endgroup]
+2026-11-07T15:04:52.3725428Z ##[group]Initializing the repository
+2026-11-07T15:04:52.3727021Z [command]/usr/bin/git init /home/runner/work/Action-Build/Action-Build
+2026-11-07T15:04:52.3848331Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-07T15:04:52.3850119Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-07T15:04:52.3851756Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-07T15:04:52.3853257Z hint: call:
+2026-11-07T15:04:52.3853966Z hint:
+2026-11-07T15:04:52.3854791Z hint: 	git config --global init.defaultBranch <name>
+2026-11-07T15:04:52.3855869Z hint:
+2026-11-07T15:04:52.3856893Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-07T15:04:52.3858446Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-07T15:04:52.3859720Z hint:
+2026-11-07T15:04:52.3860602Z hint: 	git branch -m <name>
+2026-11-07T15:04:52.3861432Z hint:
+2026-11-07T15:04:52.3862706Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-07T15:04:52.3864532Z Initialized empty Git repository in /home/runner/work/Action-Build/Action-Build/.git/
+2026-11-07T15:04:52.3887838Z [command]/usr/bin/git remote add origin https://github.com/xingmihai/Action-Build
+2026-11-07T15:04:52.3942855Z ##[endgroup]
+2026-11-07T15:04:52.3944504Z ##[group]Disabling automatic garbage collection
+2026-11-07T15:04:52.3947319Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-07T15:04:52.3992943Z ##[endgroup]
+2026-11-07T15:04:52.3994913Z ##[group]Setting up auth
+2026-11-07T15:04:52.3996253Z Removing SSH command configuration
+2026-11-07T15:04:52.4000638Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-07T15:04:52.4044890Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-07T15:04:52.4546249Z Removing HTTP extra header
+2026-11-07T15:04:52.4553985Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-07T15:04:52.4595030Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-07T15:04:52.4881581Z Removing includeIf entries pointing to credentials config files
+2026-11-07T15:04:52.4888570Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-07T15:04:52.4929703Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-07T15:04:52.5230696Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-906dce50-4890-4dd0-a946-4693fc3a1537.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-07T15:04:52.5352842Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/Action-Build/Action-Build/.git.path /home/runner/work/_temp/git-credentials-906dce50-4890-4dd0-a946-4693fc3a1537.config
+2026-11-07T15:04:52.5356602Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/Action-Build/Action-Build/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-906dce50-4890-4dd0-a946-4693fc3a1537.config
+2026-11-07T15:04:52.5390013Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-906dce50-4890-4dd0-a946-4693fc3a1537.config
+2026-11-07T15:04:52.5431425Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-906dce50-4890-4dd0-a946-4693fc3a1537.config
+2026-11-07T15:04:52.5471064Z ##[endgroup]
+2026-11-07T15:04:52.5473488Z ##[group]Fetching the repository
+2026-11-07T15:04:52.5483047Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +b8a145be18f1930c52c0b698ef6c384f9460df2d:refs/remotes/origin/SukiSU-Ultra
+2026-11-07T15:04:53.2341302Z From https://github.com/xingmihai/Action-Build
+2026-11-07T15:04:53.2342847Z  * [new ref]         b8a145be18f1930c52c0b698ef6c384f9460df2d -> origin/SukiSU-Ultra
+2026-11-07T15:04:53.2354019Z [command]/usr/bin/git branch --list --remote origin/SukiSU-Ultra
+2026-11-07T15:04:53.2382855Z   origin/SukiSU-Ultra
+2026-11-07T15:04:53.2392821Z [command]/usr/bin/git rev-parse refs/remotes/origin/SukiSU-Ultra
+2026-11-07T15:04:53.2419441Z b8a145be18f1930c52c0b698ef6c384f9460df2d
+2026-11-07T15:04:53.2425646Z ##[endgroup]
+2026-11-07T15:04:53.2426707Z ##[group]Determining the checkout info
+2026-11-07T15:04:53.2427752Z ##[endgroup]
+2026-11-07T15:04:53.2432481Z [command]/usr/bin/git sparse-checkout disable
+2026-11-07T15:04:53.2489040Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-07T15:04:53.2525365Z ##[group]Checking out the ref
+2026-11-07T15:04:53.2530614Z [command]/usr/bin/git checkout --progress --force -B SukiSU-Ultra refs/remotes/origin/SukiSU-Ultra
+2026-11-07T15:04:53.3355062Z Switched to a new branch 'SukiSU-Ultra'
+2026-11-07T15:04:53.3359848Z branch 'SukiSU-Ultra' set up to track 'origin/SukiSU-Ultra'.
+2026-11-07T15:04:53.3366619Z ##[endgroup]
+2026-11-07T15:04:53.3418001Z [command]/usr/bin/git log -1 --format=%H
+2026-11-07T15:04:53.3447685Z b8a145be18f1930c52c0b698ef6c384f9460df2d

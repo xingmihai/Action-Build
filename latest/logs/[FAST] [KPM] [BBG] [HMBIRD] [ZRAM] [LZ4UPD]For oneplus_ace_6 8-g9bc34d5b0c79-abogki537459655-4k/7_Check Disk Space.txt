@@ -1,0 +1,34 @@
+﻿2026-11-07T15:06:14.7864131Z ##[group]Run df -h
+2026-11-07T15:06:14.7864423Z [36;1mdf -h[0m
+2026-11-07T15:06:14.7912510Z shell: /usr/bin/bash -e {0}
+2026-11-07T15:06:14.7912781Z env:
+2026-11-07T15:06:14.7913023Z   CCACHE_COMPILERCHECK: none
+2026-11-07T15:06:14.7913282Z   CCACHE_NOHASHDIR: true
+2026-11-07T15:06:14.7913509Z   CCACHE_NOHARDLINK: true
+2026-11-07T15:06:14.7913757Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T15:06:14.7914013Z   CCACHE_MAXSIZE: 5G
+2026-11-07T15:06:14.7914271Z   FILE_CONF: oneplus_ace_6
+2026-11-07T15:06:14.7914513Z   FILE_BASE: OnePlusAce6
+2026-11-07T15:06:14.7914736Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T15:06:14.7914977Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T15:06:14.7915262Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T15:06:14.7915509Z   CPU: sm8750
+2026-11-07T15:06:14.7915702Z   ANDROID_VERSION: 16.0.0
+2026-11-07T15:06:14.7915925Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T15:06:14.7916141Z   CPUD: sun
+2026-11-07T15:06:14.7916322Z   BUILD_METHOD: perf
+2026-11-07T15:06:14.7916529Z ##[endgroup]
+2026-11-07T15:06:14.8003507Z Filesystem                   Size  Used Avail Use% Mounted on
+2026-11-07T15:06:14.8004153Z /dev/root                    145G  143G  2.1G  99% /
+2026-11-07T15:06:14.8004598Z tmpfs                        7.9G     0  7.9G   0% /dev/shm
+2026-11-07T15:06:14.8004979Z tmpfs                        3.2G  1.1M  3.2G   1% /run
+2026-11-07T15:06:14.8005411Z efivarfs                     128M   32K  128M   1% /sys/firmware/efi/efivars
+2026-11-07T15:06:14.8005956Z none                         1.0M     0  1.0M   0% /run/credentials/systemd-journald.service
+2026-11-07T15:06:14.8006839Z none                         1.0M     0  1.0M   0% /run/credentials/systemd-resolved.service
+2026-11-07T15:06:14.8007545Z /dev/sda13                   989M   84M  838M  10% /boot
+2026-11-07T15:06:14.8008107Z /dev/sda15                   105M  6.3M   99M   7% /boot/efi
+2026-11-07T15:06:14.8008734Z none                         1.0M     0  1.0M   0% /run/credentials/systemd-networkd.service
+2026-11-07T15:06:14.8009194Z tmpfs                        1.6G  8.0K  1.6G   1% /run/user/1001
+2026-11-07T15:06:14.8009641Z none                         1.0M     0  1.0M   0% /run/credentials/getty@tty1.service
+2026-11-07T15:06:14.8010165Z none                         1.0M     0  1.0M   0% /run/credentials/serial-getty@ttyS0.service
+2026-11-07T15:06:14.8010770Z /dev/mapper/buildvg-buildlv   98G   42M   98G   1% /home/runner/work/Action-Build/Action-Build

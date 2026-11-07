@@ -1,0 +1,63 @@
+# CI Output
+run_id=42384606109
+run_url=https://github.com/xingmihai/Action-Build/actions/runs/42384606109
+conclusion=success
+head_sha=b8a145be18f1930c52c0b698ef6c384f9460df2d
+head_branch=SukiSU-Ultra
+collected_utc=2026-11-07T15:16:31Z
+
+## artifacts
+AnyKernel3_SukiSUUltra_41159_OnePlusAce6_Android16.0.0(6.6.118)_LZ4KD_KPM_BBG_ILH_HMBIRD_LZ4UPD.zip  19222065 bytes
+ZRAM-Module_6.6_OnePlusAce6_Android16.0.0.zip  411453 bytes
+
+## logs
+0_[FAST] [KPM] [BBG] [HMBIRD] [ZRAM] [LZ4UPD]For oneplus_ace_6 8-g9bc34d5b0c79-abogki537459655-4k.txt  743054 bytes
+105_Post Restore APT Cache.txt  168 bytes
+106_Post Checkout.txt  50 bytes
+107_Complete job.txt  61 bytes
+10_Fork Check.txt  1909 bytes
+11_Reject Check.txt  1445 bytes
+12_Restore APT Cache.txt  2130 bytes
+13_Install Dependencies.txt  59754 bytes
+14_Install Ccache-ECS.txt  1509 bytes
+15_Restore Ccache.txt  2262 bytes
+16_Restore ThinLTO Cache.txt  1694 bytes
+17_Initialize Ccache.txt  3069 bytes
+18_Install Repo Tool.txt  2205 bytes
+19_Initialize Repo and Sync.txt  5314 bytes
+1_Set up job.txt  2420 bytes
+20_Kernel Version Handling.txt  5899 bytes
+21_Rust Version Handling.txt  2906 bytes
+22_Custom Kernel Suffix if set.txt  5231 bytes
+24_Add SukiSU Ultra.txt  9490 bytes
+25_Apply Fake Patches.txt  4640 bytes
+26_Apply Patches SukiSU Ultra.txt  14524 bytes
+27_Revert Fake Patches.txt  3909 bytes
+29_Apply UNICODE_BYPASS.txt  3018 bytes
+2_Checkout.txt  7748 bytes
+32_Apply LZ4_DEV.txt  4538 bytes
+33_Apply ZRAM.txt  5614 bytes
+34_Apply SCHED_HMBIRD.txt  10264 bytes
+35_Apply LSM_BBG.txt  4662 bytes
+36_Add Configuration Settings.txt  17740 bytes
+37_Custom BUILD_TIME.txt  4415 bytes
+39_Build Kernel FAST.txt  446871 bytes
+3_Maximize Build Space.txt  20011 bytes
+41_Make AnyKernel3.txt  4853 bytes
+42_Apply KPX and Replace Image.txt  14903 bytes
+45_Download Latest SukiSU-Ultra APK from CI.txt  4516 bytes
+46_Set zip Suffix.txt  2655 bytes
+47_Upload AnyKernel3.txt  4339 bytes
+48_Extract and Process ZRAM Module.txt  19992 bytes
+49_Upload ZRAM Module.txt  4013 bytes
+4_Configure Git.txt  3887 bytes
+50_Check Cache Size Before Save.txt  3944 bytes
+53_Post-build Disk Check.txt  3993 bytes
+5_Extract Manifest Info.txt  9006 bytes
+6_Debug Show Selected Inputs.txt  5784 bytes
+7_Check Disk Space.txt  2508 bytes
+8_Create and Enable 3G Swap.txt  1934 bytes
+9_Set Cache Environment.txt  1392 bytes
+build_log.txt  1486839 bytes
+run_logs.zip  339088 bytes
+system.txt  596 bytes

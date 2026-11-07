@@ -1,0 +1,66 @@
+﻿2026-11-07T15:06:43.8118497Z ##[group]Run cd kernel_workspace
+2026-11-07T15:06:43.8118909Z [36;1mcd kernel_workspace[0m
+2026-11-07T15:06:43.8119192Z [36;1mmkdir -p .repo/manifests[0m
+2026-11-07T15:06:43.8119690Z [36;1mcp "$GITHUB_WORKSPACE/.repo/manifests_fallback/${FILE}.xml" ".repo/manifests/${FILE}.xml"[0m
+2026-11-07T15:06:43.8120330Z [36;1mBASE_URL="https://github.com/${MANIFEST_REPO}/${MANIFEST_REPO_NAME}.git"[0m
+2026-11-07T15:06:43.8120747Z [36;1m[0m
+2026-11-07T15:06:43.8121078Z [36;1mecho "使用$MANIFEST_REPO/$MANIFEST_REPO_NAME($MANIFEST_BRANCH)初始化仓库..."[0m
+2026-11-07T15:06:43.8121734Z [36;1mrepo init -u "$BASE_URL" -b "$MANIFEST_BRANCH" -m "${FILE}.xml" --depth=1 --no-clone-bundle --no-tags[0m
+2026-11-07T15:06:43.8122842Z [36;1msed -i -e '/prebuilts\/asuite"/{/ks-kernel\.lnx\.5\.0\.r3-rel/d}' -e '/tools\/tradefederation\/prebuilts"/{/ks-kernel\.lnx\.5\.0\.r3-rel/d}' ".repo/manifests/${FILE}.xml"[0m
+2026-11-07T15:06:43.8123882Z [36;1mrepo sync -c -j$(nproc) --no-clone-bundle --no-tags --force-sync[0m
+2026-11-07T15:06:43.8124315Z [36;1m[0m
+2026-11-07T15:06:43.8124512Z [36;1mKERNEL_REPOS=""[0m
+2026-11-07T15:06:43.8124923Z [36;1mKERNEL_REPOS_PATH=$(find . -type f -name "build.config.msm.common" | head -n 1)[0m
+2026-11-07T15:06:43.8125405Z [36;1mif [[ -n "$KERNEL_REPOS_PATH" ]]; then[0m
+2026-11-07T15:06:43.8125813Z [36;1m  KERNEL_REPOS=$(echo "${KERNEL_REPOS_PATH#./}" | cut -d/ -f2)[0m
+2026-11-07T15:06:43.8126264Z [36;1m  echo "✅ 发现 build.config.msm.common: $KERNEL_REPOS_PATH"[0m
+2026-11-07T15:06:43.8126651Z [36;1m  echo "✅ KERNEL_REPOS=$KERNEL_REPOS"[0m
+2026-11-07T15:06:43.8127010Z [36;1m  echo "KERNEL_REPOS=$KERNEL_REPOS" >> "$GITHUB_ENV"[0m
+2026-11-07T15:06:43.8127469Z [36;1melse[0m
+2026-11-07T15:06:43.8127823Z [36;1m  echo "❎ 未找到 build.config.msm.common，可能是天玑清单或纯 Kleaf 构建结构"[0m
+2026-11-07T15:06:43.8128185Z [36;1mfi[0m
+2026-11-07T15:06:43.8128376Z [36;1m[0m
+2026-11-07T15:06:43.8128569Z [36;1m# 移除 ABI 保护[0m
+2026-11-07T15:06:43.8128927Z [36;1mfor dir in kernel_platform/common kernel_platform/$KERNEL_REPOS; do[0m
+2026-11-07T15:06:43.8129368Z [36;1m  if [ -e "$dir/BUILD.bazel" ]; then[0m
+2026-11-07T15:06:43.8130003Z [36;1m    sed -i '/^[[:space:]]*"protected_exports_list"[[:space:]]*:[[:space:]]*"android\/abi_gki_protected_exports_aarch64",$/d' "$dir/BUILD.bazel"[0m
+2026-11-07T15:06:43.8130612Z [36;1m  fi[0m
+2026-11-07T15:06:43.8131030Z [36;1m  rm -f "$dir/android/abi_gki_protected_exports_"* 2>/dev/null || echo "No protected exports in $dir"[0m
+2026-11-07T15:06:43.8131527Z [36;1mdone[0m
+2026-11-07T15:06:43.8143254Z [36;1m[0m
+2026-11-07T15:06:43.8143496Z [36;1m# 移除构建审查[0m
+2026-11-07T15:06:43.8143900Z [36;1mif grep -q 'check_defconfig' kernel_platform/common/build.config.gki; then[0m
+2026-11-07T15:06:43.8144488Z [36;1m  sed -i 's/check_defconfig//' kernel_platform/common/build.config.gki[0m
+2026-11-07T15:06:43.8144891Z [36;1mfi[0m
+2026-11-07T15:06:43.8145319Z [36;1mif grep -q 'check_defconfig = None,' kernel_platform/build/kernel/kleaf/common_kernels.bzl; then[0m
+2026-11-07T15:06:43.8146162Z [36;1m  sed -i 's/check_defconfig = None,/check_defconfig = "disabled",/' kernel_platform/build/kernel/kleaf/common_kernels.bzl[0m
+2026-11-07T15:06:43.8147074Z [36;1m  sed -i 's/if check_defconfig == None:/if False:  # check_defconfig == None:/' kernel_platform/build/kernel/kleaf/common_kernels.bzl[0m
+2026-11-07T15:06:43.8147666Z [36;1mfi[0m
+2026-11-07T15:06:43.8196004Z shell: /usr/bin/bash -e {0}
+2026-11-07T15:06:43.8196294Z env:
+2026-11-07T15:06:43.8196520Z   CCACHE_COMPILERCHECK: none
+2026-11-07T15:06:43.8196792Z   CCACHE_NOHASHDIR: true
+2026-11-07T15:06:43.8197050Z   CCACHE_NOHARDLINK: true
+2026-11-07T15:06:43.8197323Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T15:06:43.8197602Z   CCACHE_MAXSIZE: 5G
+2026-11-07T15:06:43.8197838Z   FILE_CONF: oneplus_ace_6
+2026-11-07T15:06:43.8198083Z   FILE_BASE: OnePlusAce6
+2026-11-07T15:06:43.8198340Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T15:06:43.8198634Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T15:06:43.8198938Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T15:06:43.8199489Z   CPU: sm8750
+2026-11-07T15:06:43.8199710Z   ANDROID_VERSION: 16.0.0
+2026-11-07T15:06:43.8199954Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T15:06:43.8200198Z   CPUD: sun
+2026-11-07T15:06:43.8200401Z   BUILD_METHOD: perf
+2026-11-07T15:06:43.8200665Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T15:06:43.8201273Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T15:06:43.8201854Z   FILE: oneplus_ace_6
+2026-11-07T15:06:43.8202218Z ##[endgroup]
+2026-11-07T15:06:43.8321786Z 使用OnePlusOSS/kernel_manifest(oneplus/sm8750)初始化仓库...
+2026-11-07T15:06:45.5636781Z 
+2026-11-07T15:06:45.5637764Z repo has been initialized in /home/runner/work/Action-Build/Action-Build/kernel_workspace
+2026-11-07T15:09:16.0779424Z Finalizing sync state...
+2026-11-07T15:09:16.0779841Z repo sync has finished successfully.
+2026-11-07T15:09:17.4784209Z ✅ 发现 build.config.msm.common: ./kernel_platform/msm-kernel/build.config.msm.common
+2026-11-07T15:09:17.4785249Z ✅ KERNEL_REPOS=msm-kernel

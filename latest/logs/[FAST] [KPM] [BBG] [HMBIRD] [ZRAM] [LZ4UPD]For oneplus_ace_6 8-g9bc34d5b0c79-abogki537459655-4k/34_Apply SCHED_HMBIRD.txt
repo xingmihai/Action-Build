@@ -1,0 +1,142 @@
+﻿2026-11-07T15:09:43.9442732Z ##[group]Run cd kernel_workspace/kernel_platform/common
+2026-11-07T15:09:43.9443259Z [36;1mcd kernel_workspace/kernel_platform/common[0m
+2026-11-07T15:09:43.9443606Z [36;1mCLEAN_FILE="${FILE//_bak/}"[0m
+2026-11-07T15:09:43.9444067Z [36;1mfor p in ./kernel/sched/hmbird* ./vendor/oplus/kernel/cpu/sched_ext/hmbird*; do[0m
+2026-11-07T15:09:43.9444523Z [36;1m  [ -d "$p" ] && {[0m
+2026-11-07T15:09:43.9444781Z [36;1m    echo "源码中风驰代码已经存在，启用二次回退"[0m
+2026-11-07T15:09:43.9445055Z [36;1m    exit 0[0m
+2026-11-07T15:09:43.9445266Z [36;1m  }[0m
+2026-11-07T15:09:43.9445452Z [36;1mdone[0m
+2026-11-07T15:09:43.9445712Z [36;1mecho "内核版本: $VERSIONLEVEL.$PATCHLEVEL.$SUBLEVEL"[0m
+2026-11-07T15:09:43.9446195Z [36;1mif [[ "$VERSIONLEVEL.$PATCHLEVEL" == "6.6" && "$SUBLEVEL" == "118" ]]; then[0m
+2026-11-07T15:09:43.9446660Z [36;1m  echo "检测到 6.6.118，改用 118 专用风驰补丁(避免 fuzz 顶格匹配)"[0m
+2026-11-07T15:09:43.9447038Z [36;1m  curl -fsSL -o "fengchi_${CLEAN_FILE}.patch" \[0m
+2026-11-07T15:09:43.9447697Z [36;1m    "https://raw.githubusercontent.com/luyancib-org/kernel_patches/master/other/fengchi_oneplus_ace_6_118.patch" \[0m
+2026-11-07T15:09:43.9448380Z [36;1m    || { echo "❌ 118 风驰补丁下载失败，请关闭风驰后重试"; exit 12; }[0m
+2026-11-07T15:09:43.9448888Z [36;1melse[0m
+2026-11-07T15:09:43.9449371Z [36;1m  git clone https://github.com/Numbersf/SCHED_PATCH.git -b $CPU || { echo "❌ CPU 分支不存在，风驰内核暂未支持你的机型，请关闭后重试"; exit 11; }[0m
+2026-11-07T15:09:43.9449926Z [36;1m  echo "正在拉取风驰补丁"[0m
+2026-11-07T15:09:43.9450228Z [36;1m  cp ./SCHED_PATCH/fengchi_${CLEAN_FILE}.patch ./[0m
+2026-11-07T15:09:43.9450555Z [36;1mfi[0m
+2026-11-07T15:09:43.9450813Z [36;1mif [[ -f "fengchi_${CLEAN_FILE}.patch" ]]; then[0m
+2026-11-07T15:09:43.9451129Z [36;1m  echo "正在打风驰补丁"[0m
+2026-11-07T15:09:43.9451397Z [36;1m  dos2unix "fengchi_${CLEAN_FILE}.patch"[0m
+2026-11-07T15:09:43.9451764Z [36;1m  patch -p1 -F 3 < "fengchi_${CLEAN_FILE}.patch"[0m
+2026-11-07T15:09:43.9452344Z [36;1m  echo "fengchi_patch完成"[0m
+2026-11-07T15:09:43.9452634Z [36;1m  source $REJ_CHECKER[0m
+2026-11-07T15:09:43.9452904Z [36;1m  check_rejects .[0m
+2026-11-07T15:09:43.9453132Z [36;1melse[0m
+2026-11-07T15:09:43.9453359Z [36;1m  echo "❌ 未匹配到补丁，风驰内核暂未支持你的机型，请关闭后重试"[0m
+2026-11-07T15:09:43.9453654Z [36;1m  exit 12[0m
+2026-11-07T15:09:43.9453857Z [36;1mfi[0m
+2026-11-07T15:09:43.9502675Z shell: /usr/bin/bash -e {0}
+2026-11-07T15:09:43.9502963Z env:
+2026-11-07T15:09:43.9503182Z   CCACHE_COMPILERCHECK: none
+2026-11-07T15:09:43.9503446Z   CCACHE_NOHASHDIR: true
+2026-11-07T15:09:43.9503694Z   CCACHE_NOHARDLINK: true
+2026-11-07T15:09:43.9503942Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T15:09:43.9504213Z   CCACHE_MAXSIZE: 5G
+2026-11-07T15:09:43.9504447Z   FILE_CONF: oneplus_ace_6
+2026-11-07T15:09:43.9504686Z   FILE_BASE: OnePlusAce6
+2026-11-07T15:09:43.9504931Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T15:09:43.9505187Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T15:09:43.9505471Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T15:09:43.9505723Z   CPU: sm8750
+2026-11-07T15:09:43.9505941Z   ANDROID_VERSION: 16.0.0
+2026-11-07T15:09:43.9506173Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T15:09:43.9506415Z   CPUD: sun
+2026-11-07T15:09:43.9506610Z   BUILD_METHOD: perf
+2026-11-07T15:09:43.9506882Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T15:09:43.9507476Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T15:09:43.9508033Z   KERNEL_REPOS: msm-kernel
+2026-11-07T15:09:43.9508277Z   KMI: android15-6.6
+2026-11-07T15:09:43.9508502Z   KANDROID_VERSION: android15
+2026-11-07T15:09:43.9508754Z   KERNEL_VERSION: 6.6
+2026-11-07T15:09:43.9508981Z   VERSIONLEVEL: 6
+2026-11-07T15:09:43.9509186Z   PATCHLEVEL: 6
+2026-11-07T15:09:43.9509391Z   SUBLEVEL: 118
+2026-11-07T15:09:43.9509591Z   CKERNEL_VERSION: 6.6.118
+2026-11-07T15:09:43.9509831Z   KERNEL_SHORT_PATCH_VERSION: 6_6
+2026-11-07T15:09:43.9510095Z   ENABLE_RUST: false
+2026-11-07T15:09:43.9510308Z   KSU_MANAGER_BRANCH: main
+2026-11-07T15:09:43.9510540Z   KSU_BUILTIN_BRANCH: builtin
+2026-11-07T15:09:43.9511082Z   KSU_VERSION_TAG: 4.3.0-r2
+2026-11-07T15:09:43.9511309Z   KSUVER: 41159
+2026-11-07T15:09:43.9511774Z   BASH_ENV: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T15:09:43.9512585Z   ZRAM_ALGO: lz4kd
+2026-11-07T15:09:43.9512799Z   ZRAM_ALGO_U: LZ4KD
+2026-11-07T15:09:43.9513022Z   ZRAM_SIZE: 8589934592
+2026-11-07T15:09:43.9513243Z   FILE: oneplus_ace_6
+2026-11-07T15:09:43.9513464Z ##[endgroup]
+2026-11-07T15:09:43.9656780Z 内核版本: 6.6.118
+2026-11-07T15:09:43.9657407Z 检测到 6.6.118，改用 118 专用风驰补丁(避免 fuzz 顶格匹配)
+2026-11-07T15:09:44.0985209Z 正在打风驰补丁
+2026-11-07T15:09:44.1059647Z dos2unix: converting file fengchi_oneplus_ace_6.patch to Unix format...
+2026-11-07T15:09:44.1076476Z patching file Documentation/scheduler/index.rst
+2026-11-07T15:09:44.1079374Z patching file Documentation/scheduler/sched-ext.rst
+2026-11-07T15:09:44.1103887Z patching file MAINTAINERS
+2026-11-07T15:09:44.1137629Z patching file arch/arm64/configs/defconfig
+2026-11-07T15:09:44.1142355Z patching file arch/arm64/configs/gki_defconfig
+2026-11-07T15:09:44.1147050Z patching file drivers/gpu/drm/msm/msm_drv.c
+2026-11-07T15:09:44.1149712Z patching file drivers/tty/sysrq.c
+2026-11-07T15:09:44.1152308Z patching file include/asm-generic/vmlinux.lds.h
+2026-11-07T15:09:44.1155596Z patching file include/linux/sched.h
+2026-11-07T15:09:44.1158496Z patching file include/linux/sched/ext.h
+2026-11-07T15:09:44.1160665Z patching file include/linux/sched/hmbird_proc_val.h
+2026-11-07T15:09:44.1161524Z patching file include/linux/sched/hmbird_version.h
+2026-11-07T15:09:44.1163535Z patching file include/linux/sched/task.h
+2026-11-07T15:09:44.1165170Z patching file include/uapi/linux/sched.h
+2026-11-07T15:09:44.1167455Z patching file init/Kconfig
+2026-11-07T15:09:44.1169782Z patching file init/init_task.c
+2026-11-07T15:09:44.1171360Z patching file kernel/Kconfig.preempt
+2026-11-07T15:09:44.1173180Z patching file kernel/bpf/bpf_struct_ops_types.h
+2026-11-07T15:09:44.1175911Z patching file kernel/fork.c
+2026-11-07T15:09:44.1179132Z patching file kernel/sched/build_policy.c
+2026-11-07T15:09:44.1186185Z patching file kernel/sched/core.c
+2026-11-07T15:09:44.1195223Z patching file kernel/sched/debug.c
+2026-11-07T15:09:44.1198325Z patching file kernel/sched/ext.c
+2026-11-07T15:09:44.1206622Z patching file kernel/sched/ext.h
+2026-11-07T15:09:44.1207838Z patching file kernel/sched/hmbird.h
+2026-11-07T15:09:44.1210087Z patching file kernel/sched/hmbird/hmbird.c
+2026-11-07T15:09:44.1219748Z patching file kernel/sched/hmbird/hmbird_misc.c
+2026-11-07T15:09:44.1220796Z patching file kernel/sched/hmbird/hmbird_sched.h
+2026-11-07T15:09:44.1221770Z patching file kernel/sched/hmbird/hmbird_sched_proc.c
+2026-11-07T15:09:44.1224487Z patching file kernel/sched/hmbird/hmbird_sched_proc.h
+2026-11-07T15:09:44.1225249Z patching file kernel/sched/hmbird/hmbird_shadow_tick.c
+2026-11-07T15:09:44.1226560Z patching file kernel/sched/hmbird/hmbird_shadow_tick.h
+2026-11-07T15:09:44.1227895Z patching file kernel/sched/hmbird/hmbird_trace.h
+2026-11-07T15:09:44.1229066Z patching file kernel/sched/hmbird/hmbird_util_track.c
+2026-11-07T15:09:44.1231539Z patching file kernel/sched/hmbird/hmbird_util_track.h
+2026-11-07T15:09:44.1232579Z patching file kernel/sched/hmbird/slim.h
+2026-11-07T15:09:44.1234333Z patching file kernel/sched/idle.c
+2026-11-07T15:09:44.1237082Z patching file kernel/sched/sched.h
+2026-11-07T15:09:44.1241005Z patching file kernel/time/tick-sched.c
+2026-11-07T15:09:44.1244986Z patching file tools/sched_ext/.gitignore
+2026-11-07T15:09:44.1248103Z patching file tools/sched_ext/Makefile
+2026-11-07T15:09:44.1250384Z patching file tools/sched_ext/atropos/.gitignore
+2026-11-07T15:09:44.1251453Z patching file tools/sched_ext/atropos/Cargo.toml
+2026-11-07T15:09:44.1253199Z patching file tools/sched_ext/atropos/build.rs
+2026-11-07T15:09:44.1254428Z patching file tools/sched_ext/atropos/rustfmt.toml
+2026-11-07T15:09:44.1255667Z patching file tools/sched_ext/atropos/src/atropos_sys.rs
+2026-11-07T15:09:44.1257344Z patching file tools/sched_ext/atropos/src/bpf/atropos.bpf.c
+2026-11-07T15:09:44.1259917Z patching file tools/sched_ext/atropos/src/bpf/atropos.h
+2026-11-07T15:09:44.1261721Z patching file tools/sched_ext/atropos/src/main.rs
+2026-11-07T15:09:44.1265301Z patching file tools/sched_ext/gnu/stubs.h
+2026-11-07T15:09:44.1266481Z patching file tools/sched_ext/scx_common.bpf.h
+2026-11-07T15:09:44.1268759Z patching file tools/sched_ext/scx_example_central.bpf.c
+2026-11-07T15:09:44.1270594Z patching file tools/sched_ext/scx_example_central.c
+2026-11-07T15:09:44.1272740Z patching file tools/sched_ext/scx_example_flatcg.bpf.c
+2026-11-07T15:09:44.1275534Z patching file tools/sched_ext/scx_example_flatcg.c
+2026-11-07T15:09:44.1277172Z patching file tools/sched_ext/scx_example_flatcg.h
+2026-11-07T15:09:44.1278582Z patching file tools/sched_ext/scx_example_pair.bpf.c
+2026-11-07T15:09:44.1281038Z patching file tools/sched_ext/scx_example_pair.c
+2026-11-07T15:09:44.1282618Z patching file tools/sched_ext/scx_example_pair.h
+2026-11-07T15:09:44.1283914Z patching file tools/sched_ext/scx_example_qmap.bpf.c
+2026-11-07T15:09:44.1285943Z patching file tools/sched_ext/scx_example_qmap.c
+2026-11-07T15:09:44.1287279Z patching file tools/sched_ext/scx_example_simple.bpf.c
+2026-11-07T15:09:44.1288692Z patching file tools/sched_ext/scx_example_simple.c
+2026-11-07T15:09:44.1290123Z patching file tools/sched_ext/scx_example_userland.bpf.c
+2026-11-07T15:09:44.1292172Z patching file tools/sched_ext/scx_example_userland.c
+2026-11-07T15:09:44.1294303Z patching file tools/sched_ext/scx_example_userland_common.h
+2026-11-07T15:09:44.1295307Z patching file tools/sched_ext/user_exit_info.h
+2026-11-07T15:09:44.1327508Z fengchi_patch完成

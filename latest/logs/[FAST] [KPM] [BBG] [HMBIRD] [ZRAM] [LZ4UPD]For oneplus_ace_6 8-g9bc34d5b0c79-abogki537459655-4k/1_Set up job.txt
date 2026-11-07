@@ -1,0 +1,36 @@
+﻿2026-11-07T15:04:51.1819409Z Current runner version: '2.338.2'
+2026-11-07T15:04:51.1858474Z ##[group]Runner Image Provisioner
+2026-11-07T15:04:51.1859971Z Hosted Compute Agent
+2026-11-07T15:04:51.1861080Z Version: 20261028.624
+2026-11-07T15:04:51.1862435Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-07T15:04:51.1863778Z Build Date: 2026-10-28T21:51:42Z
+2026-11-07T15:04:51.1864963Z Worker ID: {d5be6b4c-31af-464e-83bf-01afe38758dd}
+2026-11-07T15:04:51.1866249Z Region: eastus
+2026-11-07T15:04:51.1867311Z Cloud: Azure
+2026-11-07T15:04:51.1868230Z ##[endgroup]
+2026-11-07T15:04:51.1870752Z ##[group]Operating System
+2026-11-07T15:04:51.1871812Z Ubuntu
+2026-11-07T15:04:51.1873109Z 26.04.1
+2026-11-07T15:04:51.1874008Z LTS
+2026-11-07T15:04:51.1874960Z ##[endgroup]
+2026-11-07T15:04:51.1876086Z ##[group]Runner Image
+2026-11-07T15:04:51.1877090Z Image: ubuntu-26.04
+2026-11-07T15:04:51.1878227Z Version: 20261101.186.1
+2026-11-07T15:04:51.1880130Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261101.186/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-07T15:04:51.1883571Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261101.186
+2026-11-07T15:04:51.1885391Z ##[endgroup]
+2026-11-07T15:04:51.1887504Z ##[group]GITHUB_TOKEN Permissions
+2026-11-07T15:04:51.1890734Z Contents: read
+2026-11-07T15:04:51.1891716Z Metadata: read
+2026-11-07T15:04:51.1893068Z Packages: read
+2026-11-07T15:04:51.1894084Z ##[endgroup]
+2026-11-07T15:04:51.1898108Z Secret source: Actions
+2026-11-07T15:04:51.1899725Z Cache mode: write
+2026-11-07T15:04:51.1901431Z Prepare workflow directory
+2026-11-07T15:04:51.2518577Z Prepare all required actions
+2026-11-07T15:04:51.2599618Z Getting action download info
+2026-11-07T15:04:51.4319977Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+2026-11-07T15:04:51.5746868Z Download action repository 'easimon/maximize-build-space@master' (SHA:c28619d8999a147d5e09c1199f84ff6af6ad5794)
+2026-11-07T15:04:51.6726407Z Download action repository 'actions/cache@v5' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+2026-11-07T15:04:51.7583441Z Download action repository 'actions/upload-artifact@v7' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+2026-11-07T15:04:51.9609436Z Complete job name: [FAST] [KPM] [BBG] [HMBIRD] [ZRAM] [LZ4UPD]For oneplus_ace_6 8-g9bc34d5b0c79-abogki537459655-4k

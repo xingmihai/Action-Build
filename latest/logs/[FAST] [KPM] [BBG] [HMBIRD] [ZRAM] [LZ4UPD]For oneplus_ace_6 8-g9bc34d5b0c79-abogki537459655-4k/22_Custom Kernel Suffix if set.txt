@@ -1,0 +1,72 @@
+﻿2026-11-07T15:09:17.6058522Z ##[group]Run cd kernel_workspace/kernel_platform
+2026-11-07T15:09:17.6058990Z [36;1mcd kernel_workspace/kernel_platform[0m
+2026-11-07T15:09:17.6059354Z [36;1mSUFFIX="8-g9bc34d5b0c79-abogki537459655-4k"[0m
+2026-11-07T15:09:17.6059684Z [36;1mFAST_BUILD="true"[0m
+2026-11-07T15:09:17.6059920Z [36;1m[0m
+2026-11-07T15:09:17.6060485Z [36;1mfor f in ./common/scripts/setlocalversion ./"$KERNEL_REPOS"/scripts/setlocalversion ./external/dtc/scripts/setlocalversion; do[0m
+2026-11-07T15:09:17.6061140Z [36;1m  [ -f "$f" ] || continue[0m
+2026-11-07T15:09:17.6061446Z [36;1m  echo "Modifying: $f"[0m
+2026-11-07T15:09:17.6061720Z [36;1m[0m
+2026-11-07T15:09:17.6062289Z [36;1m  # Remove -dirty[0m
+2026-11-07T15:09:17.6062583Z [36;1m  sed -i 's/ -dirty//g' "$f"[0m
+2026-11-07T15:09:17.6062951Z [36;1m  sed -i '$i res=$(echo "$res" | sed '\''s/-dirty//g'\'')' "$f"[0m
+2026-11-07T15:09:17.6063304Z [36;1m[0m
+2026-11-07T15:09:17.6063567Z [36;1m  if grep -q 'KERNELVERSION.*scm_version' "$f"; then[0m
+2026-11-07T15:09:17.6063996Z [36;1m    echo "Detected NEW setlocalversion format"[0m
+2026-11-07T15:09:17.6064574Z [36;1m    sed -i "s|echo \"\${KERNELVERSION}.*scm_version}\"|echo \"\${KERNELVERSION}-${KANDROID_VERSION}-${SUFFIX}\"|" "$f"[0m
+2026-11-07T15:09:17.6065138Z [36;1m  elif grep -q 'echo "\$res"' "$f"; then[0m
+2026-11-07T15:09:17.6065486Z [36;1m    echo "Detected OLD setlocalversion format"[0m
+2026-11-07T15:09:17.6065840Z [36;1m    if [ "$FAST_BUILD" = "true" ]; then[0m
+2026-11-07T15:09:17.6066188Z [36;1m      echo "FAST_BUILD enabled: using static res"[0m
+2026-11-07T15:09:17.6066618Z [36;1m      sed -i "s/^res=.*/res=\"-${KANDROID_VERSION}-${SUFFIX}\"/" "$f"[0m
+2026-11-07T15:09:17.6066992Z [36;1m    else[0m
+2026-11-07T15:09:17.6067292Z [36;1m      echo "Standard build: injecting suffix via cut/echo"[0m
+2026-11-07T15:09:17.6067699Z [36;1m      if [[ -f ./build_with_bazel.py ]]; then[0m
+2026-11-07T15:09:17.6068093Z [36;1m        echo "使用官方脚本编译且当使用 build_with_bazel 时，可能受特殊符号数量限制，编译失败请修改"[0m
+2026-11-07T15:09:17.6069041Z [36;1m        echo "When using the official script and building with build_with_bazel, the build may fail due to a limit on the number of special characters. Please modify the configuration if that happens."[0m
+2026-11-07T15:09:17.6069877Z [36;1m      fi[0m
+2026-11-07T15:09:17.6070384Z [36;1m      tac "$f" | sed "0,/echo \"\\\$res\"/s//res=\\\$(echo \\\$res | cut -d- -f1-2)-${SUFFIX}; echo \"\\\$res\";/" | tac > "$f.tmp" && mv "$f.tmp" "$f"[0m
+2026-11-07T15:09:17.6070943Z [36;1m    fi[0m
+2026-11-07T15:09:17.6071138Z [36;1m  else[0m
+2026-11-07T15:09:17.6071417Z [36;1m    echo "Unknown format, appending echo manually"[0m
+2026-11-07T15:09:17.6071779Z [36;1m    echo "echo \"\$res-${SUFFIX}\"" >> "$f"[0m
+2026-11-07T15:09:17.6072306Z [36;1m  fi[0m
+2026-11-07T15:09:17.6072517Z [36;1m  chmod +x "$f"[0m
+2026-11-07T15:09:17.6072740Z [36;1mdone[0m
+2026-11-07T15:09:17.6122596Z shell: /usr/bin/bash -e {0}
+2026-11-07T15:09:17.6122922Z env:
+2026-11-07T15:09:17.6123146Z   CCACHE_COMPILERCHECK: none
+2026-11-07T15:09:17.6123440Z   CCACHE_NOHASHDIR: true
+2026-11-07T15:09:17.6123679Z   CCACHE_NOHARDLINK: true
+2026-11-07T15:09:17.6123922Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T15:09:17.6124194Z   CCACHE_MAXSIZE: 5G
+2026-11-07T15:09:17.6124419Z   FILE_CONF: oneplus_ace_6
+2026-11-07T15:09:17.6124666Z   FILE_BASE: OnePlusAce6
+2026-11-07T15:09:17.6124906Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T15:09:17.6125167Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T15:09:17.6125459Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T15:09:17.6125719Z   CPU: sm8750
+2026-11-07T15:09:17.6126196Z   ANDROID_VERSION: 16.0.0
+2026-11-07T15:09:17.6126435Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T15:09:17.6126664Z   CPUD: sun
+2026-11-07T15:09:17.6126863Z   BUILD_METHOD: perf
+2026-11-07T15:09:17.6127116Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T15:09:17.6127707Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T15:09:17.6128507Z   KERNEL_REPOS: msm-kernel
+2026-11-07T15:09:17.6128749Z   KMI: android15-6.6
+2026-11-07T15:09:17.6128974Z   KANDROID_VERSION: android15
+2026-11-07T15:09:17.6129214Z   KERNEL_VERSION: 6.6
+2026-11-07T15:09:17.6129427Z   VERSIONLEVEL: 6
+2026-11-07T15:09:17.6129636Z   PATCHLEVEL: 6
+2026-11-07T15:09:17.6129834Z   SUBLEVEL: 118
+2026-11-07T15:09:17.6130032Z   CKERNEL_VERSION: 6.6.118
+2026-11-07T15:09:17.6130278Z   KERNEL_SHORT_PATCH_VERSION: 6_6
+2026-11-07T15:09:17.6130535Z   ENABLE_RUST: false
+2026-11-07T15:09:17.6130751Z ##[endgroup]
+2026-11-07T15:09:17.6205021Z Modifying: ./common/scripts/setlocalversion
+2026-11-07T15:09:17.6255549Z Detected NEW setlocalversion format
+2026-11-07T15:09:17.6304659Z Modifying: ./msm-kernel/scripts/setlocalversion
+2026-11-07T15:09:17.6352859Z Detected NEW setlocalversion format
+2026-11-07T15:09:17.6399647Z Modifying: ./external/dtc/scripts/setlocalversion
+2026-11-07T15:09:17.6457799Z Detected OLD setlocalversion format
+2026-11-07T15:09:17.6458492Z FAST_BUILD enabled: using static res

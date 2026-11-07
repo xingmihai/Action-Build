@@ -1,0 +1,197 @@
+﻿2026-11-07T15:09:25.6830680Z ##[group]Run cd kernel_workspace
+2026-11-07T15:09:25.6831115Z [36;1mcd kernel_workspace[0m
+2026-11-07T15:09:25.6831383Z [36;1mif [ "" != "-1" ]; then[0m
+2026-11-07T15:09:25.6831852Z [36;1m  SUSFS_META=""[0m
+2026-11-07T15:09:25.6832821Z [36;1m  git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6[0m
+2026-11-07T15:09:25.6833288Z [36;1m  cd susfs4ksu[0m
+2026-11-07T15:09:25.6833537Z [36;1m  if [ -n "$SUSFS_META" ]; then[0m
+2026-11-07T15:09:25.6833846Z [36;1m    if [[ "$SUSFS_META" =~ ^[0-9]+$ ]]; then[0m
+2026-11-07T15:09:25.6834180Z [36;1m      git checkout HEAD~$SUSFS_META[0m
+2026-11-07T15:09:25.6834462Z [36;1m    else[0m
+2026-11-07T15:09:25.6834684Z [36;1m      git checkout "$SUSFS_META"[0m
+2026-11-07T15:09:25.6834954Z [36;1m    fi[0m
+2026-11-07T15:09:25.6835144Z [36;1m  else[0m
+2026-11-07T15:09:25.6835369Z [36;1m    echo "SUSFS_META 为空，使用最新上游 SUSFS"[0m
+2026-11-07T15:09:25.6835649Z [36;1m  fi[0m
+2026-11-07T15:09:25.6835838Z [36;1m  cd ..[0m
+2026-11-07T15:09:25.6836074Z [36;1mfi[0m
+2026-11-07T15:09:25.6836274Z [36;1mif [ "false" = "true" ]; then[0m
+2026-11-07T15:09:25.6836638Z [36;1m  git clone https://github.com/Sakion-Team/Re-Kernel.git[0m
+2026-11-07T15:09:25.6836997Z [36;1mfi[0m
+2026-11-07T15:09:25.6837202Z [36;1mif [ "true" = "true" ]; then[0m
+2026-11-07T15:09:25.6837544Z [36;1m  git clone https://github.com/Numbersf/lz4_oplus.git[0m
+2026-11-07T15:09:25.6837872Z [36;1mfi[0m
+2026-11-07T15:09:25.6838171Z [36;1mgit clone https://github.com/ShirkNeko/SukiSU_patch.git[0m
+2026-11-07T15:09:25.6838545Z [36;1mif [ "KPTOOLS" = "OLD" ]; then[0m
+2026-11-07T15:09:25.6838941Z [36;1m  echo "KPM_VER=OLD: 锁定 SukiSU_patch 至 547ae94bc (2026-03-15, 已验证可开机)"[0m
+2026-11-07T15:09:25.6839445Z [36;1m  git -C SukiSU_patch checkout 547ae94bc || echo "⚠️ 锁定失败，继续使用最新"[0m
+2026-11-07T15:09:25.6839851Z [36;1melif [ "KPTOOLS" = "KPTOOLS" ]; then[0m
+2026-11-07T15:09:25.6840343Z [36;1m  echo "KPM_VER=KPTOOLS: 不使用仓库内 patch_linux，改用官方 0.14.0 release 的 kptools+kpimg 注入"[0m
+2026-11-07T15:09:25.6840793Z [36;1melse[0m
+2026-11-07T15:09:25.6841072Z [36;1m  echo "KPM_VER=NEW: 使用 SukiSU_patch 最新 (需配合新版 kpimg)"[0m
+2026-11-07T15:09:25.6841405Z [36;1mfi[0m
+2026-11-07T15:09:25.6841604Z [36;1mcd kernel_platform[0m
+2026-11-07T15:09:25.6842156Z [36;1mif [ "" != "-1" ]; then[0m
+2026-11-07T15:09:25.6842461Z [36;1m  echo "正在拉取susfs补丁"[0m
+2026-11-07T15:09:25.6842895Z [36;1m  cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android15-6.6.patch ./common/[0m
+2026-11-07T15:09:25.6843415Z [36;1m  cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/[0m
+2026-11-07T15:09:25.6843873Z [36;1m  cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/[0m
+2026-11-07T15:09:25.6844280Z [36;1mfi[0m
+2026-11-07T15:09:25.6844472Z [36;1m[0m
+2026-11-07T15:09:25.6844721Z [36;1mif [[ "1/lz4kd/8589934592" == 1* ]]; then[0m
+2026-11-07T15:09:25.6845024Z [36;1m  echo "正在拉取zram补丁"[0m
+2026-11-07T15:09:25.6845429Z [36;1m  cp -r ../SukiSU_patch/other/zram/lz4k/include/linux/* ./common/include/linux/[0m
+2026-11-07T15:09:25.6845972Z [36;1m  cp -r ../SukiSU_patch/other/zram/lz4k/lib/* ./common/lib/[0m
+2026-11-07T15:09:25.6846427Z [36;1m  cp -r ../SukiSU_patch/other/zram/lz4k/crypto/* ./common/crypto/[0m
+2026-11-07T15:09:25.6846881Z [36;1m  cp -r ../SukiSU_patch/other/zram/lz4k_oplus ./common/lib/[0m
+2026-11-07T15:09:25.6847219Z [36;1mfi[0m
+2026-11-07T15:09:25.6847407Z [36;1m[0m
+2026-11-07T15:09:25.6847601Z [36;1mcd ./common[0m
+2026-11-07T15:09:25.6847814Z [36;1m[0m
+2026-11-07T15:09:25.6848099Z [36;1mif [ "$KMI" == "android13-5.15" ] && [ "$SUBLEVEL" -lt 123 ]; then[0m
+2026-11-07T15:09:25.6848503Z [36;1m  echo "修复内核版本为5.15.0~5.15.123仅支持旧版C库造成的一些bug"[0m
+2026-11-07T15:09:25.6849070Z [36;1m  cp "${GITHUB_WORKSPACE}/kernel_workspace/Action-Build/patches/fix_5.15.legacy" ./fix_5.15.legacy.patch[0m
+2026-11-07T15:09:25.6849639Z [36;1m  patch -p1 < fix_5.15.legacy.patch[0m
+2026-11-07T15:09:25.6849943Z [36;1m  echo "fix_5.15_patch完成"[0m
+2026-11-07T15:09:25.6850201Z [36;1mfi[0m
+2026-11-07T15:09:25.6850609Z [36;1m[0m
+2026-11-07T15:09:25.6850796Z [36;1mif [ "" != "-1" ]; then[0m
+2026-11-07T15:09:25.6851185Z [36;1m  echo "正在打susfs补丁"[0m
+2026-11-07T15:09:25.6851523Z [36;1m  patch -p1 < 50_add_susfs_in_gki-android15-6.6.patch || true[0m
+2026-11-07T15:09:25.6852126Z [36;1m  echo "susfs_patch完成"[0m
+2026-11-07T15:09:25.6852382Z [36;1mfi[0m
+2026-11-07T15:09:25.6852564Z [36;1m[0m
+2026-11-07T15:09:25.6852866Z [36;1m# ---- SukiSU-Ultra / SUSFS priority uid filter 接口兼容（修正版）----[0m
+2026-11-07T15:09:25.6853337Z [36;1m# builtin 在 manager/pkg_observer.c 与 supercall/dispatch.c 直接调用[0m
+2026-11-07T15:09:25.6853851Z [36;1m# susfs_parse_priority_app_strings() / susfs_set_priority_uid_filter()，[0m
+2026-11-07T15:09:25.6854292Z [36;1m# 但这两个是片段文件、不 include <linux/susfs.h>；把声明加进[0m
+2026-11-07T15:09:25.6854752Z [36;1m# common/include/linux/susfs.h 对它们无效，仍会 -Wimplicit-function-declaration。[0m
+2026-11-07T15:09:25.6855232Z [36;1m# 正确做法：定位 KernelSU 源码真实目录，在调用点文件顶部补 extern 声明，[0m
+2026-11-07T15:09:25.6855621Z [36;1m# 并在同一 Makefile 追加 weak 兜底实现（SUSFS 有真实实现时被 strong 覆盖）。[0m
+2026-11-07T15:09:25.6855956Z [36;1mKSU_SRC=""[0m
+2026-11-07T15:09:25.6856184Z [36;1mfor d in \[0m
+2026-11-07T15:09:25.6856569Z [36;1m  "${GITHUB_WORKSPACE}/kernel_workspace/kernel_platform/common/drivers/kernelsu" \[0m
+2026-11-07T15:09:25.6857312Z [36;1m  "${GITHUB_WORKSPACE}/kernel_workspace/kernel_platform/drivers/kernelsu" \[0m
+2026-11-07T15:09:25.6857876Z [36;1m  "${GITHUB_WORKSPACE}/kernel_workspace/kernel_platform/KernelSU/kernel"; do[0m
+2026-11-07T15:09:25.6858414Z [36;1m  if [ -f "$d/manager/pkg_observer.c" ]; then KSU_SRC="$d"; break; fi[0m
+2026-11-07T15:09:25.6858800Z [36;1mdone[0m
+2026-11-07T15:09:25.6859013Z [36;1mif [ -z "$KSU_SRC" ]; then[0m
+2026-11-07T15:09:25.6859372Z [36;1m  echo "⚠️ 未定位到 KernelSU 源码目录，跳过 priority uid filter 兼容"[0m
+2026-11-07T15:09:25.6859707Z [36;1melse[0m
+2026-11-07T15:09:25.6859920Z [36;1m  echo "KSU_SRC=$KSU_SRC"[0m
+2026-11-07T15:09:25.6860187Z [36;1m  printf '%s\n' \[0m
+2026-11-07T15:09:25.6860554Z [36;1m    '/* SukiSU compat: priority uid filter hook declarations */' \[0m
+2026-11-07T15:09:25.6861035Z [36;1m    'extern void susfs_parse_priority_app_strings(void);' \[0m
+2026-11-07T15:09:25.6861551Z [36;1m    'extern int susfs_set_priority_uid_filter(void *arg);' > /tmp/ksu_priority_decl.h[0m
+2026-11-07T15:09:25.6862385Z [36;1m  for f in "$KSU_SRC/manager/pkg_observer.c" "$KSU_SRC/supercall/dispatch.c"; do[0m
+2026-11-07T15:09:25.6862979Z [36;1m    if [ -f "$f" ] && ! grep -q "extern void susfs_parse_priority_app_strings" "$f"; then[0m
+2026-11-07T15:09:25.6863496Z [36;1m      cat /tmp/ksu_priority_decl.h "$f" > /tmp/ksu_priority_f.c[0m
+2026-11-07T15:09:25.6863877Z [36;1m      mv /tmp/ksu_priority_f.c "$f"[0m
+2026-11-07T15:09:25.6864164Z [36;1m      echo "✅ 已补声明: $f"[0m
+2026-11-07T15:09:25.6864413Z [36;1m    fi[0m
+2026-11-07T15:09:25.6864611Z [36;1m  done[0m
+2026-11-07T15:09:25.6864812Z [36;1m  printf '%s\n' \[0m
+2026-11-07T15:09:25.6865082Z [36;1m    '#include <linux/types.h>' \[0m
+2026-11-07T15:09:25.6865506Z [36;1m    '__attribute__((weak)) void susfs_parse_priority_app_strings(void) { }' \[0m
+2026-11-07T15:09:25.6866087Z [36;1m    '__attribute__((weak)) int susfs_set_priority_uid_filter(void *arg) { return 0; }' \[0m
+2026-11-07T15:09:25.6866560Z [36;1m    > "$KSU_SRC/susfs_priority_compat.c"[0m
+2026-11-07T15:09:25.6867037Z [36;1m  if [ -f "$KSU_SRC/Makefile" ] && ! grep -q "susfs_priority_compat" "$KSU_SRC/Makefile"; then[0m
+2026-11-07T15:09:25.6867588Z [36;1m    echo 'ksu-y += susfs_priority_compat.o' >> "$KSU_SRC/Makefile"[0m
+2026-11-07T15:09:25.6867947Z [36;1m  fi[0m
+2026-11-07T15:09:25.6868159Z [36;1m  echo "✅ 已注入 weak 兜底实现"[0m
+2026-11-07T15:09:25.6868406Z [36;1mfi[0m
+2026-11-07T15:09:25.6868596Z [36;1m[0m
+2026-11-07T15:09:25.6868786Z [36;1msource $REJ_CHECKER[0m
+2026-11-07T15:09:25.6869033Z [36;1mcheck_rejects .[0m
+2026-11-07T15:09:25.6917208Z shell: /usr/bin/bash -e {0}
+2026-11-07T15:09:25.6917486Z env:
+2026-11-07T15:09:25.6917922Z   CCACHE_COMPILERCHECK: none
+2026-11-07T15:09:25.6918205Z   CCACHE_NOHASHDIR: true
+2026-11-07T15:09:25.6918571Z   CCACHE_NOHARDLINK: true
+2026-11-07T15:09:25.6918818Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T15:09:25.6919079Z   CCACHE_MAXSIZE: 5G
+2026-11-07T15:09:25.6919310Z   FILE_CONF: oneplus_ace_6
+2026-11-07T15:09:25.6919556Z   FILE_BASE: OnePlusAce6
+2026-11-07T15:09:25.6919798Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T15:09:25.6920058Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T15:09:25.6920351Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T15:09:25.6920603Z   CPU: sm8750
+2026-11-07T15:09:25.6920807Z   ANDROID_VERSION: 16.0.0
+2026-11-07T15:09:25.6921048Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T15:09:25.6921282Z   CPUD: sun
+2026-11-07T15:09:25.6921479Z   BUILD_METHOD: perf
+2026-11-07T15:09:25.6921734Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T15:09:25.6922522Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T15:09:25.6923110Z   KERNEL_REPOS: msm-kernel
+2026-11-07T15:09:25.6923347Z   KMI: android15-6.6
+2026-11-07T15:09:25.6923577Z   KANDROID_VERSION: android15
+2026-11-07T15:09:25.6923821Z   KERNEL_VERSION: 6.6
+2026-11-07T15:09:25.6924031Z   VERSIONLEVEL: 6
+2026-11-07T15:09:25.6924237Z   PATCHLEVEL: 6
+2026-11-07T15:09:25.6924433Z   SUBLEVEL: 118
+2026-11-07T15:09:25.6924632Z   CKERNEL_VERSION: 6.6.118
+2026-11-07T15:09:25.6924884Z   KERNEL_SHORT_PATCH_VERSION: 6_6
+2026-11-07T15:09:25.6925134Z   ENABLE_RUST: false
+2026-11-07T15:09:25.6925355Z   KSU_MANAGER_BRANCH: main
+2026-11-07T15:09:25.6925588Z   KSU_BUILTIN_BRANCH: builtin
+2026-11-07T15:09:25.6925830Z   KSU_VERSION_TAG: 4.3.0-r2
+2026-11-07T15:09:25.6926065Z   KSUVER: 41159
+2026-11-07T15:09:25.6926260Z   FILE: oneplus_ace_6
+2026-11-07T15:09:25.6926473Z ##[endgroup]
+2026-11-07T15:09:25.7011573Z Cloning into 'susfs4ksu'...
+2026-11-07T15:09:38.3935394Z SUSFS_META 为空，使用最新上游 SUSFS
+2026-11-07T15:09:38.3950680Z Cloning into 'lz4_oplus'...
+2026-11-07T15:09:38.5747597Z Cloning into 'SukiSU_patch'...
+2026-11-07T15:09:39.9367495Z KPM_VER=KPTOOLS: 不使用仓库内 patch_linux，改用官方 0.14.0 release 的 kptools+kpimg 注入
+2026-11-07T15:09:39.9368548Z 正在拉取susfs补丁
+2026-11-07T15:09:39.9430469Z 正在拉取zram补丁
+2026-11-07T15:09:39.9497920Z 正在打susfs补丁
+2026-11-07T15:09:39.9595403Z patching file block/ioprio.c
+2026-11-07T15:09:39.9601171Z patching file drivers/input/input.c
+2026-11-07T15:09:39.9604200Z patching file fs/Makefile
+2026-11-07T15:09:39.9608345Z patching file fs/exec.c
+2026-11-07T15:09:39.9609339Z Hunk #2 succeeded at 1928 (offset -1 lines).
+2026-11-07T15:09:39.9609911Z Hunk #3 succeeded at 1952 (offset -1 lines).
+2026-11-07T15:09:39.9610431Z Hunk #4 succeeded at 2054 (offset -1 lines).
+2026-11-07T15:09:39.9617290Z patching file fs/namei.c
+2026-11-07T15:09:39.9624483Z patching file fs/namespace.c
+2026-11-07T15:09:39.9628885Z patching file fs/notify/fdinfo.c
+2026-11-07T15:09:39.9631116Z patching file fs/open.c
+2026-11-07T15:09:39.9647055Z patching file fs/proc/base.c
+2026-11-07T15:09:39.9647681Z patching file fs/proc/bootconfig.c
+2026-11-07T15:09:39.9648209Z patching file fs/proc/fd.c
+2026-11-07T15:09:39.9648674Z patching file fs/proc/task_mmu.c
+2026-11-07T15:09:39.9649198Z Hunk #2 succeeded at 263 (offset -129 lines).
+2026-11-07T15:09:39.9649760Z Hunk #3 succeeded at 286 (offset -129 lines).
+2026-11-07T15:09:39.9650353Z Hunk #4 succeeded at 931 with fuzz 1 (offset -148 lines).
+2026-11-07T15:09:39.9651004Z Hunk #5 succeeded at 1001 (offset -148 lines).
+2026-11-07T15:09:39.9651578Z Hunk #6 succeeded at 1074 (offset -148 lines).
+2026-11-07T15:09:39.9652348Z Hunk #7 succeeded at 1860 (offset -148 lines).
+2026-11-07T15:09:39.9652928Z Hunk #8 succeeded at 1872 (offset -148 lines).
+2026-11-07T15:09:39.9653481Z patching file fs/proc_namespace.c
+2026-11-07T15:09:39.9653983Z patching file fs/read_write.c
+2026-11-07T15:09:39.9654452Z patching file fs/readdir.c
+2026-11-07T15:09:39.9655836Z patching file fs/stat.c
+2026-11-07T15:09:39.9658439Z patching file fs/statfs.c
+2026-11-07T15:09:39.9661004Z patching file fs/super.c
+2026-11-07T15:09:39.9664181Z patching file kernel/kallsyms.c
+2026-11-07T15:09:39.9664893Z Hunk #2 succeeded at 802 (offset -3 lines).
+2026-11-07T15:09:39.9666713Z patching file kernel/reboot.c
+2026-11-07T15:09:39.9670148Z patching file kernel/sys.c
+2026-11-07T15:09:39.9677232Z patching file mm/memory.c
+2026-11-07T15:09:39.9680838Z Hunk #2 succeeded at 6423 (offset -108 lines).
+2026-11-07T15:09:39.9685452Z patching file security/selinux/avc.c
+2026-11-07T15:09:39.9696928Z patching file security/selinux/hooks.c
+2026-11-07T15:09:39.9700532Z Hunk #2 succeeded at 6516 (offset -1 lines).
+2026-11-07T15:09:39.9701134Z Hunk #3 succeeded at 7287 (offset -1 lines).
+2026-11-07T15:09:39.9706361Z patching file security/selinux/selinuxfs.c
+2026-11-07T15:09:39.9706951Z Hunk #3 succeeded at 703 (offset 24 lines).
+2026-11-07T15:09:39.9707497Z Hunk #4 succeeded at 886 (offset 24 lines).
+2026-11-07T15:09:39.9708015Z Hunk #5 succeeded at 993 (offset 24 lines).
+2026-11-07T15:09:39.9714071Z patching file security/selinux/ss/services.c
+2026-11-07T15:09:39.9719226Z patching file security/selinux/status.c
+2026-11-07T15:09:39.9744295Z susfs_patch完成
+2026-11-07T15:09:39.9746369Z KSU_SRC=/home/runner/work/Action-Build/Action-Build/kernel_workspace/kernel_platform/common/drivers/kernelsu
+2026-11-07T15:09:39.9820636Z ✅ 已补声明: /home/runner/work/Action-Build/Action-Build/kernel_workspace/kernel_platform/common/drivers/kernelsu/manager/pkg_observer.c
+2026-11-07T15:09:39.9884173Z ✅ 已补声明: /home/runner/work/Action-Build/Action-Build/kernel_workspace/kernel_platform/common/drivers/kernelsu/supercall/dispatch.c
+2026-11-07T15:09:39.9898418Z ✅ 已注入 weak 兜底实现

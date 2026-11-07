@@ -1,0 +1,41 @@
+﻿2026-11-07T15:06:12.6862256Z ##[group]Run git config --global user.name "Numbersf"
+2026-11-07T15:06:12.6862766Z [36;1mgit config --global user.name "Numbersf"[0m
+2026-11-07T15:06:12.6863160Z [36;1mgit config --global user.email "263623064@qq.com"[0m
+2026-11-07T15:06:12.6863544Z [36;1mmkdir kernel_workspace && cd kernel_workspace[0m
+2026-11-07T15:06:12.6863855Z [36;1mset +e[0m
+2026-11-07T15:06:12.6864246Z [36;1mgit clone https://github.com/Numbersf/Action-Build.git -b SukiSU-Ultra[0m
+2026-11-07T15:06:12.6879003Z [36;1mclone_rc=$?[0m
+2026-11-07T15:06:12.6879417Z [36;1mset -e[0m
+2026-11-07T15:06:12.6880660Z [36;1mecho "::error::DIAG clone_rc=$clone_rc | 上游scripts: $(ls "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts" 2>/dev/null | tr '\n' ' ' | cut -c1-250) | 本仓库scripts: $(ls "$GITHUB_WORKSPACE/scripts" 2>/dev/null | tr '\n' ' ' | cut -c1-250)"[0m
+2026-11-07T15:06:12.6881741Z [36;1m[ "$clone_rc" -eq 0 ] || exit "$clone_rc"[0m
+2026-11-07T15:06:12.6882439Z [36;1m# 上游已将 scripts/PatchFakePatches.kts 重命名为 SusfsCompat.kts，而本工作流仍按旧名调用。[0m
+2026-11-07T15:06:12.6882940Z [36;1m# 缺失时从本仓库(自有分支)回补，保持与既有流程一致的行为。[0m
+2026-11-07T15:06:12.6883564Z [36;1mFP="$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts"[0m
+2026-11-07T15:06:12.6884325Z [36;1mif [ ! -f "$FP" ]; then[0m
+2026-11-07T15:06:12.6884934Z [36;1m  echo "⚠️ 上游缺少 PatchFakePatches.kts(已重命名为 SusfsCompat.kts)，尝试回补"[0m
+2026-11-07T15:06:12.6885551Z [36;1m  mkdir -p "$(dirname "$FP")" || true[0m
+2026-11-07T15:06:12.6886147Z [36;1m  if [ -f "$GITHUB_WORKSPACE/scripts/PatchFakePatches.kts" ]; then[0m
+2026-11-07T15:06:12.6887003Z [36;1m    cp "$GITHUB_WORKSPACE/scripts/PatchFakePatches.kts" "$FP" || true[0m
+2026-11-07T15:06:12.6887794Z [36;1m    echo "✅ 已从本仓库回补 PatchFakePatches.kts"[0m
+2026-11-07T15:06:12.6888324Z [36;1m  else[0m
+2026-11-07T15:06:12.6888759Z [36;1m    echo "⚠️ 本仓库 checkout 无 scripts/，改用 raw 下载回补"[0m
+2026-11-07T15:06:12.6889959Z [36;1m    curl -fsSL -o "$FP" "https://raw.githubusercontent.com/xingmihai/Action-Build/SukiSU-Ultra/scripts/PatchFakePatches.kts" \[0m
+2026-11-07T15:06:12.6891171Z [36;1m      && echo "✅ 已通过 raw 回补 PatchFakePatches.kts" \[0m
+2026-11-07T15:06:12.6891625Z [36;1m      || echo "::error::回补失败，FakePatches 步骤可能失败"[0m
+2026-11-07T15:06:12.6892217Z [36;1m  fi[0m
+2026-11-07T15:06:12.6892421Z [36;1mfi[0m
+2026-11-07T15:06:12.6892706Z [36;1mls -l "$FP" 2>/dev/null || echo "⚠️ 回补后仍无 PatchFakePatches.kts"[0m
+2026-11-07T15:06:12.6946816Z shell: /usr/bin/bash -e {0}
+2026-11-07T15:06:12.6947140Z env:
+2026-11-07T15:06:12.6947372Z   CCACHE_COMPILERCHECK: none
+2026-11-07T15:06:12.6947898Z   CCACHE_NOHASHDIR: true
+2026-11-07T15:06:12.6948137Z   CCACHE_NOHARDLINK: true
+2026-11-07T15:06:12.6948384Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T15:06:12.6948639Z   CCACHE_MAXSIZE: 5G
+2026-11-07T15:06:12.6948922Z ##[endgroup]
+2026-11-07T15:06:12.7104922Z Cloning into 'Action-Build'...
+2026-11-07T15:06:13.4980168Z ##[error]DIAG clone_rc=0 | 上游scripts: SusfsCompat.kts SusfsContext.kts cache_apt_pkgs.sh check_rejects.sh check_unicode_format.py cleanup-runs.sh maximize-build-space.sh  | 本仓库scripts: 
+2026-11-07T15:06:13.4989648Z ⚠️ 上游缺少 PatchFakePatches.kts(已重命名为 SusfsCompat.kts)，尝试回补
+2026-11-07T15:06:13.5020923Z ⚠️ 本仓库 checkout 无 scripts/，改用 raw 下载回补
+2026-11-07T15:06:13.5911790Z ✅ 已通过 raw 回补 PatchFakePatches.kts
+2026-11-07T15:06:13.5953663Z -rw-r--r-- 1 runner runner 12878 Nov  7 15:06 /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts
