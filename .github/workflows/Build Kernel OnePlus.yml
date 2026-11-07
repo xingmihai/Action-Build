@@ -24,9 +24,8 @@ on:
         type: choice
         description: "KPM修补工具版本(仅KPM生效)//KPM patch tool version (KPM only)"
         required: true
-        default: OLD
+        default: NEW
         options:
-          - OLD
           - NEW
           - KPTOOLS
       KPM_SKEY:
@@ -775,13 +774,10 @@ jobs:
             git clone https://github.com/Numbersf/lz4_oplus.git
           fi
           git clone https://github.com/ShirkNeko/SukiSU_patch.git
-          if [ "${{ github.event.inputs.KPM_VER }}" = "OLD" ]; then
-            echo "KPM_VER=OLD: 锁定 SukiSU_patch 至 547ae94bc (2026-03-15, 已验证可开机)"
-            git -C SukiSU_patch checkout 547ae94bc || echo "⚠️ 锁定失败，继续使用最新"
-          elif [ "${{ github.event.inputs.KPM_VER }}" = "KPTOOLS" ]; then
+          if [ "${{ github.event.inputs.KPM_VER }}" = "KPTOOLS" ]; then
             echo "KPM_VER=KPTOOLS: 不使用仓库内 patch_linux，改用官方 0.14.0 release 的 kptools+kpimg 注入"
           else
-            echo "KPM_VER=NEW: 使用 SukiSU_patch 最新 (需配合新版 kpimg)"
+            echo "KPM_VER=NEW (默认): 使用 SukiSU_patch 最新 (需配合新版 kpimg)"
           fi
           cd kernel_platform
           if [ "${{ github.event.inputs.SUSFS_META }}" != "-1" ]; then
@@ -1554,8 +1550,8 @@ jobs:
               fi
               ./kptools-linux -l -i ./oImage || true
               echo "--- 请核对上面 kpimg 长度是否约 0x47df0(294384)，若为 0x10 则本包不可用 ---"
-            elif [ "${{ github.event.inputs.KPM_VER }}" = "NEW" ]; then
-              echo "NEW 模式：显式指定仓库内 kpimg，避免内嵌空 payload"
+            else
+              echo "NEW 模式（默认）：显式指定仓库内 kpimg，避免内嵌空 payload"
               test -f "${KPM_DIR}/kpimg" || { echo "❌ 未找到 ${KPM_DIR}/kpimg"; exit 13; }
               cp "${KPM_DIR}/kpimg" ./kpimg
               SKEY="${{ github.event.inputs.KPM_SKEY }}"
@@ -1566,8 +1562,6 @@ jobs:
               fi
               ./patch_linux -l -k ./kpimg || true
               ./patch_linux -l -i ./oImage || true
-            else
-              ./patch_linux
             fi
           else
             cp "${KPN_DIR}/kptools-linux" "${KPN_DIR}/kpimg-linux" .
