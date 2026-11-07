@@ -1,0 +1,26 @@
+﻿2026-11-07T21:55:29.5873206Z ##[group]Run repo="xingmihai/Action-Build"; json=$(curl -s "https://api.github.com/repos/$repo")
+2026-11-07T21:55:29.5873873Z [36;1mrepo="xingmihai/Action-Build"; json=$(curl -s "https://api.github.com/repos/$repo")[0m
+2026-11-07T21:55:29.5874498Z [36;1mparent=$(echo "$json" | grep -o '"full_name": *"[^"]*"' | head -n 2 | tail -n 1 | sed 's/.*"full_name": *"\([^"]*\)".*/\1/')[0m
+2026-11-07T21:55:29.5875053Z [36;1mif [ -n "$parent" ] && [ "$parent" != "Numbersf/Action-Build" ]; then[0m
+2026-11-07T21:55:29.5875517Z [36;1m  echo "::warning title=Source Warning::您使用的内核编译地址为非官方源，可能导致运行失败或内核异常。"[0m
+2026-11-07T21:55:29.5875861Z [36;1mfi[0m
+2026-11-07T21:55:29.5903455Z shell: /usr/bin/bash -e {0}
+2026-11-07T21:55:29.5903716Z env:
+2026-11-07T21:55:29.5903921Z   CCACHE_COMPILERCHECK: none
+2026-11-07T21:55:29.5904165Z   CCACHE_NOHASHDIR: true
+2026-11-07T21:55:29.5904395Z   CCACHE_NOHARDLINK: true
+2026-11-07T21:55:29.5904634Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T21:55:29.5904878Z   CCACHE_MAXSIZE: 5G
+2026-11-07T21:55:29.5905171Z   FILE_CONF: oneplus_ace_6
+2026-11-07T21:55:29.5905402Z   FILE_BASE: OnePlusAce6
+2026-11-07T21:55:29.5905628Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T21:55:29.5905867Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T21:55:29.5906137Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T21:55:29.5906376Z   CPU: sm8750
+2026-11-07T21:55:29.5906578Z   ANDROID_VERSION: 16.0.0
+2026-11-07T21:55:29.5906806Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T21:55:29.5907045Z   CPUD: sun
+2026-11-07T21:55:29.5907231Z   BUILD_METHOD: perf
+2026-11-07T21:55:29.5907465Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T21:55:29.5907748Z ##[endgroup]
+2026-11-07T21:55:29.8790540Z ##[warning]您使用的内核编译地址为非官方源，可能导致运行失败或内核异常。

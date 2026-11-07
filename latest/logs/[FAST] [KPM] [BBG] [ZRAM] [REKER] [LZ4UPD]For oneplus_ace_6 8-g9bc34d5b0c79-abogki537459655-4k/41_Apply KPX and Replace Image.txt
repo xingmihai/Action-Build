@@ -1,0 +1,188 @@
+﻿2026-11-07T22:20:16.8575160Z ##[group]Run KPM_DIR="${GITHUB_WORKSPACE}/kernel_workspace/SukiSU_patch/kpm"
+2026-11-07T22:20:16.8575721Z [36;1mKPM_DIR="${GITHUB_WORKSPACE}/kernel_workspace/SukiSU_patch/kpm"[0m
+2026-11-07T22:20:16.8576212Z [36;1m# KPM_DIR="${GITHUB_WORKSPACE}/kernel_workspace/Action-Build/patches/kpm"[0m
+2026-11-07T22:20:16.8576727Z [36;1mKPN_DIR="${GITHUB_WORKSPACE}/kernel_workspace/Action-Build/patches/kpn"[0m
+2026-11-07T22:20:16.8577268Z [36;1mOUT_DIR="${GITHUB_WORKSPACE}/kernel_workspace/kernel_platform/out/Final-Image-Find"[0m
+2026-11-07T22:20:16.8577691Z [36;1mcd "${OUT_DIR}"[0m
+2026-11-07T22:20:16.8577928Z [36;1mif [ "KPM" = "KPM" ]; then[0m
+2026-11-07T22:20:16.8578206Z [36;1m  cp "${KPM_DIR}/patch_linux" .[0m
+2026-11-07T22:20:16.8578483Z [36;1m  chmod +x patch_linux[0m
+2026-11-07T22:20:16.8578752Z [36;1m  if [ "KPTOOLS" = "KPTOOLS" ]; then[0m
+2026-11-07T22:20:16.8579329Z [36;1m    echo "KPTOOLS 模式：保留 CONFIG_KPM=y，改用官方 0.14.0 的 kptools+kpimg 注入（绕开坏掉的 patch_linux）"[0m
+2026-11-07T22:20:16.8580090Z [36;1m    echo "0.14.0 的 kpimg 配套新内核 SUKISU_KPM_ABI_VERSION=2；旧版 kpimg 会导致 KPM 全部 -EOPNOTSUPP"[0m
+2026-11-07T22:20:16.8580753Z [36;1m    KP_REL="https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/releases/download/0.14.0"[0m
+2026-11-07T22:20:16.8581338Z [36;1m    curl -fsSL -o ./kpimg "$KP_REL/kpimg" || { echo "❌ kpimg 下载失败"; exit 14; }[0m
+2026-11-07T22:20:16.8581914Z [36;1m    curl -fsSL -o ./kptools-linux "$KP_REL/kptools-linux" || { echo "❌ kptools-linux 下载失败"; exit 15; }[0m
+2026-11-07T22:20:16.8582383Z [36;1m    chmod +x ./kptools-linux[0m
+2026-11-07T22:20:16.8582676Z [36;1m    ls -l ./kpimg ./kptools-linux[0m
+2026-11-07T22:20:16.8583015Z [36;1m    echo "--- 期望：kpimg 约 294384 字节(0x47df0)，非 16 字节空壳 ---"[0m
+2026-11-07T22:20:16.8583355Z [36;1m    SKEY="20070311@Lt"[0m
+2026-11-07T22:20:16.8583596Z [36;1m    set +e[0m
+2026-11-07T22:20:16.8583835Z [36;1m    if [ -n "$SKEY" ]; then[0m
+2026-11-07T22:20:16.8584206Z [36;1m      ./kptools-linux -p -i ./Image -k ./kpimg -o ./oImage -s "$SKEY"[0m
+2026-11-07T22:20:16.8584575Z [36;1m      rc=$?[0m
+2026-11-07T22:20:16.8584797Z [36;1m    else[0m
+2026-11-07T22:20:16.8585072Z [36;1m      ./kptools-linux -p -i ./Image -k ./kpimg -o ./oImage[0m
+2026-11-07T22:20:16.8585391Z [36;1m      rc=$?[0m
+2026-11-07T22:20:16.8585597Z [36;1m    fi[0m
+2026-11-07T22:20:16.8585794Z [36;1m    set -e[0m
+2026-11-07T22:20:16.8586018Z [36;1m    if [ $rc -ne 0 ]; then[0m
+2026-11-07T22:20:16.8586272Z [36;1m      if [ -n "$SKEY" ]; then[0m
+2026-11-07T22:20:16.8586615Z [36;1m        echo "⚠️ 带 -s 调用失败(rc=$rc)，该 kptools 可能不支持 -s，回退为不带 superkey"[0m
+2026-11-07T22:20:16.8587028Z [36;1m        ./kptools-linux -p -i ./Image -k ./kpimg -o ./oImage[0m
+2026-11-07T22:20:16.8587348Z [36;1m      else[0m
+2026-11-07T22:20:16.8587604Z [36;1m        echo "❌ kptools 修补失败 rc=$rc"; exit 16[0m
+2026-11-07T22:20:16.8587899Z [36;1m      fi[0m
+2026-11-07T22:20:16.8588093Z [36;1m    fi[0m
+2026-11-07T22:20:16.8588333Z [36;1m    ./kptools-linux -l -i ./oImage || true[0m
+2026-11-07T22:20:16.8588700Z [36;1m    echo "--- 请核对上面 kpimg 长度是否约 0x47df0(294384)，若为 0x10 则本包不可用 ---"[0m
+2026-11-07T22:20:16.8589026Z [36;1m  else[0m
+2026-11-07T22:20:16.8589285Z [36;1m    echo "NEW 模式（默认）：显式指定仓库内 kpimg，避免内嵌空 payload"[0m
+2026-11-07T22:20:16.8589694Z [36;1m    test -f "${KPM_DIR}/kpimg" || { echo "❌ 未找到 ${KPM_DIR}/kpimg"; exit 13; }[0m
+2026-11-07T22:20:16.8590379Z [36;1m    cp "${KPM_DIR}/kpimg" ./kpimg[0m
+2026-11-07T22:20:16.8590657Z [36;1m    SKEY="20070311@Lt"[0m
+2026-11-07T22:20:16.8590912Z [36;1m    if [ -n "$SKEY" ]; then[0m
+2026-11-07T22:20:16.8591270Z [36;1m      ./patch_linux -p -i ./Image -k ./kpimg -o ./oImage -s "$SKEY"[0m
+2026-11-07T22:20:16.8591615Z [36;1m    else[0m
+2026-11-07T22:20:16.8591895Z [36;1m      ./patch_linux -p -i ./Image -k ./kpimg -o ./oImage[0m
+2026-11-07T22:20:16.8592207Z [36;1m    fi[0m
+2026-11-07T22:20:16.8592586Z [36;1m    ./patch_linux -l -k ./kpimg || true[0m
+2026-11-07T22:20:16.8592908Z [36;1m    ./patch_linux -l -i ./oImage || true[0m
+2026-11-07T22:20:16.8593304Z [36;1m  fi[0m
+2026-11-07T22:20:16.8593513Z [36;1melse[0m
+2026-11-07T22:20:16.8593787Z [36;1m  cp "${KPN_DIR}/kptools-linux" "${KPN_DIR}/kpimg-linux" .[0m
+2026-11-07T22:20:16.8594124Z [36;1m  chmod +x ./kptools-linux[0m
+2026-11-07T22:20:16.8594475Z [36;1m  ./kptools-linux -p -i ./Image -k ./kpimg-linux -o ./oImage[0m
+2026-11-07T22:20:16.8594816Z [36;1mfi[0m
+2026-11-07T22:20:16.8595030Z [36;1mmv -f oImage Image[0m
+2026-11-07T22:20:16.8595327Z [36;1mcp Image "${GITHUB_WORKSPACE}/AnyKernel3/Image"[0m
+2026-11-07T22:20:16.8623291Z shell: /usr/bin/bash -e {0}
+2026-11-07T22:20:16.8623569Z env:
+2026-11-07T22:20:16.8623778Z   CCACHE_COMPILERCHECK: none
+2026-11-07T22:20:16.8624036Z   CCACHE_NOHASHDIR: true
+2026-11-07T22:20:16.8624282Z   CCACHE_NOHARDLINK: true
+2026-11-07T22:20:16.8624526Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T22:20:16.8624801Z   CCACHE_MAXSIZE: 5G
+2026-11-07T22:20:16.8625018Z   FILE_CONF: oneplus_ace_6
+2026-11-07T22:20:16.8625249Z   FILE_BASE: OnePlusAce6
+2026-11-07T22:20:16.8625504Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T22:20:16.8625752Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T22:20:16.8626030Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T22:20:16.8626287Z   CPU: sm8750
+2026-11-07T22:20:16.8626490Z   ANDROID_VERSION: 16.0.0
+2026-11-07T22:20:16.8626724Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T22:20:16.8626950Z   CPUD: sun
+2026-11-07T22:20:16.8627140Z   BUILD_METHOD: perf
+2026-11-07T22:20:16.8627390Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T22:20:16.8627918Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T22:20:16.8628428Z   KERNEL_REPOS: msm-kernel
+2026-11-07T22:20:16.8628659Z   KMI: android15-6.6
+2026-11-07T22:20:16.8628876Z   KANDROID_VERSION: android15
+2026-11-07T22:20:16.8629116Z   KERNEL_VERSION: 6.6
+2026-11-07T22:20:16.8629328Z   VERSIONLEVEL: 6
+2026-11-07T22:20:16.8629533Z   PATCHLEVEL: 6
+2026-11-07T22:20:16.8629733Z   SUBLEVEL: 118
+2026-11-07T22:20:16.8630114Z   CKERNEL_VERSION: 6.6.118
+2026-11-07T22:20:16.8630360Z   KERNEL_SHORT_PATCH_VERSION: 6_6
+2026-11-07T22:20:16.8630613Z   ENABLE_RUST: false
+2026-11-07T22:20:16.8630830Z   KSU_MANAGER_BRANCH: main
+2026-11-07T22:20:16.8631068Z   KSU_BUILTIN_BRANCH: builtin
+2026-11-07T22:20:16.8631308Z   KSU_VERSION_TAG: 4.3.0-r2
+2026-11-07T22:20:16.8631535Z   KSUVER: 41160
+2026-11-07T22:20:16.8631966Z   BASH_ENV: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T22:20:16.8632447Z   ZRAM_ALGO: lz4kd
+2026-11-07T22:20:16.8632660Z   ZRAM_ALGO_U: LZ4KD
+2026-11-07T22:20:16.8632870Z   ZRAM_SIZE: 8589934592
+2026-11-07T22:20:16.8633164Z   CONFIG_FAKE_DISABLE: CONFIG_TCP_CONG_ADVANCED CONFIG_IP6_NF_NAT
+2026-11-07T22:20:16.8633547Z   KBUILD_BUILD_TIMESTAMP: Wed Jul 22 09:32:35 UTC 2026
+2026-11-07T22:20:16.8633855Z   KBUILD_BUILD_VERSION: 1
+2026-11-07T22:20:16.8634090Z ##[endgroup]
+2026-11-07T22:20:16.8781403Z KPTOOLS 模式：保留 CONFIG_KPM=y，改用官方 0.14.0 的 kptools+kpimg 注入（绕开坏掉的 patch_linux）
+2026-11-07T22:20:16.8782499Z 0.14.0 的 kpimg 配套新内核 SUKISU_KPM_ABI_VERSION=2；旧版 kpimg 会导致 KPM 全部 -EOPNOTSUPP
+2026-11-07T22:20:17.4972086Z -rw-r--r-- 1 runner runner  294384 Nov  7 22:20 ./kpimg
+2026-11-07T22:20:17.4972747Z -rwxr-xr-x 1 runner runner 1672840 Nov  7 22:20 ./kptools-linux
+2026-11-07T22:20:17.4975552Z --- 期望：kpimg 约 294384 字节(0x47df0)，非 16 字节空壳 ---
+2026-11-07T22:20:18.6764761Z [+] kernel image_size: 0x0235fa00
+2026-11-07T22:20:18.6765171Z [+] kernel uefi header: true
+2026-11-07T22:20:18.6765480Z [+] kernel load_offset: 0x00000000
+2026-11-07T22:20:18.6765809Z [+] kernel kernel_size: 0x02640000
+2026-11-07T22:20:18.6766118Z [+] kernel page_shift: 12
+2026-11-07T22:20:18.6766467Z [+] new kernel image ...
+2026-11-07T22:20:18.6766840Z [+] is_gki: true
+2026-11-07T22:20:18.6768453Z [+] linux_banner 1: Linux version 6.6.118-android15-8-g9bc34d5b0c79-abogki537459655-4k (build-user@build-host) (Android (11368308, +pgo, +bolt, +lto, +mlgo, based on r510928) clang version 18.0.0 (https://android.googlesource.com/toolchain/llvm-project 477610d4d0d988e69dbc3fae4fe86bff3f07f2b5), LLD 18.0.0) #1 SMP PREEMPT Wed Jul 22 09:32:35 UTC 2026
+2026-11-07T22:20:18.6786413Z [+] linux_banner offset: 0x10c011f
+2026-11-07T22:20:18.6789135Z [+] linux_banner 2: Linux version 6.6.118-android15-8-g9bc34d5b0c79-abogki537459655-4k (build-user@build-host) (Android (11368308, +pgo, +bolt, +lto, +mlgo, based on r510928) clang version 18.0.0 (https://android.googlesource.com/toolchain/llvm-project 477610d4d0d988e69dbc3fae4fe86bff3f07f2b5), LLD 18.0.0) #1 SMP PREEMPT Wed Jul 22 09:32:35 UTC 2026
+2026-11-07T22:20:18.6791525Z [+] linux_banner offset: 0x12e59d8
+2026-11-07T22:20:18.6791896Z [+] kernel version major: 6, minor: 6, patch: 118
+2026-11-07T22:20:18.6792275Z [+] kallsyms_token_table offset: 0x0147fb80
+2026-11-07T22:20:18.6792618Z [+] endian: little
+2026-11-07T22:20:18.6792928Z [+] kallsyms_token_index offset: 0x0147ff20
+2026-11-07T22:20:18.6793413Z [+] kallsyms_markers range: [0x0147f438, 0x0147fb7c), count: 0x000001d0
+2026-11-07T22:20:18.6793864Z [+] kallsyms_names offset: 0x012e5b30
+2026-11-07T22:20:18.6794221Z [+] arm64 relocation kernel_va: 0xffffffffffffffff
+2026-11-07T22:20:18.6794595Z [?] can't find arm64 relocation table
+2026-11-07T22:20:18.6794998Z [+] kallsyms_markers range: [0x0147f438, 0x0147fb7c), count: 0x000001d0
+2026-11-07T22:20:18.6795496Z [+] try kallsyms_offsets first for 64-bit relative-base kernel
+2026-11-07T22:20:18.6796042Z [+] approximate kallsyms_offsets range: [0x01480120, 0x014f4424) count: 0x0001d0c1
+2026-11-07T22:20:18.6796514Z [+] kallsyms_names offset: 0x012e5b30
+2026-11-07T22:20:18.6796896Z [+] kallsyms_num_syms offset: 0x012e5b28, value: 0x0001d0c1
+2026-11-07T22:20:18.6797301Z [+] names table linux_banner index: 0x0001151c
+2026-11-07T22:20:18.6797640Z [+] linux_banner index: 1
+2026-11-07T22:20:18.6797931Z [+] kallsyms_offsets offset: 0x01480120
+2026-11-07T22:20:18.6798265Z [+] pid_vnr: type: T, offset: 0x000d6810
+2026-11-07T22:20:18.6798629Z [+] pid_vnr verfied sp_el0, insn: 0xd5384108 (off +0)
+2026-11-07T22:20:18.6799072Z [+] ikconfig gzip blob at 0x10e4e08, size 0xb368 (runtime puff)
+2026-11-07T22:20:18.6799486Z [+] btf blob at 0x1731a04, size 0x5eb2f7
+2026-11-07T22:20:18.6800319Z [+] layout kimg: 0x0,0x235fa00, kpimg: 0x2360000,0x47df0, extra: 0x23a7df0,0x80, end: 0x23a7e70, start: 0x2640000
+2026-11-07T22:20:18.6801098Z [+] image_size: 0x2640000 -> 0x2688000
+2026-11-07T22:20:18.6801411Z [+] kpimg version: e00
+2026-11-07T22:20:18.6801900Z [+] kpimg compile time: 19:40:23 Oct 26 2026
+2026-11-07T22:20:18.6802506Z [+] kpimg config: android, release, arm64
+2026-11-07T22:20:18.6802996Z [+] tcp_init_sock: type: T, offset: 0x00eddcd4
+2026-11-07T22:20:18.6803396Z [+] select map anchor: tcp_init_sock, offset: 0x00eddcd4
+2026-11-07T22:20:18.6803799Z [+] pac verify not pair  pos: fe8  count: 23
+2026-11-07T22:20:18.6804134Z [+] second_pos: 1014 
+2026-11-07T22:20:18.6804433Z [+] map_start: 0xeddcd0, max_size: 0x1000
+2026-11-07T22:20:18.6804950Z [+] Synced NOP modifications from kallsym_kimg to output file (offset: 0xeddcd0, size: 0x2000)
+2026-11-07T22:20:18.6805498Z [+] sprintf: type: T, offset: 0x01070fec
+2026-11-07T22:20:18.6805832Z [+] show_stack: type: T, offset: 0x00020aa0
+2026-11-07T22:20:18.6806214Z [+] kallsyms_lookup_name: type: T, offset: 0x001a4dcc
+2026-11-07T22:20:18.6806758Z [+] prefer runtime forward scan anchor for kallsyms_lookup_name: show_stack, offset: 0x00020aa0
+2026-11-07T22:20:18.6807272Z [?] no symbol: printk
+2026-11-07T22:20:18.6807551Z [+] _printk: type: T, offset: 0x0107b4d8
+2026-11-07T22:20:18.6807897Z [+] memblock_reserve: type: T, offset: 0x00357e3c
+2026-11-07T22:20:18.6808310Z [+] memblock_free: type: T, offset: 0x00357c38
+2026-11-07T22:20:18.6808690Z [+] memblock_mark_nomap: type: T, offset: 0x003580c4
+2026-11-07T22:20:18.6809111Z [+] memblock_phys_alloc_try_nid: type: T, offset: 0x01d530a8
+2026-11-07T22:20:18.6809735Z [?] no symbol: memblock_virt_alloc_try_nid
+2026-11-07T22:20:18.6810396Z [+] memblock_alloc_try_nid: type: T, offset: 0x01d532f4
+2026-11-07T22:20:18.6810931Z [+] kallsyms_lookup_name: type: T, offset: 0x001a4dcc
+2026-11-07T22:20:18.6811276Z [?] no symbol: printk
+2026-11-07T22:20:18.6811544Z [+] _printk: type: T, offset: 0x0107b4d8
+2026-11-07T22:20:18.6811884Z [+] panic: type: T, offset: 0x0107b16c
+2026-11-07T22:20:18.6812222Z [+] rest_init: type: T, offset: 0x01084b0c
+2026-11-07T22:20:18.6812558Z [+] kernel_init: type: t, offset: 0x01084bf4
+2026-11-07T22:20:18.6812931Z [+] report_cfi_failure: type: T, offset: 0x002a27f0
+2026-11-07T22:20:18.6813287Z [?] no symbol: __cfi_slowpath_diag
+2026-11-07T22:20:18.6813607Z [?] no symbol: __cfi_slowpath
+2026-11-07T22:20:18.6813922Z [+] copy_process: type: T, offset: 0x000a7ea4
+2026-11-07T22:20:18.6814266Z [+] avc_denied: type: t, offset: 0x00615cf0
+2026-11-07T22:20:18.6814618Z [+] slow_avc_audit: type: T, offset: 0x00614a3c
+2026-11-07T22:20:18.6814992Z [+] input_handle_event: type: T, offset: 0x00ab96cc
+2026-11-07T22:20:18.6815363Z [+] superkey configured (value omitted)
+2026-11-07T22:20:18.6815707Z [+] paging_init: type: T, offset: 0x01d3b110
+2026-11-07T22:20:18.6816036Z [+] patch done: ./oImage
+2026-11-07T22:20:18.8220720Z [kernel]
+2026-11-07T22:20:18.8222407Z banner=Linux version 6.6.118-android15-8-g9bc34d5b0c79-abogki537459655-4k (build-user@build-host) (Android (11368308, +pgo, +bolt, +lto, +mlgo, based on r510928) clang version 18.0.0 (https://android.googlesource.com/toolchain/llvm-project 477610d4d0d988e69dbc3fae4fe86bff3f07f2b5), LLD 18.0.0) #1 SMP PREEMPT Wed Jul 22 09:32:35 UTC 2026
+2026-11-07T22:20:18.8224191Z patched=true
+2026-11-07T22:20:18.8224438Z [kpimg]
+2026-11-07T22:20:18.8224662Z version=0xe00
+2026-11-07T22:20:18.8224920Z compile_time=19:40:23 Oct 26 2026
+2026-11-07T22:20:18.8225234Z config=android,release
+2026-11-07T22:20:18.8225497Z arch=arm64
+2026-11-07T22:20:18.8225725Z superkey=<redacted>
+2026-11-07T22:20:18.8225993Z root_superkey=<redacted>
+2026-11-07T22:20:18.8226295Z [additional]
+2026-11-07T22:20:18.8226525Z [extras]
+2026-11-07T22:20:18.8226742Z num=0
+2026-11-07T22:20:18.8227331Z --- 请核对上面 kpimg 长度是否约 0x47df0(294384)，若为 0x10 则本包不可用 ---

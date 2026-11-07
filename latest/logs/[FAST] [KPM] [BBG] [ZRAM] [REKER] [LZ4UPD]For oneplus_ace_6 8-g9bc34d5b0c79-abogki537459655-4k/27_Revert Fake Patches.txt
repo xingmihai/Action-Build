@@ -1,0 +1,51 @@
+﻿2026-11-07T21:58:56.9446161Z ##[group]Run if [ ! -f "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" ]; then
+2026-11-07T21:58:56.9446904Z [36;1mif [ ! -f "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" ]; then[0m
+2026-11-07T21:58:56.9447443Z [36;1m  echo "⚠️ 缺少 PatchFakePatches.kts，跳过 revert"[0m
+2026-11-07T21:58:56.9447748Z [36;1m  exit 0[0m
+2026-11-07T21:58:56.9447947Z [36;1mfi[0m
+2026-11-07T21:58:56.9448566Z [36;1mkotlinc -script "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" revert "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/common"[0m
+2026-11-07T21:58:56.9477512Z shell: /usr/bin/bash -e {0}
+2026-11-07T21:58:56.9477803Z env:
+2026-11-07T21:58:56.9478015Z   CCACHE_COMPILERCHECK: none
+2026-11-07T21:58:56.9478291Z   CCACHE_NOHASHDIR: true
+2026-11-07T21:58:56.9478535Z   CCACHE_NOHARDLINK: true
+2026-11-07T21:58:56.9478776Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T21:58:56.9479033Z   CCACHE_MAXSIZE: 5G
+2026-11-07T21:58:56.9479307Z   FILE_CONF: oneplus_ace_6
+2026-11-07T21:58:56.9479536Z   FILE_BASE: OnePlusAce6
+2026-11-07T21:58:56.9479772Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T21:58:56.9480183Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T21:58:56.9480467Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T21:58:56.9480714Z   CPU: sm8750
+2026-11-07T21:58:56.9480918Z   ANDROID_VERSION: 16.0.0
+2026-11-07T21:58:56.9481159Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T21:58:56.9481387Z   CPUD: sun
+2026-11-07T21:58:56.9481580Z   BUILD_METHOD: perf
+2026-11-07T21:58:56.9481837Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T21:58:56.9482377Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T21:58:56.9482890Z   KERNEL_REPOS: msm-kernel
+2026-11-07T21:58:56.9483118Z   KMI: android15-6.6
+2026-11-07T21:58:56.9483330Z   KANDROID_VERSION: android15
+2026-11-07T21:58:56.9483570Z   KERNEL_VERSION: 6.6
+2026-11-07T21:58:56.9483778Z   VERSIONLEVEL: 6
+2026-11-07T21:58:56.9483984Z   PATCHLEVEL: 6
+2026-11-07T21:58:56.9484177Z   SUBLEVEL: 118
+2026-11-07T21:58:56.9484376Z   CKERNEL_VERSION: 6.6.118
+2026-11-07T21:58:56.9484616Z   KERNEL_SHORT_PATCH_VERSION: 6_6
+2026-11-07T21:58:56.9484859Z   ENABLE_RUST: false
+2026-11-07T21:58:56.9485075Z   KSU_MANAGER_BRANCH: main
+2026-11-07T21:58:56.9485312Z   KSU_BUILTIN_BRANCH: builtin
+2026-11-07T21:58:56.9485551Z   KSU_VERSION_TAG: 4.3.0-r2
+2026-11-07T21:58:56.9485785Z   KSUVER: 41160
+2026-11-07T21:58:56.9486208Z   BASH_ENV: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T21:58:56.9486685Z ##[endgroup]
+2026-11-07T21:58:56.9858838Z OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+2026-11-07T21:58:57.5389668Z WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+2026-11-07T21:58:57.5391289Z WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.intellij.util.containers.ConcurrentIntObjectHashMap
+2026-11-07T21:58:57.5392964Z WARNING: Please consider reporting this to the maintainers of class com.intellij.util.containers.ConcurrentIntObjectHashMap
+2026-11-07T21:58:57.5394401Z WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+2026-11-07T21:58:57.7622880Z WARNING: A restricted method in java.lang.System has been called
+2026-11-07T21:58:57.7624060Z WARNING: java.lang.System::load has been called by com.sun.jna.Native in an unnamed module
+2026-11-07T21:58:57.7625307Z WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+2026-11-07T21:58:57.7626485Z WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+2026-11-07T21:58:57.7627208Z 

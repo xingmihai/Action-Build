@@ -1,0 +1,59 @@
+﻿2026-11-07T21:58:39.7693018Z ##[group]Run if [ ! -f "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" ]; then
+2026-11-07T21:58:39.7693777Z [36;1mif [ ! -f "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" ]; then[0m
+2026-11-07T21:58:39.7694418Z [36;1m  echo "⚠️ 缺少 PatchFakePatches.kts，跳过本步骤(android15-6.6 且 SUBLEVEL>92 时该脚本为 no-op)"[0m
+2026-11-07T21:58:39.7694832Z [36;1m  exit 0[0m
+2026-11-07T21:58:39.7695045Z [36;1mfi[0m
+2026-11-07T21:58:39.7695232Z [36;1mset +e[0m
+2026-11-07T21:58:39.7695950Z [36;1mkotlinc -script "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" apply "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/common" 2>&1 | tee /tmp/fakepatch.log[0m
+2026-11-07T21:58:39.7696875Z [36;1mrc=${PIPESTATUS[0]}[0m
+2026-11-07T21:58:39.7697115Z [36;1mset -e[0m
+2026-11-07T21:58:39.7697342Z [36;1mif [ "$rc" -ne 0 ]; then[0m
+2026-11-07T21:58:39.7697642Z [36;1m  echo "::error::FakePatches 退出码 $rc，非警告输出如下"[0m
+2026-11-07T21:58:39.7698378Z [36;1m  grep -vE "WARNING|warning|deprecated|restricted" /tmp/fakepatch.log | grep -vE '^\s*$' | head -30 | cut -c1-300 | while IFS= read -r l; do echo "::error::FP: $l"; done[0m
+2026-11-07T21:58:39.7699250Z [36;1m  echo "::error::FP-TAIL: $(grep -vE "WARNING|warning" /tmp/fakepatch.log | tail -3 | tr '\n' ' ' | cut -c1-300)"[0m
+2026-11-07T21:58:39.7699724Z [36;1m  exit "$rc"[0m
+2026-11-07T21:58:39.7700106Z [36;1mfi[0m
+2026-11-07T21:58:39.7728114Z shell: /usr/bin/bash -e {0}
+2026-11-07T21:58:39.7728398Z env:
+2026-11-07T21:58:39.7728624Z   CCACHE_COMPILERCHECK: none
+2026-11-07T21:58:39.7728881Z   CCACHE_NOHASHDIR: true
+2026-11-07T21:58:39.7729139Z   CCACHE_NOHARDLINK: true
+2026-11-07T21:58:39.7729384Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T21:58:39.7729636Z   CCACHE_MAXSIZE: 5G
+2026-11-07T21:58:39.7730003Z   FILE_CONF: oneplus_ace_6
+2026-11-07T21:58:39.7730356Z   FILE_BASE: OnePlusAce6
+2026-11-07T21:58:39.7730599Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T21:58:39.7730850Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T21:58:39.7731136Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T21:58:39.7731389Z   CPU: sm8750
+2026-11-07T21:58:39.7731591Z   ANDROID_VERSION: 16.0.0
+2026-11-07T21:58:39.7731818Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T21:58:39.7732047Z   CPUD: sun
+2026-11-07T21:58:39.7732235Z   BUILD_METHOD: perf
+2026-11-07T21:58:39.7732492Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T21:58:39.7733023Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T21:58:39.7733526Z   KERNEL_REPOS: msm-kernel
+2026-11-07T21:58:39.7733764Z   KMI: android15-6.6
+2026-11-07T21:58:39.7733987Z   KANDROID_VERSION: android15
+2026-11-07T21:58:39.7734343Z   KERNEL_VERSION: 6.6
+2026-11-07T21:58:39.7734564Z   VERSIONLEVEL: 6
+2026-11-07T21:58:39.7734765Z   PATCHLEVEL: 6
+2026-11-07T21:58:39.7734967Z   SUBLEVEL: 118
+2026-11-07T21:58:39.7735167Z   CKERNEL_VERSION: 6.6.118
+2026-11-07T21:58:39.7735404Z   KERNEL_SHORT_PATCH_VERSION: 6_6
+2026-11-07T21:58:39.7735666Z   ENABLE_RUST: false
+2026-11-07T21:58:39.7735878Z   KSU_MANAGER_BRANCH: main
+2026-11-07T21:58:39.7736108Z   KSU_BUILTIN_BRANCH: builtin
+2026-11-07T21:58:39.7736354Z   KSU_VERSION_TAG: 4.3.0-r2
+2026-11-07T21:58:39.7736580Z   KSUVER: 41160
+2026-11-07T21:58:39.7736782Z ##[endgroup]
+2026-11-07T21:58:39.8295102Z OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+2026-11-07T21:58:40.8704719Z WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+2026-11-07T21:58:40.8711491Z WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.intellij.util.containers.ConcurrentIntObjectHashMap
+2026-11-07T21:58:40.8712487Z WARNING: Please consider reporting this to the maintainers of class com.intellij.util.containers.ConcurrentIntObjectHashMap
+2026-11-07T21:58:40.8713304Z WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+2026-11-07T21:58:41.4880628Z WARNING: A restricted method in java.lang.System has been called
+2026-11-07T21:58:41.4882026Z WARNING: java.lang.System::load has been called by com.sun.jna.Native in an unnamed module
+2026-11-07T21:58:41.4882676Z WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+2026-11-07T21:58:41.4883279Z WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+2026-11-07T21:58:41.4883627Z 

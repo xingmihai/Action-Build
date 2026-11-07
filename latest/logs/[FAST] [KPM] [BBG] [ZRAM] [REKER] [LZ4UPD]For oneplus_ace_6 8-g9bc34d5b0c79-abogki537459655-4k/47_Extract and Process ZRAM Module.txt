@@ -1,0 +1,198 @@
+﻿2026-11-07T22:20:21.9650941Z ##[group]Run set -e
+2026-11-07T22:20:21.9651434Z [36;1mset -e[0m
+2026-11-07T22:20:21.9651779Z [36;1mZRAM_ZIP="${GITHUB_WORKSPACE}/kernel_workspace/Action-Build/ZRAM.zip"[0m
+2026-11-07T22:20:21.9652169Z [36;1m[0m
+2026-11-07T22:20:21.9652380Z [36;1mif [ ! -f "$ZRAM_ZIP" ]; then[0m
+2026-11-07T22:20:21.9652701Z [36;1m  echo "❌ 未找到 ZRAM.zip: $ZRAM_ZIP"[0m
+2026-11-07T22:20:21.9653024Z [36;1m  echo "upload=false" >> "$GITHUB_OUTPUT"[0m
+2026-11-07T22:20:21.9653325Z [36;1m  exit 0[0m
+2026-11-07T22:20:21.9653522Z [36;1mfi[0m
+2026-11-07T22:20:21.9653725Z [36;1m[0m
+2026-11-07T22:20:21.9653948Z [36;1munzip "$ZRAM_ZIP" -d ZRAM-Module[0m
+2026-11-07T22:20:21.9654226Z [36;1m[0m
+2026-11-07T22:20:21.9654453Z [36;1mCONFIG_PROP="ZRAM-Module/config.prop"[0m
+2026-11-07T22:20:21.9654766Z [36;1mif [ -f "$CONFIG_PROP" ]; then[0m
+2026-11-07T22:20:21.9655053Z [36;1m  echo "修改 config.prop"[0m
+2026-11-07T22:20:21.9655406Z [36;1m  sed -i "s/^ZRAM_ALGO=.*/ZRAM_ALGO=${ZRAM_ALGO}/" "$CONFIG_PROP"[0m
+2026-11-07T22:20:21.9655867Z [36;1m  sed -i "s/^ZRAM_SIZE=.*/ZRAM_SIZE=${ZRAM_SIZE}/" "$CONFIG_PROP"[0m
+2026-11-07T22:20:21.9656221Z [36;1m  echo "ZRAM_ALGO=${ZRAM_ALGO}"[0m
+2026-11-07T22:20:21.9656499Z [36;1m  echo "ZRAM_SIZE=${ZRAM_SIZE}"[0m
+2026-11-07T22:20:21.9656765Z [36;1melse[0m
+2026-11-07T22:20:21.9656983Z [36;1m  echo "❌ 未找到 config.prop"[0m
+2026-11-07T22:20:21.9657285Z [36;1m  echo "upload=false" >> "$GITHUB_OUTPUT"[0m
+2026-11-07T22:20:21.9657568Z [36;1m  exit 0[0m
+2026-11-07T22:20:21.9657773Z [36;1mfi[0m
+2026-11-07T22:20:21.9657964Z [36;1m[0m
+2026-11-07T22:20:21.9658865Z [36;1mtarget="./ZRAM-Module/zram/zram.ko"[0m
+2026-11-07T22:20:21.9659171Z [36;1mecho "查找 zram.ko 模块文件..."[0m
+2026-11-07T22:20:21.9659433Z [36;1msearch_paths=([0m
+2026-11-07T22:20:21.9659713Z [36;1m  "./kernel_workspace/kernel_platform/out"[0m
+2026-11-07T22:20:21.9660305Z [36;1m  "./kernel_workspace/device/qcom"[0m
+2026-11-07T22:20:21.9660587Z [36;1m)[0m
+2026-11-07T22:20:21.9660783Z [36;1mzram_path=""[0m
+2026-11-07T22:20:21.9661053Z [36;1mfor path in "${search_paths[@]}"; do[0m
+2026-11-07T22:20:21.9661354Z [36;1m  if [ -d "$path" ]; then[0m
+2026-11-07T22:20:21.9661705Z [36;1m    zram_path=$(find "$path" -type f -name "zram.ko" | head -n 1)[0m
+2026-11-07T22:20:21.9662071Z [36;1m    [ -n "$zram_path" ] && break[0m
+2026-11-07T22:20:21.9662340Z [36;1m  fi[0m
+2026-11-07T22:20:21.9662538Z [36;1mdone[0m
+2026-11-07T22:20:21.9662757Z [36;1mif [ -z "$zram_path" ]; then[0m
+2026-11-07T22:20:21.9663141Z [36;1m  zram_path=$(find "./kernel_workspace" -type f -name "zram.ko" | head -n 1)[0m
+2026-11-07T22:20:21.9663710Z [36;1mfi[0m
+2026-11-07T22:20:21.9663970Z [36;1mif [ -n "$zram_path" ] && [ -f "$zram_path" ]; then[0m
+2026-11-07T22:20:21.9664375Z [36;1m  echo "✅ zram.ko file finally located at: $zram_path"[0m
+2026-11-07T22:20:21.9664735Z [36;1m  install -D "$zram_path" "$target"[0m
+2026-11-07T22:20:21.9665000Z [36;1melse[0m
+2026-11-07T22:20:21.9665238Z [36;1m  echo "❌ 未找到 zram.ko 文件，可能是未支持的内核版本或构建失败"[0m
+2026-11-07T22:20:21.9665566Z [36;1m  echo "upload=false" >> "$GITHUB_OUTPUT"[0m
+2026-11-07T22:20:21.9665857Z [36;1m  exit 0[0m
+2026-11-07T22:20:21.9666054Z [36;1mfi[0m
+2026-11-07T22:20:21.9666242Z [36;1m[0m
+2026-11-07T22:20:21.9666474Z [36;1m# ---- zsmalloc.ko：zram.ko 的硬依赖 ----[0m
+2026-11-07T22:20:21.9666778Z [36;1mecho "查找 zsmalloc.ko 依赖模块..."[0m
+2026-11-07T22:20:21.9667048Z [36;1mzsmalloc_path=""[0m
+2026-11-07T22:20:21.9667316Z [36;1mfor path in "${search_paths[@]}"; do[0m
+2026-11-07T22:20:21.9667598Z [36;1m  if [ -d "$path" ]; then[0m
+2026-11-07T22:20:21.9668046Z [36;1m    zsmalloc_path=$(find "$path" -type f -name "zsmalloc.ko" | head -n 1)[0m
+2026-11-07T22:20:21.9668618Z [36;1m    [ -n "$zsmalloc_path" ] && break[0m
+2026-11-07T22:20:21.9668892Z [36;1m  fi[0m
+2026-11-07T22:20:21.9669081Z [36;1mdone[0m
+2026-11-07T22:20:21.9669293Z [36;1mif [ -z "$zsmalloc_path" ]; then[0m
+2026-11-07T22:20:21.9669712Z [36;1m  zsmalloc_path=$(find "./kernel_workspace" -type f -name "zsmalloc.ko" | head -n 1)[0m
+2026-11-07T22:20:21.9670423Z [36;1mfi[0m
+2026-11-07T22:20:21.9670702Z [36;1mif [ -n "$zsmalloc_path" ] && [ -f "$zsmalloc_path" ]; then[0m
+2026-11-07T22:20:21.9671094Z [36;1m  echo "✅ zsmalloc.ko located at: $zsmalloc_path"[0m
+2026-11-07T22:20:21.9671507Z [36;1m  install -D "$zsmalloc_path" "./ZRAM-Module/zram/zsmalloc.ko"[0m
+2026-11-07T22:20:21.9671843Z [36;1melse[0m
+2026-11-07T22:20:21.9672090Z [36;1m  echo "⚠️ 未找到 zsmalloc.ko（可能已内置 =y），跳过"[0m
+2026-11-07T22:20:21.9672368Z [36;1mfi[0m
+2026-11-07T22:20:21.9672564Z [36;1m[0m
+2026-11-07T22:20:21.9672787Z [36;1m# ---- 覆写 service.sh（base64 内嵌）----[0m
+2026-11-07T22:20:21.9673111Z [36;1m# 两级重压缩(zstdn p1 + zstdn_o p2)；重压循环回归固定间隔:[0m
+2026-11-07T22:20:21.9673400Z [36;1m# 未触发 1800 秒，压完 300 秒快速复检。[0m
+2026-11-07T22:20:21.9673675Z [36;1m# 此前闭环 EWMA 自适应经实测反而更差(huge 序列噪声主导，[0m
+2026-11-07T22:20:21.9673948Z [36;1m# 速率估计被带偏单向衰减)，已移除。[0m
+2026-11-07T22:20:21.9674216Z [36;1m: > "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9674968Z [36;1mecho 'TU9ERElSPSR7MCUvKn0KQ09ORklHX0ZJTEU9IiRNT0RESVIvY29uZmlnLnByb3AiCkxPRz0iJE1PRERJUi96cmFtX21vZHVsZS5s' > "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9676140Z [36;1mecho 'b2ciCgojIOWmguaenOmFjee9ruaWh+S7tuS4jeWtmOWcqOWImemAgOWHugppZiBbICEgLWYgIiRDT05GSUdfRklMRSIgXTsgdGhl' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9677320Z [36;1mecho 'bgogIGVjaG8gImNvbmZpZy5wcm9wIG5vdCBmb3VuZCEgRXhpdGluZy4iCiAgZXhpdCAxCmZpCgojIOWKoOi9veWPmOmHjwouICIk' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9678491Z [36;1mecho 'Q09ORklHX0ZJTEUiCgojIOajgOafpeWPmOmHj+aYr+WQpuWumuS5iQppZiBbIC16ICIkWlJBTV9BTEdPIiBdIHx8IFsgLXogIiRa' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9679658Z [36;1mecho 'UkFNX1NJWkUiIF07IHRoZW4KICBlY2hvICJaUkFNX0FMR08gb3IgWlJBTV9TSVpFIGlzIG5vdCBzZXQhIEV4aXRpbmcuIgogIGV4' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9680957Z [36;1mecho 'aXQgMQpmaQoKOiA+ICIkTE9HIgplY2hvICI9PT0gJChkYXRlICcrJUYgJUg6JU06JVMnKSBib290ID09PSIgPj4gIiRMT0ciCgoj' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9682107Z [36;1mecho 'IOW7tui/n+WQr+WKqO+8iOmYsuatouezu+e7n+acquWujOaIkOWIneWni+WMlu+8iQpzbGVlcCAzMAoKZWNobyAiLS0tIGxzbW9k' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9683264Z [36;1mecho 'IGJlZm9yZSAtLS0iID4+ICIkTE9HIgpsc21vZCB8IGdyZXAgLUUgInpyYW18enNtYWxsb2MiID4+ICIkTE9HIiAyPiYxCgojIOmH' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9684440Z [36;1mecho 'jee9ruaJgOacieeOsOaciSB6cmFtIOiuvuWkhwpmb3IgZGV2IGluIC9kZXYvYmxvY2svenJhbSo7IGRvCiAgaWYgWyAtZSAiJGRl' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9685725Z [36;1mecho 'diIgXTsgdGhlbgogICAgZWNobyAiRGlzYWJsaW5nICRkZXYiCiAgICBzd2Fwb2ZmICIkZGV2IiAyPi9kZXYvbnVsbAogICAgZWNo' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9686914Z [36;1mecho 'byAxID4gIi9zeXMvYmxvY2svJChiYXNlbmFtZSAiJGRldiIpL3Jlc2V0IgogIGZpCmRvbmUKCiMg5bCd6K+V5Yqg6L295Y6f55Sf' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9688071Z [36;1mecho 'IHpzbWFsbG9jICsgenJhbe+8iOS+nei1luWQjOS4gOaehOW7uuS6p+eJqe+8iQojIOiLpeWksei0peWImeWbnumAgO+8muWkjeeU' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9689225Z [36;1mecho 'qCBPcGx1cyBvcGx1c19ic3BfaHlicmlkc3dhcF96cmFtIOaPkOS+m+eahCB6cmFtMAppZiBbIC1mICIkTU9ERElSL3pyYW0venNt' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9690442Z [36;1mecho 'YWxsb2Mua28iIF0gJiYgWyAtZiAiJE1PRERJUi96cmFtL3pyYW0ua28iIF07IHRoZW4KICBlY2hvICJ0cnlpbmcgdG8gbG9hZCB6' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9691584Z [36;1mecho 'c21hbGxvYy5rbyIgPj4gIiRMT0ciCiAgaWYgaW5zbW9kICIkTU9ERElSL3pyYW0venNtYWxsb2Mua28iIDI+PiIkTE9HIjsgdGhl' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9692800Z [36;1mecho 'bgogICAgZWNobyAienNtYWxsb2MgbG9hZGVkIiA+PiAiJExPRyIKICAgIHNsZWVwIDEKICAgIGlmICEgbHNtb2QgfCBncmVwIC1x' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9693986Z [36;1mecho 'dyAiXnpyYW0iOyB0aGVuCiAgICAgIGVjaG8gInRyeWluZyB0byBsb2FkIHpyYW0ua28iID4+ICIkTE9HIgogICAgICBpbnNtb2Qg' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9695154Z [36;1mecho 'IiRNT0RESVIvenJhbS96cmFtLmtvIiAyPj4iJExPRyIKICAgICAgZWNobyAienJhbSBpbnNtb2QgcmM9JD8iID4+ICIkTE9HIgog' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9696423Z [36;1mecho 'ICAgZmkKICBlbHNlCiAgICBlY2hvICJ6c21hbGxvYyBsb2FkIEZBSUxFRCwgZmFsbGJhY2sgdG8gb3BsdXMgZHJpdmVyIiA+PiAi' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9697599Z [36;1mecho 'JExPRyIKICBmaQplbHNlCiAgZWNobyAienNtYWxsb2Mua28venJhbS5rbyBub3QgcHJlc2VudCwgdXNlIG9wbHVzIGRyaXZlciIg' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9698761Z [36;1mecho 'Pj4gIiRMT0ciCmZpCgpzbGVlcCAyCmVjaG8gIi0tLSBsc21vZCBhZnRlciAtLS0iID4+ICIkTE9HIgpsc21vZCB8IGdyZXAgLUUg' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9700049Z [36;1mecho 'InpyYW18enNtYWxsb2MiID4+ICIkTE9HIiAyPiYxCgojIOmFjee9riB6cmFtMAppZiBbIC1lIC9kZXYvYmxvY2svenJhbTAgXTsg' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9701236Z [36;1mecho 'dGhlbgogIHNsZWVwIDUKICBlY2hvICcxJyA+IC9zeXMvYmxvY2svenJhbTAvcmVzZXQKICBlY2hvICcwJyA+IC9zeXMvYmxvY2sv' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9702429Z [36;1mecho 'enJhbTAvZGlza3NpemUKICBlY2hvICc4JyA+IC9zeXMvYmxvY2svenJhbTAvbWF4X2NvbXBfc3RyZWFtcwogIGVjaG8gIiR7WlJB' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9703597Z [36;1mecho 'TV9BTEdPfSIgPiAvc3lzL2Jsb2NrL3pyYW0wL2NvbXBfYWxnb3JpdGhtCgogICMg5rOo5YaM5qyh57qn77yI6YeN5Y6L57yp77yJ' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9704737Z [36;1mecho '566X5rOV77yM5b+F6aG75ZyoIGRpc2tzaXplIOS5i+WJjQogICMg5Lik57qn5Liy6IGU77ya5LiA57qnIHpzdGRuIOWOi+S4jeWK' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9705872Z [36;1mecho 'qOeahOmhteS6pOe7meS6jOe6pyB6c3Rkbl9vIOWGjeivlQogICMg5LqM57qn5Zyo6YOo5YiG5YaF5qC4L+acuuWei+S4iuS4jeWt' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9707025Z [36;1mecho 'mOWcqO+8jOazqOWGjOWksei0peS7heiusOW9le+8jOS4jeW9seWTjeS4gOe6pwogIGVjaG8gImFsZ289enN0ZG4gcHJpb3JpdHk9' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9708158Z [36;1mecho 'MSIgPiAvc3lzL2Jsb2NrL3pyYW0wL3JlY29tcF9hbGdvcml0aG0KICBlY2hvICJyZWNvbXAgcDEoenN0ZG4pIHJjPSQ/IiA+PiAi' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9709295Z [36;1mecho 'JExPRyIKCiAgZWNobyAiYWxnbz16c3Rkbl9vIHByaW9yaXR5PTIiID4gL3N5cy9ibG9jay96cmFtMC9yZWNvbXBfYWxnb3JpdGht' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9710473Z [36;1mecho 'CiAgZWNobyAicmVjb21wIHAyKHpzdGRuX28pIHJjPSQ/IiA+PiAiJExPRyIKCiAgZWNobyAiJHtaUkFNX1NJWkV9IiA+IC9zeXMv' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9711585Z [36;1mecho 'YmxvY2svenJhbTAvZGlza3NpemUKICBta3N3YXAgL2Rldi9ibG9jay96cmFtMCA+IC9kZXYvbnVsbCAyPiYxCiAgc3dhcG9uIC9k' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9712808Z [36;1mecho 'ZXYvYmxvY2svenJhbTAgPiAvZGV2L251bGwgMj4mMQogIGVjaG8gInpyYW0wIGlzIG5vdyBhY3RpdmUgd2l0aCAke1pSQU1fQUxH' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9713970Z [36;1mecho 'T30gYW5kIHNpemUgJHtaUkFNX1NJWkV9IgoKICBlY2hvICItLS0gcmVjb21wX2FsZ29yaXRobSAtLS0iID4+ICIkTE9HIgogIGNh' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9715119Z [36;1mecho 'dCAvc3lzL2Jsb2NrL3pyYW0wL3JlY29tcF9hbGdvcml0aG0gPj4gIiRMT0ciIDI+JjEKICBlY2hvICItLS0gY29tcF9hbGdvcml0' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9716285Z [36;1mecho 'aG0gLS0tIiA+PiAiJExPRyIKICBjYXQgL3N5cy9ibG9jay96cmFtMC9jb21wX2FsZ29yaXRobSA+PiAiJExPRyIgMj4mMQoKICAj' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9717403Z [36;1mecho 'IC0tLS0g6Ieq5Yqo6YeN5Y6L57yp5b6q546v77yI5Zu65a6a6Ze06ZqU77yJLS0tLQogICMg57O757ufIG1tZCDmnKrlkK/nlKjv' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9718530Z [36;1mecho 'vIzmiYvlt6XlpI3liLsgQU9TUCDnrZbnlaXjgIIKICAjIOabvuWwneivlemXreeOryBFV01BIOiHqumAguW6lOmXtOmalO+8jOWu' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9719708Z [36;1mecho 'nua1iyBodWdlIOW6j+WIl+aYr+OAjOWZquWjsOS4u+WvvOaoquebmCArIOWBtuWPkemYtui3g+OAje+8jAogICMg55u46YK75beu' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9720876Z [36;1mecho '5YiG566X5Ye655qE6YCf546H6KKr5Zmq5aOw5bim5YGP77yMUkFURSDljZXlkJHoobDlh4/liLDkuIvpmZDvvIzlj43ogIzmr5Tl' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9722133Z [36;1mecho 'm7rlrprpl7TpmpTmm7Tlt67vvJoKICAjICAg5Zu65a6aIDE4MDBzICDmo4Dmn6UgNDgg5qyhL+WkqSAg5bmz5Z2H5rC05L2NIDEy' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9723292Z [36;1mecho 'NiBNaULvvIjlrp7mtYvmnIDkvJjvvIkKICAjICAg5Zu65a6aIDMwMHMgICDmo4Dmn6UgMjg4IOasoSAgICDlubPlnYfmsLTkvY0g' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9724459Z [36;1mecho 'MTM0IE1pQgogICMgICDoh6rpgILlupQgICAgICDmo4Dmn6UgMTYxIOasoSAgICDlubPlnYfmsLTkvY0gMTQ2IE1pQgogICMg5pWF' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9725556Z [36;1mecho '5Zue5b2S5Zu65a6a6Ze06ZqU77yb5LuF5L+d55WZ44CM5Y6L5a6M5b+r6YCf5aSN5qOA44CN77yM6YG/5YWN5q6L55WZ5LuN6auY' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9726620Z [36;1mecho '5pe255m9562J5Y2K5bCP5pe244CCCiAgKAogIFJMT0c9IiRNT0RESVIvcmVjb21wcmVzcy5sb2ciCiAgU1Q9IiRNT0RESVIvc3Rh' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9727763Z [36;1mecho 'dHVzIgogIDogPiAiJFJMT0ciCgogIFRIUkVTSD00MDAwMAogIElETEU9MTgwMCAgICAgICAgIyDluLjop4Tmo4Dmn6Xpl7TpmpQg' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9728926Z [36;1mecho 'MzAg5YiG6ZKfCiAgUkVDSEVDSz0zMDAgICAgICAjIOWImuWOi+WujO+8jDUg5YiG6ZKf5ZCO5b+r6YCf5aSN5qOACgogIHdoaWxl' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9730315Z [36;1mecho 'IHRydWU7IGRvCiAgICBodWdlPSQoYXdrICd7cHJpbnQgJDh9JyAvc3lzL2Jsb2NrL3pyYW0wL21tX3N0YXQpCiAgICB0cz0kKGRh' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9731482Z [36;1mecho 'dGUgJyslRiAlSDolTTolUycpCgogICAgaWYgWyAiJGh1Z2UiIC1ndCAiJFRIUkVTSCIgXTsgdGhlbgogICAgICBlY2hvICI9PT0g' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9732668Z [36;1mecho 'JHRzID09PSIgPj4gIiRSTE9HIgogICAgICBlY2hvICJCRUZPUkU6ICQoY2F0IC9zeXMvYmxvY2svenJhbTAvbW1fc3RhdCkiID4+' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9733839Z [36;1mecho 'ICIkUkxPRyIKICAgICAgZWNobyAidHlwZT1odWdlIiA+IC9zeXMvYmxvY2svenJhbTAvcmVjb21wcmVzcwogICAgICBlY2hvICJB' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9734995Z [36;1mecho 'RlRFUiA6ICQoY2F0IC9zeXMvYmxvY2svenJhbTAvbW1fc3RhdCkiID4+ICIkUkxPRyIKICAgICAgc2xlZXBfbmV4dD0kUkVDSEVD' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9736180Z [36;1mecho 'SwogICAgZWxzZQogICAgICBlY2hvICIkdHMgaHVnZT0kaHVnZSBza2lwKDwkVEhSRVNIKSIgPj4gIiRSTE9HIgogICAgICBzbGVl' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9737351Z [36;1mecho 'cF9uZXh0PSRJRExFCiAgICBmaQoKICAgIGVjaG8gIiR0cyBodWdlPSRodWdlIG5leHQ9JHtzbGVlcF9uZXh0fXMiID4gIiRTVCIK' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9738517Z [36;1mecho 'ICAgIHRhaWwgLW4gMzAwICIkUkxPRyIgPiAiJFJMT0cudG1wIiAmJiBtdiAiJFJMT0cudG1wIiAiJFJMT0ciCiAgICBzbGVlcCAi' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9739783Z [36;1mecho 'JHNsZWVwX25leHQiCiAgZG9uZQogICkgJgplbHNlCiAgZWNobyAienJhbTAgbm90IGZvdW5kLCBmYWlsZWQgdG8gaW5pdGlhbGl6' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9740753Z [36;1mecho 'ZSBzd2FwIgogIGV4aXQgMQpmaQo=' >> "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9741259Z [36;1mbase64 -d "ZRAM-Module/service.sh.b64" > "ZRAM-Module/service.sh"[0m
+2026-11-07T22:20:21.9741675Z [36;1mrm -f "ZRAM-Module/service.sh.b64"[0m
+2026-11-07T22:20:21.9741983Z [36;1mchmod 0755 "ZRAM-Module/service.sh"[0m
+2026-11-07T22:20:21.9742281Z [36;1mecho "✅ service.sh 已覆写（4220 字节）"[0m
+2026-11-07T22:20:21.9770923Z shell: /usr/bin/bash -e {0}
+2026-11-07T22:20:21.9771206Z env:
+2026-11-07T22:20:21.9771427Z   CCACHE_COMPILERCHECK: none
+2026-11-07T22:20:21.9771692Z   CCACHE_NOHASHDIR: true
+2026-11-07T22:20:21.9771928Z   CCACHE_NOHARDLINK: true
+2026-11-07T22:20:21.9772185Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T22:20:21.9772465Z   CCACHE_MAXSIZE: 5G
+2026-11-07T22:20:21.9772695Z   FILE_CONF: oneplus_ace_6
+2026-11-07T22:20:21.9772931Z   FILE_BASE: OnePlusAce6
+2026-11-07T22:20:21.9773173Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T22:20:21.9773426Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T22:20:21.9773712Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T22:20:21.9773958Z   CPU: sm8750
+2026-11-07T22:20:21.9774171Z   ANDROID_VERSION: 16.0.0
+2026-11-07T22:20:21.9774540Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T22:20:21.9774772Z   CPUD: sun
+2026-11-07T22:20:21.9774982Z   BUILD_METHOD: perf
+2026-11-07T22:20:21.9775241Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T22:20:21.9775801Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T22:20:21.9776326Z   KERNEL_REPOS: msm-kernel
+2026-11-07T22:20:21.9776572Z   KMI: android15-6.6
+2026-11-07T22:20:21.9776798Z   KANDROID_VERSION: android15
+2026-11-07T22:20:21.9777046Z   KERNEL_VERSION: 6.6
+2026-11-07T22:20:21.9777267Z   VERSIONLEVEL: 6
+2026-11-07T22:20:21.9777482Z   PATCHLEVEL: 6
+2026-11-07T22:20:21.9777684Z   SUBLEVEL: 118
+2026-11-07T22:20:21.9777898Z   CKERNEL_VERSION: 6.6.118
+2026-11-07T22:20:21.9778162Z   KERNEL_SHORT_PATCH_VERSION: 6_6
+2026-11-07T22:20:21.9778471Z   ENABLE_RUST: false
+2026-11-07T22:20:21.9778687Z   KSU_MANAGER_BRANCH: main
+2026-11-07T22:20:21.9778927Z   KSU_BUILTIN_BRANCH: builtin
+2026-11-07T22:20:21.9779171Z   KSU_VERSION_TAG: 4.3.0-r2
+2026-11-07T22:20:21.9779404Z   KSUVER: 41160
+2026-11-07T22:20:21.9779829Z   BASH_ENV: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T22:20:21.9780432Z   ZRAM_ALGO: lz4kd
+2026-11-07T22:20:21.9780643Z   ZRAM_ALGO_U: LZ4KD
+2026-11-07T22:20:21.9780869Z   ZRAM_SIZE: 8589934592
+2026-11-07T22:20:21.9781171Z   CONFIG_FAKE_DISABLE: CONFIG_TCP_CONG_ADVANCED CONFIG_IP6_NF_NAT
+2026-11-07T22:20:21.9781566Z   KBUILD_BUILD_TIMESTAMP: Wed Jul 22 09:32:35 UTC 2026
+2026-11-07T22:20:21.9781889Z   KBUILD_BUILD_VERSION: 1
+2026-11-07T22:20:21.9782125Z ##[endgroup]
+2026-11-07T22:20:21.9902965Z Archive:  /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/ZRAM.zip
+2026-11-07T22:20:21.9908867Z    creating: ZRAM-Module/META-INF/
+2026-11-07T22:20:21.9915552Z    creating: ZRAM-Module/META-INF/com/
+2026-11-07T22:20:21.9916061Z    creating: ZRAM-Module/META-INF/com/google/
+2026-11-07T22:20:21.9916677Z    creating: ZRAM-Module/META-INF/com/google/android/
+2026-11-07T22:20:21.9917465Z   inflating: ZRAM-Module/META-INF/com/google/android/update-binary  
+2026-11-07T22:20:21.9918281Z   inflating: ZRAM-Module/META-INF/com/google/android/updater-script  
+2026-11-07T22:20:21.9918694Z   inflating: ZRAM-Module/action.sh   
+2026-11-07T22:20:21.9918985Z   inflating: ZRAM-Module/config.prop  
+2026-11-07T22:20:21.9919261Z   inflating: ZRAM-Module/customize.sh  
+2026-11-07T22:20:21.9919545Z   inflating: ZRAM-Module/module.prop  
+2026-11-07T22:20:21.9919827Z   inflating: ZRAM-Module/post-fs-data.sh  
+2026-11-07T22:20:21.9920479Z   inflating: ZRAM-Module/service.sh  
+2026-11-07T22:20:21.9924041Z 修改 config.prop
+2026-11-07T22:20:21.9947752Z ZRAM_ALGO=lz4kd
+2026-11-07T22:20:21.9948165Z ZRAM_SIZE=8589934592
+2026-11-07T22:20:21.9948737Z 查找 zram.ko 模块文件...
+2026-11-07T22:20:22.2692503Z ✅ zram.ko file finally located at: ./kernel_workspace/kernel_platform/common/out/drivers/block/zram/zram.ko
+2026-11-07T22:20:22.2720692Z 查找 zsmalloc.ko 依赖模块...
+2026-11-07T22:20:22.5175419Z ✅ zsmalloc.ko located at: ./kernel_workspace/kernel_platform/common/out/mm/zsmalloc.ko
+2026-11-07T22:20:22.5271561Z ✅ service.sh 已覆写（4220 字节）

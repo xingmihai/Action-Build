@@ -1,0 +1,70 @@
+﻿2026-11-07T22:20:16.2777331Z ##[group]Run git clone https://github.com/Numbersf/AnyKernel3 --depth=1
+2026-11-07T22:20:16.2777852Z [36;1mgit clone https://github.com/Numbersf/AnyKernel3 --depth=1[0m
+2026-11-07T22:20:16.2778223Z [36;1mrm -rf ./AnyKernel3/.git[0m
+2026-11-07T22:20:16.2778603Z [36;1mmkdir -p kernel_workspace/kernel_platform/out/Final-Image-Find/[0m
+2026-11-07T22:20:16.2778970Z [36;1mimage_path=""[0m
+2026-11-07T22:20:16.2779295Z [36;1mif [ -d "./kernel_workspace/kernel_platform/common/out/" ]; then[0m
+2026-11-07T22:20:16.2780038Z [36;1m  image_path=$(find "./kernel_workspace/kernel_platform/common/out/" -name "Image" | head -n 1)[0m
+2026-11-07T22:20:16.2780701Z [36;1m  if [ -n "$image_path" ]; then[0m
+2026-11-07T22:20:16.2781010Z [36;1m    echo "✅ 使用 make 编译的统一路径，成功找到 Image 文件"[0m
+2026-11-07T22:20:16.2781294Z [36;1m  fi[0m
+2026-11-07T22:20:16.2781496Z [36;1mfi[0m
+2026-11-07T22:20:16.2781813Z [36;1mif [ -z "$image_path" ] && [ -d "./kernel_workspace/kernel_platform/out/" ]; then[0m
+2026-11-07T22:20:16.2782398Z [36;1m  image_path=$(find "./kernel_workspace/kernel_platform/out/" -name "Image" | head -n 1)[0m
+2026-11-07T22:20:16.2782840Z [36;1m  if [ -n "$image_path" ]; then[0m
+2026-11-07T22:20:16.2783125Z [36;1m    echo "✅ 使用官方脚本编译，成功找到 Image 文件"[0m
+2026-11-07T22:20:16.2783391Z [36;1m  fi[0m
+2026-11-07T22:20:16.2783586Z [36;1mfi[0m
+2026-11-07T22:20:16.2783786Z [36;1mif [ -z "$image_path" ]; then[0m
+2026-11-07T22:20:16.2784060Z [36;1m  echo "❌ 未找到 Image 文件，构建失败" >&2[0m
+2026-11-07T22:20:16.2784472Z [36;1m  exit 1[0m
+2026-11-07T22:20:16.2784674Z [36;1mfi[0m
+2026-11-07T22:20:16.2784889Z [36;1mif [ -f "$image_path" ]; then[0m
+2026-11-07T22:20:16.2785211Z [36;1m  echo "✅ Image file finally located at: $image_path"[0m
+2026-11-07T22:20:16.2785562Z [36;1m  cp "$image_path" ./AnyKernel3/Image[0m
+2026-11-07T22:20:16.2785992Z [36;1m  cp "$image_path" kernel_workspace/kernel_platform/out/Final-Image-Find/Image[0m
+2026-11-07T22:20:16.2786380Z [36;1mfi[0m
+2026-11-07T22:20:16.2853472Z shell: /usr/bin/bash -e {0}
+2026-11-07T22:20:16.2853772Z env:
+2026-11-07T22:20:16.2853985Z   CCACHE_COMPILERCHECK: none
+2026-11-07T22:20:16.2854243Z   CCACHE_NOHASHDIR: true
+2026-11-07T22:20:16.2854477Z   CCACHE_NOHARDLINK: true
+2026-11-07T22:20:16.2854725Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T22:20:16.2854988Z   CCACHE_MAXSIZE: 5G
+2026-11-07T22:20:16.2855204Z   FILE_CONF: oneplus_ace_6
+2026-11-07T22:20:16.2855446Z   FILE_BASE: OnePlusAce6
+2026-11-07T22:20:16.2855692Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T22:20:16.2855941Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T22:20:16.2856229Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T22:20:16.2856468Z   CPU: sm8750
+2026-11-07T22:20:16.2856666Z   ANDROID_VERSION: 16.0.0
+2026-11-07T22:20:16.2856897Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T22:20:16.2857120Z   CPUD: sun
+2026-11-07T22:20:16.2857314Z   BUILD_METHOD: perf
+2026-11-07T22:20:16.2857556Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T22:20:16.2858089Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T22:20:16.2858602Z   KERNEL_REPOS: msm-kernel
+2026-11-07T22:20:16.2858835Z   KMI: android15-6.6
+2026-11-07T22:20:16.2859058Z   KANDROID_VERSION: android15
+2026-11-07T22:20:16.2859294Z   KERNEL_VERSION: 6.6
+2026-11-07T22:20:16.2859507Z   VERSIONLEVEL: 6
+2026-11-07T22:20:16.2859717Z   PATCHLEVEL: 6
+2026-11-07T22:20:16.2860123Z   SUBLEVEL: 118
+2026-11-07T22:20:16.2860334Z   CKERNEL_VERSION: 6.6.118
+2026-11-07T22:20:16.2860589Z   KERNEL_SHORT_PATCH_VERSION: 6_6
+2026-11-07T22:20:16.2860842Z   ENABLE_RUST: false
+2026-11-07T22:20:16.2861073Z   KSU_MANAGER_BRANCH: main
+2026-11-07T22:20:16.2861307Z   KSU_BUILTIN_BRANCH: builtin
+2026-11-07T22:20:16.2861549Z   KSU_VERSION_TAG: 4.3.0-r2
+2026-11-07T22:20:16.2861783Z   KSUVER: 41160
+2026-11-07T22:20:16.2862205Z   BASH_ENV: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T22:20:16.2862684Z   ZRAM_ALGO: lz4kd
+2026-11-07T22:20:16.2862895Z   ZRAM_ALGO_U: LZ4KD
+2026-11-07T22:20:16.2863325Z   ZRAM_SIZE: 8589934592
+2026-11-07T22:20:16.2863640Z   CONFIG_FAKE_DISABLE: CONFIG_TCP_CONG_ADVANCED CONFIG_IP6_NF_NAT
+2026-11-07T22:20:16.2864057Z   KBUILD_BUILD_TIMESTAMP: Wed Jul 22 09:32:35 UTC 2026
+2026-11-07T22:20:16.2864372Z   KBUILD_BUILD_VERSION: 1
+2026-11-07T22:20:16.2864609Z ##[endgroup]
+2026-11-07T22:20:16.2986512Z Cloning into 'AnyKernel3'...
+2026-11-07T22:20:16.8309494Z ✅ 使用 make 编译的统一路径，成功找到 Image 文件
+2026-11-07T22:20:16.8310394Z ✅ Image file finally located at: ./kernel_workspace/kernel_platform/common/out/arch/arm64/boot/Image

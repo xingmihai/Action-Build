@@ -1,0 +1,71 @@
+﻿2026-11-07T21:59:00.1399646Z ##[group]Run cd kernel_workspace/kernel_platform/common
+2026-11-07T21:59:00.1400334Z [36;1mcd kernel_workspace/kernel_platform/common[0m
+2026-11-07T21:59:00.1400651Z [36;1mecho "正在启用内核级基带保护支持…"[0m
+2026-11-07T21:59:00.1401128Z [36;1mcurl -LSs https://raw.githubusercontent.com/vc-teahouse/Baseband-guard/main/setup.sh | bash[0m
+2026-11-07T21:59:00.1401911Z [36;1msed -i '/^config LSM$/,/^help$/{ /^[[:space:]]*default/ { /baseband_guard/! s/selinux/selinux,baseband_guard/ } }' ./security/Kconfig[0m
+2026-11-07T21:59:00.1431552Z shell: /usr/bin/bash -e {0}
+2026-11-07T21:59:00.1431824Z env:
+2026-11-07T21:59:00.1432038Z   CCACHE_COMPILERCHECK: none
+2026-11-07T21:59:00.1432297Z   CCACHE_NOHASHDIR: true
+2026-11-07T21:59:00.1432535Z   CCACHE_NOHARDLINK: true
+2026-11-07T21:59:00.1432796Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T21:59:00.1433056Z   CCACHE_MAXSIZE: 5G
+2026-11-07T21:59:00.1433278Z   FILE_CONF: oneplus_ace_6
+2026-11-07T21:59:00.1433516Z   FILE_BASE: OnePlusAce6
+2026-11-07T21:59:00.1433750Z   MANIFEST_REPO: OnePlusOSS
+2026-11-07T21:59:00.1434047Z   MANIFEST_REPO_NAME: kernel_manifest
+2026-11-07T21:59:00.1434316Z   MANIFEST_BRANCH: oneplus/sm8750
+2026-11-07T21:59:00.1434564Z   CPU: sm8750
+2026-11-07T21:59:00.1434761Z   ANDROID_VERSION: 16.0.0
+2026-11-07T21:59:00.1435006Z   ANDROID_SHORT_VERSION: 16
+2026-11-07T21:59:00.1435232Z   CPUD: sun
+2026-11-07T21:59:00.1435421Z   BUILD_METHOD: perf
+2026-11-07T21:59:00.1435671Z   CCACHE_DIR: /home/runner/.ccache_oneplus_ace_6
+2026-11-07T21:59:00.1436203Z   REJ_CHECKER: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T21:59:00.1436708Z   KERNEL_REPOS: msm-kernel
+2026-11-07T21:59:00.1436941Z   KMI: android15-6.6
+2026-11-07T21:59:00.1437151Z   KANDROID_VERSION: android15
+2026-11-07T21:59:00.1437399Z   KERNEL_VERSION: 6.6
+2026-11-07T21:59:00.1437606Z   VERSIONLEVEL: 6
+2026-11-07T21:59:00.1437809Z   PATCHLEVEL: 6
+2026-11-07T21:59:00.1438008Z   SUBLEVEL: 118
+2026-11-07T21:59:00.1438206Z   CKERNEL_VERSION: 6.6.118
+2026-11-07T21:59:00.1438441Z   KERNEL_SHORT_PATCH_VERSION: 6_6
+2026-11-07T21:59:00.1438696Z   ENABLE_RUST: false
+2026-11-07T21:59:00.1438910Z   KSU_MANAGER_BRANCH: main
+2026-11-07T21:59:00.1439144Z   KSU_BUILTIN_BRANCH: builtin
+2026-11-07T21:59:00.1439385Z   KSU_VERSION_TAG: 4.3.0-r2
+2026-11-07T21:59:00.1439615Z   KSUVER: 41160
+2026-11-07T21:59:00.1440548Z   BASH_ENV: /home/runner/work/Action-Build/Action-Build/kernel_workspace/Action-Build/scripts/check_rejects.sh
+2026-11-07T21:59:00.1441037Z   ZRAM_ALGO: lz4kd
+2026-11-07T21:59:00.1441250Z   ZRAM_ALGO_U: LZ4KD
+2026-11-07T21:59:00.1441461Z   ZRAM_SIZE: 8589934592
+2026-11-07T21:59:00.1441677Z ##[endgroup]
+2026-11-07T21:59:00.1549083Z 正在启用内核级基带保护支持…
+2026-11-07T21:59:00.2497607Z [+] Setting up Baseband-guard
+2026-11-07T21:59:00.2512938Z Cloning into '/home/runner/work/Action-Build/Action-Build/kernel_workspace/kernel_platform/common/Baseband-guard'...
+2026-11-07T21:59:00.5178400Z  - repo ready
+2026-11-07T21:59:00.5232326Z  - symlink created
+2026-11-07T21:59:00.5245511Z  - Makefile updated
+2026-11-07T21:59:00.5298046Z  - Kconfig updated
+2026-11-07T21:59:00.5312220Z Modern LSM infrastructure detected (GKI/Modern Kernel). Skipping Selinux patch.
+2026-11-07T21:59:00.5312948Z BBG will use standard LSM blob management.
+2026-11-07T21:59:00.5313455Z [+] Done.
+2026-11-07T21:59:00.5327991Z 
+2026-11-07T21:59:00.5328493Z Please manually set your defconfig, select one append to your defconfig:
+2026-11-07T21:59:00.5329012Z 
+2026-11-07T21:59:00.5346235Z if DEFAULT_SECURITY_SMACK enabled:
+2026-11-07T21:59:00.5347108Z CONFIG_LSM=landlock,lockdown,yama,loadpin,safesetid,smack,selinux,tomoyo,apparmor,bpf,baseband_guard
+2026-11-07T21:59:00.5347548Z 
+2026-11-07T21:59:00.5347667Z if DEFAULT_SECURITY_APPARMOR enabled:
+2026-11-07T21:59:00.5348194Z CONFIG_LSM=landlock,lockdown,yama,loadpin,safesetid,apparmor,selinux,smack,tomoyo,bpf,baseband_guard
+2026-11-07T21:59:00.5348671Z 
+2026-11-07T21:59:00.5348782Z if DEFAULT_SECURITY_TOMOYO enabled:
+2026-11-07T21:59:00.5349195Z CONFIG_LSM=landlock,lockdown,yama,loadpin,safesetid,tomoyo,bpf,baseband_guard
+2026-11-07T21:59:00.5349790Z 
+2026-11-07T21:59:00.5350034Z if DEFAULT_SECURITY_DAC enabled:
+2026-11-07T21:59:00.5350497Z CONFIG_LSM=landlock,lockdown,yama,loadpin,safesetid,bpf,baseband_guard
+2026-11-07T21:59:00.5350816Z 
+2026-11-07T21:59:00.5350897Z else:
+2026-11-07T21:59:00.5351347Z CONFIG_LSM=landlock,lockdown,yama,loadpin,safesetid,selinux,smack,tomoyo,apparmor,bpf,baseband_guard
+2026-11-07T21:59:00.5351791Z 

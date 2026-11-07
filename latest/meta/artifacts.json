@@ -1,0 +1,45 @@
+{
+  "total_count": 2,
+  "artifacts": [
+    {
+      "id": 13592239535,
+      "node_id": "MDg6QXJ0aWZhY3QxMzU5MjIzOTUzNQ==",
+      "name": "ZRAM-Module_6.6_OnePlusAce6_Android16.0.0",
+      "size_in_bytes": 414069,
+      "url": "https://api.github.com/repos/xingmihai/Action-Build/actions/artifacts/13592239535",
+      "archive_download_url": "https://api.github.com/repos/xingmihai/Action-Build/actions/artifacts/13592239535/zip",
+      "expired": false,
+      "digest": "sha256:d287c33de4ee533471c4cef39409ef075694a1a10f99bbde288bd3e14d25d00c",
+      "created_at": "2026-11-07T22:20:23Z",
+      "updated_at": "2026-11-07T22:20:23Z",
+      "expires_at": "2027-02-05T21:54:17Z",
+      "workflow_run": {
+        "id": 42418055409,
+        "repository_id": 1424115723,
+        "head_repository_id": 1424115723,
+        "head_branch": "SukiSU-Ultra",
+        "head_sha": "719e2098e56ca2589cdfa32d7e6e4b841fa13bcd"
+      }
+    },
+    {
+      "id": 13592229682,
+      "node_id": "MDg6QXJ0aWZhY3QxMzU5MjIyOTY4Mg==",
+      "name": "AnyKernel3_SukiSUUltra_41160_OnePlusAce6_Android16.0.0(6.6.118)_LZ4KD_KPM_BBG_ILH_REKER_LZ4UPD",
+      "size_in_bytes": 19197348,
+      "url": "https://api.github.com/repos/xingmihai/Action-Build/actions/artifacts/13592229682",
+      "archive_download_url": "https://api.github.com/repos/xingmihai/Action-Build/actions/artifacts/13592229682/zip",
+      "expired": false,
+      "digest": "sha256:b513bc21b3b499e1a32b32cb2173d7de4b9166ca59bdce92d1a0091ae297e0e3",
+      "created_at": "2026-11-07T22:20:21Z",
+      "updated_at": "2026-11-07T22:20:21Z",
+      "expires_at": "2027-02-05T21:54:17Z",
+      "workflow_run": {
+        "id": 42418055409,
+        "repository_id": 1424115723,
+        "head_repository_id": 1424115723,
+        "head_branch": "SukiSU-Ultra",
+        "head_sha": "719e2098e56ca2589cdfa32d7e6e4b841fa13bcd"
+      }
+    }
+  ]
+}

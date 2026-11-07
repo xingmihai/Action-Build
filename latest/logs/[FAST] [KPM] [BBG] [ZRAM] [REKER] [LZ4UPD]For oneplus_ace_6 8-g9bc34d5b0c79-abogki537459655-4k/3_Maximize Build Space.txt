@@ -1,0 +1,282 @@
+﻿2026-11-07T21:54:22.8016595Z ##[group]Run easimon/maximize-build-space@master
+2026-11-07T21:54:22.8017205Z with:
+2026-11-07T21:54:22.8017647Z   root-reserve-mb: 8192
+2026-11-07T21:54:22.8018091Z   temp-reserve-mb: 2048
+2026-11-07T21:54:22.8018515Z   remove-dotnet: true
+2026-11-07T21:54:22.8018934Z   remove-android: true
+2026-11-07T21:54:22.8019358Z   remove-haskell: true
+2026-11-07T21:54:22.8019780Z   remove-codeql: true
+2026-11-07T21:54:22.8020424Z   swap-size-mb: 4096
+2026-11-07T21:54:22.8020865Z   overprovision-lvm: false
+2026-11-07T21:54:22.8021352Z   build-mount-path-ownership: runner:runner
+2026-11-07T21:54:22.8021924Z   pv-loop-path: /pv.img
+2026-11-07T21:54:22.8022416Z   tmp-pv-loop-path: /mnt/tmp-pv.img
+2026-11-07T21:54:22.8022911Z   remove-docker-images: false
+2026-11-07T21:54:22.8023346Z env:
+2026-11-07T21:54:22.8023736Z   CCACHE_COMPILERCHECK: none
+2026-11-07T21:54:22.8024191Z   CCACHE_NOHASHDIR: true
+2026-11-07T21:54:22.8024643Z   CCACHE_NOHARDLINK: true
+2026-11-07T21:54:22.8025086Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T21:54:22.8025610Z   CCACHE_MAXSIZE: 5G
+2026-11-07T21:54:22.8026017Z ##[endgroup]
+2026-11-07T21:54:22.8091235Z ##[start-action display=Disk space report before modification;id=__easimon_maximize-build-space.__run]
+2026-11-07T21:54:22.8138186Z ##[group]Run echo "Memory and swap:"
+2026-11-07T21:54:22.8138937Z [36;1mecho "Memory and swap:"[0m
+2026-11-07T21:54:22.8139475Z [36;1msudo free -h[0m
+2026-11-07T21:54:22.8140112Z [36;1mecho[0m
+2026-11-07T21:54:22.8140524Z [36;1msudo swapon --show[0m
+2026-11-07T21:54:22.8140967Z [36;1mecho[0m
+2026-11-07T21:54:22.8141347Z [36;1m[0m
+2026-11-07T21:54:22.8141745Z [36;1mecho "Available storage:"[0m
+2026-11-07T21:54:22.8142203Z [36;1msudo df -h[0m
+2026-11-07T21:54:22.8142597Z [36;1mecho[0m
+2026-11-07T21:54:22.8178404Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-07T21:54:22.8179063Z env:
+2026-11-07T21:54:22.8179497Z   CCACHE_COMPILERCHECK: none
+2026-11-07T21:54:22.8180326Z   CCACHE_NOHASHDIR: true
+2026-11-07T21:54:22.8180804Z   CCACHE_NOHARDLINK: true
+2026-11-07T21:54:22.8181367Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T21:54:22.8182095Z   CCACHE_MAXSIZE: 5G
+2026-11-07T21:54:22.8182553Z ##[endgroup]
+2026-11-07T21:54:22.8270900Z Memory and swap:
+2026-11-07T21:54:22.8335575Z                total        used        free      shared  buff/cache   available
+2026-11-07T21:54:22.8341057Z Mem:            15Gi       947Mi        14Gi        42Mi       918Mi        14Gi
+2026-11-07T21:54:22.8342049Z Swap:          3.0Gi          0B       3.0Gi
+2026-11-07T21:54:22.8342415Z 
+2026-11-07T21:54:22.8399209Z NAME      TYPE SIZE USED PRIO
+2026-11-07T21:54:22.8400456Z /swapfile file   3G   0B   -1
+2026-11-07T21:54:22.8405143Z 
+2026-11-07T21:54:22.8405792Z Available storage:
+2026-11-07T21:54:22.8537252Z Filesystem      Size  Used Avail Use% Mounted on
+2026-11-07T21:54:22.8538207Z /dev/root       145G   57G   88G  40% /
+2026-11-07T21:54:22.8538801Z tmpfs           7.9G     0  7.9G   0% /dev/shm
+2026-11-07T21:54:22.8539561Z tmpfs           3.2G  1.0M  3.2G   1% /run
+2026-11-07T21:54:22.8540594Z efivarfs        128M   32K  128M   1% /sys/firmware/efi/efivars
+2026-11-07T21:54:22.8541289Z none            1.0M     0  1.0M   0% /run/credentials/systemd-journald.service
+2026-11-07T21:54:22.8541973Z none            1.0M     0  1.0M   0% /run/credentials/systemd-resolved.service
+2026-11-07T21:54:22.8542750Z /dev/sda13      989M   84M  838M  10% /boot
+2026-11-07T21:54:22.8543486Z /dev/sda15      105M  6.3M   99M   7% /boot/efi
+2026-11-07T21:54:22.8544443Z none            1.0M     0  1.0M   0% /run/credentials/systemd-networkd.service
+2026-11-07T21:54:22.8545409Z tmpfs           1.6G  8.0K  1.6G   1% /run/user/1001
+2026-11-07T21:54:22.8546575Z none            1.0M     0  1.0M   0% /run/credentials/serial-getty@ttyS0.service
+2026-11-07T21:54:22.8547646Z none            1.0M     0  1.0M   0% /run/credentials/getty@tty1.service
+2026-11-07T21:54:22.8548178Z 
+2026-11-07T21:54:22.8565789Z ##[end-action id=__easimon_maximize-build-space.__run;outcome=success;conclusion=success;duration_ms=47]
+2026-11-07T21:54:22.8570682Z ##[start-action display=Maximize build disk space;id=__easimon_maximize-build-space.__run_2]
+2026-11-07T21:54:22.8623394Z ##[group]Run set -euo pipefail
+2026-11-07T21:54:22.8624051Z [36;1mset -euo pipefail[0m
+2026-11-07T21:54:22.8624508Z [36;1m[0m
+2026-11-07T21:54:22.8624945Z [36;1mBUILD_MOUNT_PATH=""[0m
+2026-11-07T21:54:22.8625457Z [36;1mif [[ -z "${BUILD_MOUNT_PATH}" ]]; then[0m
+2026-11-07T21:54:22.8626012Z [36;1m  BUILD_MOUNT_PATH="${GITHUB_WORKSPACE}"[0m
+2026-11-07T21:54:22.8626521Z [36;1mfi[0m
+2026-11-07T21:54:22.8626915Z [36;1m[0m
+2026-11-07T21:54:22.8627328Z [36;1mecho "Arguments:"[0m
+2026-11-07T21:54:22.8627778Z [36;1mecho[0m
+2026-11-07T21:54:22.8628207Z [36;1mecho "  Root reserve:      8192 MiB"[0m
+2026-11-07T21:54:22.8628731Z [36;1mecho "  Temp reserve:      2048 MiB"[0m
+2026-11-07T21:54:22.8629245Z [36;1mecho "  Swap space:        4096 MiB"[0m
+2026-11-07T21:54:22.8629752Z [36;1mecho "  Overprovision LVM: false"[0m
+2026-11-07T21:54:22.8630564Z [36;1mecho "  Mount path:        ${BUILD_MOUNT_PATH}"[0m
+2026-11-07T21:54:22.8631136Z [36;1mecho "  Root PV loop path: /pv.img"[0m
+2026-11-07T21:54:22.8631702Z [36;1mecho "  Temp PV loop path: /mnt/tmp-pv.img"[0m
+2026-11-07T21:54:22.8632223Z [36;1mecho -n "  Removing:     "[0m
+2026-11-07T21:54:22.8632719Z [36;1mif [[ true == 'true' ]]; then[0m
+2026-11-07T21:54:22.8633219Z [36;1m  echo -n "dotnet "[0m
+2026-11-07T21:54:22.8633665Z [36;1mfi[0m
+2026-11-07T21:54:22.8634103Z [36;1mif [[ true == 'true' ]]; then[0m
+2026-11-07T21:54:22.8634609Z [36;1m  echo -n "android "[0m
+2026-11-07T21:54:22.8635068Z [36;1mfi[0m
+2026-11-07T21:54:22.8635499Z [36;1mif [[ true == 'true' ]]; then[0m
+2026-11-07T21:54:22.8635991Z [36;1m  echo -n "haskell "[0m
+2026-11-07T21:54:22.8636434Z [36;1mfi[0m
+2026-11-07T21:54:22.8636854Z [36;1mif [[ true == 'true' ]]; then[0m
+2026-11-07T21:54:22.8637362Z [36;1m  echo -n "codeql "[0m
+2026-11-07T21:54:22.8637793Z [36;1mfi[0m
+2026-11-07T21:54:22.8638196Z [36;1mif [[ false == 'true' ]]; then[0m
+2026-11-07T21:54:22.8638695Z [36;1m  echo -n "docker "[0m
+2026-11-07T21:54:22.8639369Z [36;1mfi[0m
+2026-11-07T21:54:22.8639772Z [36;1mecho[0m
+2026-11-07T21:54:22.8640364Z [36;1m[0m
+2026-11-07T21:54:22.8640901Z [36;1m# store owner of $GITHUB_WORKSPACE in case the action deletes it[0m
+2026-11-07T21:54:22.8641588Z [36;1mWORKSPACE_OWNER="$(stat -c '%U:%G' "${GITHUB_WORKSPACE}")"[0m
+2026-11-07T21:54:22.8642152Z [36;1m[0m
+2026-11-07T21:54:22.8642638Z [36;1m# ensure mount path exists before the action[0m
+2026-11-07T21:54:22.8643183Z [36;1msudo mkdir -p "${BUILD_MOUNT_PATH}"[0m
+2026-11-07T21:54:22.8644121Z [36;1msudo find "${BUILD_MOUNT_PATH}" -maxdepth 0 ! -empty -exec echo 'WARNING: directory [{}] is not empty, data loss might occur. Content:' \; -exec ls -al "{}" \;[0m
+2026-11-07T21:54:22.8644969Z [36;1m[0m
+2026-11-07T21:54:22.8645407Z [36;1mecho "Removing unwanted software... "[0m
+2026-11-07T21:54:22.8645931Z [36;1mif [[ true == 'true' ]]; then[0m
+2026-11-07T21:54:22.8646454Z [36;1m  sudo rm -rf /usr/share/dotnet[0m
+2026-11-07T21:54:22.8646956Z [36;1mfi[0m
+2026-11-07T21:54:22.8647509Z [36;1mif [[ true == 'true' ]]; then[0m
+2026-11-07T21:54:22.8648317Z [36;1m  sudo rm -rf /usr/local/lib/android[0m
+2026-11-07T21:54:22.8648806Z [36;1mfi[0m
+2026-11-07T21:54:22.8649200Z [36;1mif [[ true == 'true' ]]; then[0m
+2026-11-07T21:54:22.8649663Z [36;1m  sudo rm -rf /opt/ghc[0m
+2026-11-07T21:54:22.8650279Z [36;1mfi[0m
+2026-11-07T21:54:22.8650707Z [36;1mif [[ true == 'true' ]]; then[0m
+2026-11-07T21:54:22.8651221Z [36;1m  sudo rm -rf /opt/hostedtoolcache/CodeQL[0m
+2026-11-07T21:54:22.8651735Z [36;1mfi[0m
+2026-11-07T21:54:22.8652151Z [36;1mif [[ false == 'true' ]]; then[0m
+2026-11-07T21:54:22.8652670Z [36;1m  sudo docker image prune --all --force[0m
+2026-11-07T21:54:22.8653183Z [36;1mfi[0m
+2026-11-07T21:54:22.8653609Z [36;1mecho "... done"[0m
+2026-11-07T21:54:22.8654053Z [36;1m[0m
+2026-11-07T21:54:22.8654464Z [36;1mVG_NAME=buildvg[0m
+2026-11-07T21:54:22.8655095Z [36;1m[0m
+2026-11-07T21:54:22.8655632Z [36;1m# github runners have an active swap file in /mnt/swapfile[0m
+2026-11-07T21:54:22.8656375Z [36;1m# we want to reuse the temp disk, so first unmount swap and clean the temp disk[0m
+2026-11-07T21:54:22.8657061Z [36;1mecho "Unmounting and removing swap file."[0m
+2026-11-07T21:54:22.8657604Z [36;1msudo swapoff -a[0m
+2026-11-07T21:54:22.8658078Z [36;1msudo rm -f /mnt/swapfile[0m
+2026-11-07T21:54:22.8658536Z [36;1m[0m
+2026-11-07T21:54:22.8658944Z [36;1mecho "Creating LVM Volume."[0m
+2026-11-07T21:54:22.8659471Z [36;1mecho "  Creating LVM PV on root fs."[0m
+2026-11-07T21:54:22.8660220Z [36;1m# create loop pv image on root fs[0m
+2026-11-07T21:54:22.8660770Z [36;1mROOT_RESERVE_KB=$(expr 8192 \* 1024)[0m
+2026-11-07T21:54:22.8661364Z [36;1mROOT_FREE_KB=$(df --block-size=1024 --output=avail / | tail -1)[0m
+2026-11-07T21:54:22.8662058Z [36;1mROOT_LVM_SIZE_KB=$(expr $ROOT_FREE_KB - $ROOT_RESERVE_KB)[0m
+2026-11-07T21:54:22.8662703Z [36;1mROOT_LVM_SIZE_BYTES=$(expr $ROOT_LVM_SIZE_KB \* 1024)[0m
+2026-11-07T21:54:22.8663410Z [36;1msudo touch "/pv.img" && sudo fallocate -z -l "${ROOT_LVM_SIZE_BYTES}" "/pv.img"[0m
+2026-11-07T21:54:22.8664166Z [36;1mexport ROOT_LOOP_DEV=$(sudo losetup --find --show "/pv.img")[0m
+2026-11-07T21:54:22.8664769Z [36;1msudo pvcreate -f "${ROOT_LOOP_DEV}"[0m
+2026-11-07T21:54:22.8665249Z [36;1m[0m
+2026-11-07T21:54:22.8665669Z [36;1m# create pv on temp disk[0m
+2026-11-07T21:54:22.8666182Z [36;1mecho "  Creating LVM PV on temp fs."[0m
+2026-11-07T21:54:22.8666718Z [36;1mTMP_RESERVE_KB=$(expr 2048 \* 1024)[0m
+2026-11-07T21:54:22.8667310Z [36;1mTMP_FREE_KB=$(df --block-size=1024 --output=avail /mnt | tail -1)[0m
+2026-11-07T21:54:22.8667955Z [36;1mTMP_LVM_SIZE_KB=$(expr $TMP_FREE_KB - $TMP_RESERVE_KB)[0m
+2026-11-07T21:54:22.8668567Z [36;1mTMP_LVM_SIZE_BYTES=$(expr $TMP_LVM_SIZE_KB \* 1024)[0m
+2026-11-07T21:54:22.8669332Z [36;1msudo touch "/mnt/tmp-pv.img" && sudo fallocate -z -l "${TMP_LVM_SIZE_BYTES}" "/mnt/tmp-pv.img"[0m
+2026-11-07T21:54:22.8670469Z [36;1mexport TMP_LOOP_DEV=$(sudo losetup --find --show "/mnt/tmp-pv.img")[0m
+2026-11-07T21:54:22.8671247Z [36;1msudo pvcreate -f "${TMP_LOOP_DEV}"[0m
+2026-11-07T21:54:22.8671723Z [36;1m[0m
+2026-11-07T21:54:22.8672153Z [36;1m# create volume group from these pvs[0m
+2026-11-07T21:54:22.8672757Z [36;1msudo vgcreate "${VG_NAME}" "${TMP_LOOP_DEV}" "${ROOT_LOOP_DEV}"[0m
+2026-11-07T21:54:22.8673340Z [36;1m[0m
+2026-11-07T21:54:22.8673797Z [36;1mecho "Recreating swap"[0m
+2026-11-07T21:54:22.8674281Z [36;1m# create and activate swap[0m
+2026-11-07T21:54:22.8674818Z [36;1msudo lvcreate -L "4096M" -n swap "${VG_NAME}"[0m
+2026-11-07T21:54:22.8675392Z [36;1msudo mkswap "/dev/mapper/${VG_NAME}-swap"[0m
+2026-11-07T21:54:22.8675952Z [36;1msudo swapon "/dev/mapper/${VG_NAME}-swap"[0m
+2026-11-07T21:54:22.8676444Z [36;1m[0m
+2026-11-07T21:54:22.8676872Z [36;1mecho "Creating build volume"[0m
+2026-11-07T21:54:22.8677366Z [36;1m# create and mount build volume[0m
+2026-11-07T21:54:22.8677930Z [36;1msudo lvcreate -l 100%FREE -n buildlv "${VG_NAME}"[0m
+2026-11-07T21:54:22.8678472Z [36;1mif [[ false == 'true' ]]; then[0m
+2026-11-07T21:54:22.8679007Z [36;1m  sudo mkfs.ext4 -m0 "/dev/mapper/${VG_NAME}-buildlv"[0m
+2026-11-07T21:54:22.8679543Z [36;1melse[0m
+2026-11-07T21:54:22.8680353Z [36;1m  sudo mkfs.ext4 -Enodiscard -m0 "/dev/mapper/${VG_NAME}-buildlv"[0m
+2026-11-07T21:54:22.8680912Z [36;1mfi[0m
+2026-11-07T21:54:22.8681406Z [36;1msudo mount "/dev/mapper/${VG_NAME}-buildlv" "${BUILD_MOUNT_PATH}"[0m
+2026-11-07T21:54:22.8682052Z [36;1msudo chown -R "runner:runner" "${BUILD_MOUNT_PATH}"[0m
+2026-11-07T21:54:22.8682566Z [36;1m[0m
+2026-11-07T21:54:22.8683136Z [36;1m# if build mount path is a parent of $GITHUB_WORKSPACE, and has been deleted, recreate it[0m
+2026-11-07T21:54:22.8683812Z [36;1mif [[ ! -d "${GITHUB_WORKSPACE}" ]]; then[0m
+2026-11-07T21:54:22.8684339Z [36;1m  sudo mkdir -p "${GITHUB_WORKSPACE}"[0m
+2026-11-07T21:54:22.8684916Z [36;1m  sudo chown -R "${WORKSPACE_OWNER}" "${GITHUB_WORKSPACE}"[0m
+2026-11-07T21:54:22.8685596Z [36;1mfi[0m
+2026-11-07T21:54:22.8716367Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-07T21:54:22.8716984Z env:
+2026-11-07T21:54:22.8717405Z   CCACHE_COMPILERCHECK: none
+2026-11-07T21:54:22.8717870Z   CCACHE_NOHASHDIR: true
+2026-11-07T21:54:22.8718322Z   CCACHE_NOHARDLINK: true
+2026-11-07T21:54:22.8718789Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T21:54:22.8719258Z   CCACHE_MAXSIZE: 5G
+2026-11-07T21:54:22.8719668Z ##[endgroup]
+2026-11-07T21:54:22.8773056Z Arguments:
+2026-11-07T21:54:22.8773594Z 
+2026-11-07T21:54:22.8773873Z   Root reserve:      8192 MiB
+2026-11-07T21:54:22.8774366Z   Temp reserve:      2048 MiB
+2026-11-07T21:54:22.8774840Z   Swap space:        4096 MiB
+2026-11-07T21:54:22.8775295Z   Overprovision LVM: false
+2026-11-07T21:54:22.8775823Z   Mount path:        /home/runner/work/Action-Build/Action-Build
+2026-11-07T21:54:22.8776389Z   Root PV loop path: /pv.img
+2026-11-07T21:54:22.8776908Z   Temp PV loop path: /mnt/tmp-pv.img
+2026-11-07T21:54:22.8777444Z   Removing:     dotnet android haskell codeql 
+2026-11-07T21:54:22.8954983Z WARNING: directory [/home/runner/work/Action-Build/Action-Build] is not empty, data loss might occur. Content:
+2026-11-07T21:54:22.8984768Z total 76
+2026-11-07T21:54:22.8985282Z drwxr-xr-x 8 runner runner  4096 Nov  7 21:54 .
+2026-11-07T21:54:22.8985854Z drwxr-xr-x 3 runner runner  4096 Nov  7 21:54 ..
+2026-11-07T21:54:22.8986425Z drwxr-xr-x 7 runner runner  4096 Nov  7 21:54 .git
+2026-11-07T21:54:22.8986983Z drwxr-xr-x 3 runner runner  4096 Nov  7 21:54 .github
+2026-11-07T21:54:22.8987555Z -rw-r--r-- 1 runner runner  3915 Nov  7 21:54 FILE.md
+2026-11-07T21:54:22.8988211Z -rw-r--r-- 1 runner runner  1367 Nov  7 21:54 LICENSE
+2026-11-07T21:54:22.8989064Z -rw-r--r-- 1 runner runner 12592 Nov  7 21:54 README-en.md
+2026-11-07T21:54:22.8990038Z -rw-r--r-- 1 runner runner 10713 Nov  7 21:54 README.md
+2026-11-07T21:54:22.8990914Z -rw-r--r-- 1 runner runner  4154 Nov  7 21:54 ZRAM.zip
+2026-11-07T21:54:22.8991892Z drwxr-xr-x 2 runner runner  4096 Nov  7 21:54 lib
+2026-11-07T21:54:22.8993076Z drwxr-xr-x 5 runner runner  4096 Nov  7 21:54 patches
+2026-11-07T21:54:22.8993968Z drwxr-xr-x 2 runner runner  4096 Nov  7 21:54 pic
+2026-11-07T21:54:22.8994766Z drwxr-xr-x 2 runner runner  4096 Nov  7 21:54 scripts
+2026-11-07T21:54:22.8996249Z Removing unwanted software... 
+2026-11-07T21:55:25.8983113Z ... done
+2026-11-07T21:55:25.8983659Z Unmounting and removing swap file.
+2026-11-07T21:55:25.9197938Z Creating LVM Volume.
+2026-11-07T21:55:25.9198847Z   Creating LVM PV on root fs.
+2026-11-07T21:55:26.2421476Z   Physical volume "/dev/loop0" successfully created.
+2026-11-07T21:55:26.2533326Z   Creating LVM PV on temp fs.
+2026-11-07T21:55:26.3581996Z   Physical volume "/dev/loop1" successfully created.
+2026-11-07T21:55:26.3863184Z   Volume group "buildvg" successfully created
+2026-11-07T21:55:26.3966688Z Recreating swap
+2026-11-07T21:55:26.4436860Z   Logical volume "swap" created.
+2026-11-07T21:55:26.4681424Z Setting up swapspace version 1, size = 4 GiB (4294963200 bytes)
+2026-11-07T21:55:26.4682671Z no label, UUID=cad2e09d-7f52-4f2d-b198-776219a5cdca
+2026-11-07T21:55:26.4774784Z Creating build volume
+2026-11-07T21:55:26.5041592Z   Logical volume "buildlv" created.
+2026-11-07T21:55:26.5257494Z mke2fs 1.47.2 (1-Jan-2025)
+2026-11-07T21:55:26.5285182Z Creating filesystem with 26170368 4k blocks and 6545408 inodes
+2026-11-07T21:55:26.5295235Z Filesystem UUID: 03052ece-8c22-4974-aab3-1badac5817e4
+2026-11-07T21:55:26.5296293Z Superblock backups stored on blocks: 
+2026-11-07T21:55:26.5297096Z 	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, 
+2026-11-07T21:55:26.5297900Z 	4096000, 7962624, 11239424, 20480000, 23887872
+2026-11-07T21:55:26.5298388Z 
+2026-11-07T21:55:26.5299221Z Allocating group tables:   0/799       done                            
+2026-11-07T21:55:26.5300583Z Writing inode tables:   0/799       done                            
+2026-11-07T21:55:26.5324730Z Creating journal (131072 blocks): done
+2026-11-07T21:55:26.5488043Z Writing superblocks and filesystem accounting information:   0/799       done
+2026-11-07T21:55:26.5488495Z 
+2026-11-07T21:55:26.5844963Z ##[end-action id=__easimon_maximize-build-space.__run_2;outcome=success;conclusion=success;duration_ms=63727]
+2026-11-07T21:55:26.5848949Z ##[start-action display=Disk space report after modification;id=__easimon_maximize-build-space.__run_3]
+2026-11-07T21:55:26.5871867Z ##[group]Run echo "Memory and swap:"
+2026-11-07T21:55:26.5872230Z [36;1mecho "Memory and swap:"[0m
+2026-11-07T21:55:26.5872488Z [36;1msudo free -h[0m
+2026-11-07T21:55:26.5872704Z [36;1mecho[0m
+2026-11-07T21:55:26.5872941Z [36;1msudo swapon --show[0m
+2026-11-07T21:55:26.5873166Z [36;1mecho[0m
+2026-11-07T21:55:26.5873351Z [36;1m[0m
+2026-11-07T21:55:26.5873545Z [36;1mecho "Available storage:"[0m
+2026-11-07T21:55:26.5873792Z [36;1msudo df -h[0m
+2026-11-07T21:55:26.5906316Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-07T21:55:26.5906691Z env:
+2026-11-07T21:55:26.5906932Z   CCACHE_COMPILERCHECK: none
+2026-11-07T21:55:26.5907182Z   CCACHE_NOHASHDIR: true
+2026-11-07T21:55:26.5907412Z   CCACHE_NOHARDLINK: true
+2026-11-07T21:55:26.5907656Z   CCACHE_IS_KERNEL_COMPILING: true
+2026-11-07T21:55:26.5907921Z   CCACHE_MAXSIZE: 5G
+2026-11-07T21:55:26.5908127Z ##[endgroup]
+2026-11-07T21:55:26.5960019Z Memory and swap:
+2026-11-07T21:55:26.6021585Z                total        used        free      shared  buff/cache   available
+2026-11-07T21:55:26.6022443Z Mem:            15Gi       933Mi        13Gi        44Mi       1.3Gi        14Gi
+2026-11-07T21:55:26.6023118Z Swap:          4.0Gi          0B       4.0Gi
+2026-11-07T21:55:26.6026664Z 
+2026-11-07T21:55:26.6085286Z NAME      TYPE      SIZE USED PRIO
+2026-11-07T21:55:26.6085721Z /dev/dm-0 partition   4G   0B   -1
+2026-11-07T21:55:26.6090639Z 
+2026-11-07T21:55:26.6090969Z Available storage:
+2026-11-07T21:55:26.6148545Z Filesystem                   Size  Used Avail Use% Mounted on
+2026-11-07T21:55:26.6149345Z /dev/root                    145G  143G  2.0G  99% /
+2026-11-07T21:55:26.6150685Z tmpfs                        7.9G     0  7.9G   0% /dev/shm
+2026-11-07T21:55:26.6151187Z tmpfs                        3.2G  1.1M  3.2G   1% /run
+2026-11-07T21:55:26.6151750Z efivarfs                     128M   32K  128M   1% /sys/firmware/efi/efivars
+2026-11-07T21:55:26.6152514Z none                         1.0M     0  1.0M   0% /run/credentials/systemd-journald.service
+2026-11-07T21:55:26.6153320Z none                         1.0M     0  1.0M   0% /run/credentials/systemd-resolved.service
+2026-11-07T21:55:26.6153937Z /dev/sda13                   989M   84M  838M  10% /boot
+2026-11-07T21:55:26.6154319Z /dev/sda15                   105M  6.3M   99M   7% /boot/efi
+2026-11-07T21:55:26.6154713Z none                         1.0M     0  1.0M   0% /run/credentials/systemd-networkd.service
+2026-11-07T21:55:26.6155163Z tmpfs                        1.6G  8.0K  1.6G   1% /run/user/1001
+2026-11-07T21:55:26.6155694Z none                         1.0M     0  1.0M   0% /run/credentials/serial-getty@ttyS0.service
+2026-11-07T21:55:26.6156414Z none                         1.0M     0  1.0M   0% /run/credentials/getty@tty1.service
+2026-11-07T21:55:26.6157228Z /dev/mapper/buildvg-buildlv   98G  2.1M   98G   1% /home/runner/work/Action-Build/Action-Build
+2026-11-07T21:55:26.6163680Z ##[end-action id=__easimon_maximize-build-space.__run_3;outcome=success;conclusion=success;duration_ms=31]
