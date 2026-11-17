@@ -817,6 +817,14 @@ jobs:
           # common/include/linux/susfs.h 对它们无效，仍会 -Wimplicit-function-declaration。
           # 正确做法：定位 KernelSU 源码真实目录，在调用点文件顶部补 extern 声明，
           # 并在同一 Makefile 追加 weak 兜底实现（SUSFS 有真实实现时被 strong 覆盖）。
+          # SukiSU-Nova 起 include/linux/susfs.h 已原生声明这些接口，
+          # 再注入旧签名(extern int ...(void*)) 会 conflicting types；此时整段跳过。
+          SKIP_COMPAT=0
+          SUSFS_H="${GITHUB_WORKSPACE}/kernel_workspace/kernel_platform/common/include/linux/susfs.h"
+          if [ -f "$SUSFS_H" ] && grep -q "susfs_set_priority_uid_filter" "$SUSFS_H"; then
+            echo "✅ 上游 susfs.h 已自带 priority uid filter 声明，跳过 compat 注入"
+            SKIP_COMPAT=1
+          fi
           KSU_SRC=""
           for d in \
             "${GITHUB_WORKSPACE}/kernel_workspace/kernel_platform/common/drivers/kernelsu" \
@@ -824,8 +832,8 @@ jobs:
             "${GITHUB_WORKSPACE}/kernel_workspace/kernel_platform/KernelSU/kernel"; do
             if [ -f "$d/manager/pkg_observer.c" ]; then KSU_SRC="$d"; break; fi
           done
-          if [ -z "$KSU_SRC" ]; then
-            echo "⚠️ 未定位到 KernelSU 源码目录，跳过 priority uid filter 兼容"
+          if [ "$SKIP_COMPAT" -eq 1 ] || [ -z "$KSU_SRC" ]; then
+            echo "⏭️ 跳过 priority uid filter 兼容注入"
           else
             echo "KSU_SRC=$KSU_SRC"
             printf '%s\n' \
