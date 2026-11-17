@@ -668,7 +668,7 @@ jobs:
           [[ -n "$KSU_CUSTOM_TAG" ]] && echo "自定义版本标识: $KSU_CUSTOM_TAG" || echo "自定义版本标识: 未启用"
           [[ -n "$MANUAL_HASH" ]] && echo "手动指定 hash: $MANUAL_HASH" || echo "手动指定 hash: 未启用"
 
-          curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/${KSU_MANAGER_BRANCH}/kernel/setup.sh" | bash -s "$KSU_BUILTIN_BRANCH"
+          curl -LSs "https://raw.githubusercontent.com/SukiSU-Nova/SukiSU-Nova/${KSU_MANAGER_BRANCH}/kernel/setup.sh" | bash -s "$KSU_BUILTIN_BRANCH"
           cd ./KernelSU
 
           # 如果指定了手动 hash，就切换到该提交
@@ -678,7 +678,7 @@ jobs:
             SHORT_HASH=${MANUAL_HASH:0:8}
           fi
 
-          KSU_VERSION_TAG=$(curl -fsSL https://api.github.com/repos/SukiSU-Ultra/SukiSU-Ultra/releases/latest \
+          KSU_VERSION_TAG=$(curl -fsSL https://api.github.com/repos/SukiSU-Nova/SukiSU-Nova/releases/latest \
             | grep '"tag_name":' | sed -E 's/.*"v?([^"]+)".*/\1/')
           if [[ -z "$KSU_VERSION_TAG" || "$(printf '%s\n' "$KSU_VERSION_TAG" "3.1.7" | sort -V | head -n1)" != "3.1.7" ]]; then
             KSU_VERSION_TAG="3.1.7"
@@ -1524,7 +1524,7 @@ jobs:
             if [ "${{ github.event.inputs.KPM_VER }}" = "KPTOOLS" ]; then
               echo "KPTOOLS 模式：保留 CONFIG_KPM=y，改用官方 0.14.0 的 kptools+kpimg 注入（绕开坏掉的 patch_linux）"
               echo "0.14.0 的 kpimg 配套新内核 SUKISU_KPM_ABI_VERSION=2；旧版 kpimg 会导致 KPM 全部 -EOPNOTSUPP"
-              KP_REL="https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/releases/download/0.14.0"
+              KP_REL="https://github.com/SukiSU-Nova/SukiSU_KernelPatch_patch/releases/download/0.14.0"
               curl -fsSL -o ./kpimg "$KP_REL/kpimg" || { echo "❌ kpimg 下载失败"; exit 14; }
               curl -fsSL -o ./kptools-linux "$KP_REL/kptools-linux" || { echo "❌ kptools-linux 下载失败"; exit 15; }
               chmod +x ./kptools-linux
@@ -1608,13 +1608,13 @@ jobs:
           echo "Using branch: $KSU_MANAGER_BRANCH"
           echo "Downloading artifact: $MANAGER_ARTIFACT"
 
-          run_id=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/workflows/build-manager.yml/runs?branch=$KSU_MANAGER_BRANCH&status=success&event=push&per_page=1" --jq '.workflow_runs[0].id' || echo "")
+          run_id=$(gh api "repos/SukiSU-Nova/SukiSU-Nova/actions/workflows/manager.yml/runs?branch=$KSU_MANAGER_BRANCH&status=success&event=push&per_page=1" --jq '.workflow_runs[0].id' || echo "")
 
           if [[ -z "$run_id" ]]; then
             echo "No successful workflow run found on branch $KSU_MANAGER_BRANCH. Skipping download."
             exit 0
           fi
-          artifact_url=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/runs/$run_id/artifacts" | jq -r ".artifacts[] | select(.name == \"$MANAGER_ARTIFACT\") | .archive_download_url" | head -n1)
+          artifact_url=$(gh api "repos/SukiSU-Nova/SukiSU-Nova/actions/runs/$run_id/artifacts" | jq -r ".artifacts[] | select(.name == \"$MANAGER_ARTIFACT\") | .archive_download_url" | head -n1)
 
           if [[ -z "$artifact_url" ]]; then
             echo "No artifact '$MANAGER_ARTIFACT' found in run $run_id. Skipping download."
