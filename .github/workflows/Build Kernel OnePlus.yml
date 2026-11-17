@@ -158,7 +158,7 @@ jobs:
           git config --global user.email "263623064@qq.com"
           mkdir kernel_workspace && cd kernel_workspace
           set +e
-          git clone https://github.com/Numbersf/Action-Build.git -b SukiSU-Ultra
+          git clone https://github.com/Numbersf/Action-Build.git -b SukiSU-Nova
           clone_rc=$?
           set -e
           echo "::error::DIAG clone_rc=$clone_rc | 上游scripts: $(ls "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts" 2>/dev/null | tr '\n' ' ' | cut -c1-250) | 本仓库scripts: $(ls "$GITHUB_WORKSPACE/scripts" 2>/dev/null | tr '\n' ' ' | cut -c1-250)"
