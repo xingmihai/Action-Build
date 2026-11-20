@@ -1,0 +1,93 @@
+﻿2026-11-20T12:09:37.9383666Z ##[group]Run set -e
+2026-11-20T12:09:37.9385140Z [36;1mset -e[0m
+2026-11-20T12:09:37.9385721Z [36;1mcd kernel[0m
+2026-11-20T12:09:37.9386217Z [36;1mgit clone --depth=1 --branch gki-android15-6.6 \[0m
+2026-11-20T12:09:37.9386809Z [36;1m  https://gitlab.com/simonpunk/susfs4ksu.git /tmp/susfs[0m
+2026-11-20T12:09:37.9387379Z [36;1mUP=/tmp/susfs/kernel_patches/50_add_susfs_in_gki-android15-6.6.patch[0m
+2026-11-20T12:09:37.9388285Z [36;1mtest -f "$UP"[0m
+2026-11-20T12:09:37.9388672Z [36;1mcp /tmp/susfs/kernel_patches/fs/* fs/[0m
+2026-11-20T12:09:37.9389168Z [36;1mcp /tmp/susfs/kernel_patches/include/linux/* include/linux/[0m
+2026-11-20T12:09:37.9389742Z [36;1mpython3 "${GITHUB_WORKSPACE}/self/scripts/make_susfs_patch.py" \[0m
+2026-11-20T12:09:37.9390610Z [36;1m  "$UP" "$GITHUB_WORKSPACE/kernel" /tmp/susfs_adapted.patch | tee /tmp/susfs_adapt_log.txt[0m
+2026-11-20T12:09:37.9391536Z [36;1mtest -s /tmp/susfs_adapted.patch[0m
+2026-11-20T12:09:37.9392023Z [36;1mpatch -p1 --dry-run --batch --forward < /tmp/susfs_adapted.patch[0m
+2026-11-20T12:09:37.9392759Z [36;1mpatch -p1 --batch --forward < /tmp/susfs_adapted.patch[0m
+2026-11-20T12:09:37.9393292Z [36;1mif find . -name '*.rej' -print -quit | grep -q .; then[0m
+2026-11-20T12:09:37.9394076Z [36;1m  echo "::error::存在 .rej" >&2; find . -name '*.rej' -print; exit 1[0m
+2026-11-20T12:09:37.9394559Z [36;1mfi[0m
+2026-11-20T12:09:37.9394965Z [36;1mgrep -q 'CONFIG_KSU_SUSFS_SUS_MAP' fs/proc/task_mmu.c[0m
+2026-11-20T12:09:37.9419604Z shell: /usr/bin/bash -e {0}
+2026-11-20T12:09:37.9420529Z env:
+2026-11-20T12:09:37.9421231Z   KERNEL_REPO: https://github.com/LineageOS/android_kernel_oneplus_sm8750.git
+2026-11-20T12:09:37.9421850Z   KSU_REPO: https://github.com/SukiSU-Nova/SukiSU-Nova.git
+2026-11-20T12:09:37.9422516Z   AOSP_CLANG_REPO: https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86
+2026-11-20T12:09:37.9423408Z   AOSP_CLANG_DIR: clang-r596125
+2026-11-20T12:09:37.9423757Z   AOSP_CLANG_BUILD: 15071444
+2026-11-20T12:09:37.9424322Z   KP_REL: https://github.com/SukiSU-Nova/SukiSU_KernelPatch_patch/releases/download/0.14.0
+2026-11-20T12:09:37.9426117Z   UNICODE_URLS: https://raw.githubusercontent.com/xingmihai/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Vesper-1215/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Numbersf/Action-Build/SukiSU-Nova/patches/unicode_bypass_fix_6.1%2B.patch
+2026-11-20T12:09:37.9427743Z ##[endgroup]
+2026-11-20T12:09:37.9838493Z Cloning into '/tmp/susfs'...
+2026-11-20T12:09:39.3454601Z upstream: 27 file segments / 132 hunks
+2026-11-20T12:09:39.3455686Z upstream patch applies clean as-is; dropping 0 hunks
+2026-11-20T12:09:39.3514389Z checking file block/ioprio.c
+2026-11-20T12:09:39.3515952Z checking file drivers/input/input.c
+2026-11-20T12:09:39.3517478Z checking file fs/Makefile
+2026-11-20T12:09:39.3518372Z checking file fs/exec.c
+2026-11-20T12:09:39.3521582Z checking file fs/namei.c
+2026-11-20T12:09:39.3526842Z checking file fs/namespace.c
+2026-11-20T12:09:39.3529666Z checking file fs/notify/fdinfo.c
+2026-11-20T12:09:39.3530680Z checking file fs/open.c
+2026-11-20T12:09:39.3532824Z checking file fs/proc/base.c
+2026-11-20T12:09:39.3534682Z checking file fs/proc/bootconfig.c
+2026-11-20T12:09:39.3535527Z checking file fs/proc/fd.c
+2026-11-20T12:09:39.3536689Z checking file fs/proc/task_mmu.c
+2026-11-20T12:09:39.3538127Z checking file fs/proc_namespace.c
+2026-11-20T12:09:39.3539426Z checking file fs/read_write.c
+2026-11-20T12:09:39.3540728Z checking file fs/readdir.c
+2026-11-20T12:09:39.3542006Z checking file fs/stat.c
+2026-11-20T12:09:39.3543029Z checking file fs/statfs.c
+2026-11-20T12:09:39.3544230Z checking file fs/super.c
+2026-11-20T12:09:39.3545968Z checking file kernel/kallsyms.c
+2026-11-20T12:09:39.3547377Z checking file kernel/reboot.c
+2026-11-20T12:09:39.3548643Z checking file kernel/sys.c
+2026-11-20T12:09:39.3552592Z checking file mm/memory.c
+2026-11-20T12:09:39.3556409Z checking file security/selinux/avc.c
+2026-11-20T12:09:39.3560054Z checking file security/selinux/hooks.c
+2026-11-20T12:09:39.3561672Z Hunk #2 succeeded at 3352 (offset 23 lines).
+2026-11-20T12:09:39.3563083Z Hunk #3 succeeded at 6781 (offset 111 lines).
+2026-11-20T12:09:39.3563676Z Hunk #4 succeeded at 7475 (offset 112 lines).
+2026-11-20T12:09:39.3564223Z Hunk #5 succeeded at 7560 (offset 114 lines).
+2026-11-20T12:09:39.3564974Z checking file security/selinux/selinuxfs.c
+2026-11-20T12:09:39.3568647Z checking file security/selinux/ss/services.c
+2026-11-20T12:09:39.3571038Z checking file security/selinux/status.c
+2026-11-20T12:09:39.3583417Z patching file block/ioprio.c
+2026-11-20T12:09:39.3584461Z patching file drivers/input/input.c
+2026-11-20T12:09:39.3586583Z patching file fs/Makefile
+2026-11-20T12:09:39.3587693Z patching file fs/exec.c
+2026-11-20T12:09:39.3591334Z patching file fs/namei.c
+2026-11-20T12:09:39.3596754Z patching file fs/namespace.c
+2026-11-20T12:09:39.3599731Z patching file fs/notify/fdinfo.c
+2026-11-20T12:09:39.3601070Z patching file fs/open.c
+2026-11-20T12:09:39.3603297Z patching file fs/proc/base.c
+2026-11-20T12:09:39.3605393Z patching file fs/proc/bootconfig.c
+2026-11-20T12:09:39.3605916Z patching file fs/proc/fd.c
+2026-11-20T12:09:39.3607205Z patching file fs/proc/task_mmu.c
+2026-11-20T12:09:39.3608851Z patching file fs/proc_namespace.c
+2026-11-20T12:09:39.3610510Z patching file fs/read_write.c
+2026-11-20T12:09:39.3611995Z patching file fs/readdir.c
+2026-11-20T12:09:39.3613777Z patching file fs/stat.c
+2026-11-20T12:09:39.3614904Z patching file fs/statfs.c
+2026-11-20T12:09:39.3616557Z patching file fs/super.c
+2026-11-20T12:09:39.3618498Z patching file kernel/kallsyms.c
+2026-11-20T12:09:39.3619819Z patching file kernel/reboot.c
+2026-11-20T12:09:39.3621475Z patching file kernel/sys.c
+2026-11-20T12:09:39.3626361Z patching file mm/memory.c
+2026-11-20T12:09:39.3630275Z patching file security/selinux/avc.c
+2026-11-20T12:09:39.3634088Z patching file security/selinux/hooks.c
+2026-11-20T12:09:39.3635781Z Hunk #2 succeeded at 3352 (offset 23 lines).
+2026-11-20T12:09:39.3637246Z Hunk #3 succeeded at 6781 (offset 111 lines).
+2026-11-20T12:09:39.3637805Z Hunk #4 succeeded at 7475 (offset 112 lines).
+2026-11-20T12:09:39.3638727Z Hunk #5 succeeded at 7560 (offset 114 lines).
+2026-11-20T12:09:39.3639305Z patching file security/selinux/selinuxfs.c
+2026-11-20T12:09:39.3643024Z patching file security/selinux/ss/services.c
+2026-11-20T12:09:39.3646383Z patching file security/selinux/status.c

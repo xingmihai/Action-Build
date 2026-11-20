@@ -1,0 +1,61 @@
+﻿2026-11-20T12:23:12.6315839Z ##[group]Run set -e
+2026-11-20T12:23:12.6316178Z [36;1mset -e[0m
+2026-11-20T12:23:12.6316392Z [36;1mS="full"[0m
+2026-11-20T12:23:12.6316635Z [36;1mIMG=kernel/out/arch/arm64/boot/Image[0m
+2026-11-20T12:23:12.6316929Z [36;1mtest -s "$IMG"[0m
+2026-11-20T12:23:12.6317180Z [36;1mSZ=$(stat -c%s "$IMG")[0m
+2026-11-20T12:23:12.6317525Z [36;1m[ "$SZ" -gt 20000000 ] || { echo "::error::Image 异常小 ($SZ)"; exit 1; }[0m
+2026-11-20T12:23:12.6317887Z [36;1mif [ "$S" = "pure" ]; then[0m
+2026-11-20T12:23:12.6318185Z [36;1m  if grep -a -q 'com.sukisu' "$IMG"; then[0m
+2026-11-20T12:23:12.6318541Z [36;1m    echo "::error::pure Image 含 com.sukisu" >&2; exit 1[0m
+2026-11-20T12:23:12.6318851Z [36;1m  fi[0m
+2026-11-20T12:23:12.6319078Z [36;1mfi[0m
+2026-11-20T12:23:12.6319416Z [36;1mgit clone --depth=1 https://github.com/Numbersf/AnyKernel3.git ak3[0m
+2026-11-20T12:23:12.6319792Z [36;1mcp "$IMG" ak3/Image[0m
+2026-11-20T12:23:12.6320039Z [36;1m{[0m
+2026-11-20T12:23:12.6320308Z [36;1m  echo "LineageOS sm8750 r596125 + IKCONFIG build info"[0m
+2026-11-20T12:23:12.6320699Z [36;1m  echo "STAGE=$S  branch=lineage-24.0"[0m
+2026-11-20T12:23:12.6321030Z [36;1m  echo "toolchain=$(cat /tmp/toolchain_src)"[0m
+2026-11-20T12:23:12.6321396Z [36;1m  echo "config_base=official /proc/config.gz (IKCONFIG)"[0m
+2026-11-20T12:23:12.6321772Z [36;1m  echo "expect_version=6.6.144-4k-g01ee97578159"[0m
+2026-11-20T12:23:12.6322291Z [36;1m  cat /tmp/los_head.txt /tmp/los_modules_head.txt /tmp/ksu_head.txt /tmp/toolchain_note 2>/dev/null || true[0m
+2026-11-20T12:23:12.6322850Z [36;1m  cat "$GITHUB_WORKSPACE/kpm_readback.txt" 2>/dev/null || true[0m
+2026-11-20T12:23:12.6323207Z [36;1m  echo "image_bytes=$SZ"[0m
+2026-11-20T12:23:12.6323618Z [36;1m  echo "NOTE: 只替换 boot 内 kernel；init_boot/vendor_boot/dtbo/vendor_dlkm 沿用 ROM"[0m
+2026-11-20T12:23:12.6324062Z [36;1m  echo "NOTE: 验证等级 Experimental，构建成功 != 能开机"[0m
+2026-11-20T12:23:12.6324366Z [36;1m} > ak3/BUILD_INFO.txt[0m
+2026-11-20T12:23:12.6324693Z [36;1mcd ak3 && zip -r9 "../AK3_LOS24_r596125_${S}.zip" * -x .git*[0m
+2026-11-20T12:23:12.6325057Z [36;1mls -l "../AK3_LOS24_r596125_${S}.zip"[0m
+2026-11-20T12:23:12.6325473Z [36;1msha256sum "../AK3_LOS24_r596125_${S}.zip"[0m
+2026-11-20T12:23:12.6346612Z shell: /usr/bin/bash -e {0}
+2026-11-20T12:23:12.6346894Z env:
+2026-11-20T12:23:12.6347247Z   KERNEL_REPO: https://github.com/LineageOS/android_kernel_oneplus_sm8750.git
+2026-11-20T12:23:12.6347715Z   KSU_REPO: https://github.com/SukiSU-Nova/SukiSU-Nova.git
+2026-11-20T12:23:12.6348226Z   AOSP_CLANG_REPO: https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86
+2026-11-20T12:23:12.6348689Z   AOSP_CLANG_DIR: clang-r596125
+2026-11-20T12:23:12.6348960Z   AOSP_CLANG_BUILD: 15071444
+2026-11-20T12:23:12.6349377Z   KP_REL: https://github.com/SukiSU-Nova/SukiSU_KernelPatch_patch/releases/download/0.14.0
+2026-11-20T12:23:12.6350795Z   UNICODE_URLS: https://raw.githubusercontent.com/xingmihai/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Vesper-1215/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Numbersf/Action-Build/SukiSU-Nova/patches/unicode_bypass_fix_6.1%2B.patch
+2026-11-20T12:23:12.6352065Z ##[endgroup]
+2026-11-20T12:23:12.6430153Z Cloning into 'ak3'...
+2026-11-20T12:23:13.1933152Z   adding: BUILD_INFO.txt (deflated 34%)
+2026-11-20T12:23:18.0266984Z   adding: Image (deflated 60%)
+2026-11-20T12:23:18.0269269Z   adding: LICENSE (deflated 73%)
+2026-11-20T12:23:18.0269738Z   adding: META-INF/ (stored 0%)
+2026-11-20T12:23:18.0270157Z   adding: META-INF/com/ (stored 0%)
+2026-11-20T12:23:18.0270593Z   adding: META-INF/com/google/ (stored 0%)
+2026-11-20T12:23:18.0271395Z   adding: META-INF/com/google/android/ (stored 0%)
+2026-11-20T12:23:18.0272016Z   adding: META-INF/com/google/android/updater-script (deflated 1%)
+2026-11-20T12:23:18.0277492Z   adding: META-INF/com/google/android/update-binary (deflated 73%)
+2026-11-20T12:23:18.0279253Z   adding: anykernel.sh (deflated 63%)
+2026-11-20T12:23:18.0279996Z   adding: tools/ (stored 0%)
+2026-11-20T12:23:18.0923351Z   adding: tools/magiskboot (deflated 51%)
+2026-11-20T12:23:18.2507184Z   adding: tools/busybox (deflated 43%)
+2026-11-20T12:23:18.3076266Z   adding: tools/lptools_static (deflated 52%)
+2026-11-20T12:23:18.3762830Z   adding: tools/httools_static (deflated 53%)
+2026-11-20T12:23:18.6814877Z   adding: tools/snapshotupdater_static (deflated 53%)
+2026-11-20T12:23:18.6830365Z   adding: tools/ak3-core.sh (deflated 74%)
+2026-11-20T12:23:18.6962062Z   adding: tools/fec (deflated 53%)
+2026-11-20T12:23:18.7404002Z   adding: tools/magiskpolicy (deflated 50%)
+2026-11-20T12:23:18.7442033Z -rw-r--r-- 1 runner runner 18399643 Nov 20 12:23 ../AK3_LOS24_r596125_full.zip
+2026-11-20T12:23:18.7620429Z 46522a6cbf3f5474ccfa0d110bab56344f3a1bb9cc1de35fd12862eba2c2b883  ../AK3_LOS24_r596125_full.zip

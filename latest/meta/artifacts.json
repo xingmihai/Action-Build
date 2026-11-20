@@ -1,0 +1,25 @@
+{
+  "total_count": 1,
+  "artifacts": [
+    {
+      "id": 14627238937,
+      "node_id": "MDg6QXJ0aWZhY3QxNDYyNzIzODkzNw==",
+      "name": "AK3_LOS24_r596125_full",
+      "size_in_bytes": 18402465,
+      "url": "https://api.github.com/repos/xingmihai/Action-Build/actions/artifacts/14627238937",
+      "archive_download_url": "https://api.github.com/repos/xingmihai/Action-Build/actions/artifacts/14627238937/zip",
+      "expired": false,
+      "digest": "sha256:ee8ce80d283e6eed7541b965166d7caf2f44740069e44565acabbc346b325aa3",
+      "created_at": "2026-11-20T12:23:20Z",
+      "updated_at": "2026-11-20T12:23:20Z",
+      "expires_at": "2027-02-18T12:01:14Z",
+      "workflow_run": {
+        "id": 44732291826,
+        "repository_id": 1424115723,
+        "head_repository_id": 1424115723,
+        "head_branch": "SukiSU-Ultra",
+        "head_sha": "810241a9298f70a5b3813a9ed8636bff7753696f"
+      }
+    }
+  ]
+}

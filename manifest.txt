@@ -1,0 +1,31 @@
+# CI Output
+run_id=44732291826
+run_url=https://github.com/xingmihai/Action-Build/actions/runs/44732291826
+conclusion=manual
+head_sha=
+head_branch=
+collected_utc=2026-11-20T12:25:23Z
+
+## artifacts
+AK3_LOS24_r596125_full.zip  18402465 bytes
+
+## logs
+0_build.txt  428767 bytes
+10_Build Image.txt  350395 bytes
+11_Inject KPM (KPTOOLS).txt  11545 bytes
+12_Package AK3.txt  5046 bytes
+13_Upload AK3 and config.txt  3357 bytes
+1_Set up job.txt  2068 bytes
+26_Post Checkout this branch.txt  1724 bytes
+27_Complete job.txt  376 bytes
+2_Checkout this branch.txt  6989 bytes
+3_Checkout LineageOS kernel.txt  8898 bytes
+4_Resolve vendor Kconfig symlinks.txt  5966 bytes
+5_Setup AOSP prebuilt clang-r596125.txt  8929 bytes
+6_Integrate SukiSU-Nova (manual).txt  2136 bytes
+7_Apply SUSFS patch (runtime-adapted).txt  6632 bytes
+8_Apply UNICODE_BYPASS.txt  3321 bytes
+9_Configure from official IKCONFIG.txt  11427 bytes
+build_log.txt  858176 bytes
+run_logs.zip  186795 bytes
+system.txt  600 bytes

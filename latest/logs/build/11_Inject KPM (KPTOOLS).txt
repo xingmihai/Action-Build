@@ -1,0 +1,132 @@
+﻿2026-11-20T12:23:09.9628263Z ##[group]Run set -e
+2026-11-20T12:23:09.9628748Z [36;1mset -e[0m
+2026-11-20T12:23:09.9629115Z [36;1mcd kernel/out/arch/arm64/boot[0m
+2026-11-20T12:23:09.9629733Z [36;1mcurl -fL --retry 3 --max-time 300 "$KP_REL/kptools-linux" -o kptools-linux[0m
+2026-11-20T12:23:09.9630432Z [36;1mcurl -fL --retry 3 --max-time 300 "$KP_REL/kpimg" -o kpimg[0m
+2026-11-20T12:23:09.9630941Z [36;1mchmod +x kptools-linux[0m
+2026-11-20T12:23:09.9631332Z [36;1mtest "$(stat -c%s kpimg)" = 294384[0m
+2026-11-20T12:23:09.9631744Z [36;1mS=""[0m
+2026-11-20T12:23:09.9632102Z [36;1mif [ -n "$S" ]; then[0m
+2026-11-20T12:23:09.9632583Z [36;1m  ./kptools-linux -p -i Image -k kpimg -s "$S" -o oImage[0m
+2026-11-20T12:23:09.9633141Z [36;1melse[0m
+2026-11-20T12:23:09.9633591Z [36;1m  ./kptools-linux -p -i Image -k kpimg -o oImage[0m
+2026-11-20T12:23:09.9634065Z [36;1mfi[0m
+2026-11-20T12:23:09.9634459Z [36;1m./kptools-linux -l -i oImage | tee kpm_readback.txt[0m
+2026-11-20T12:23:09.9635202Z [36;1mgrep -q 'patched=true' kpm_readback.txt || { echo "::error::KPM 注入失败" >&2; exit 1; }[0m
+2026-11-20T12:23:09.9636860Z [36;1mgrep -q 'version=0xe00' kpm_readback.txt || { echo "::error::kpimg 版本异常" >&2; exit 1; }[0m
+2026-11-20T12:23:09.9637788Z [36;1mgrep -q 'config=android,release' kpm_readback.txt || { echo "::error::非 android payload" >&2; exit 1; }[0m
+2026-11-20T12:23:09.9638521Z [36;1mmv -f oImage Image[0m
+2026-11-20T12:23:09.9639012Z [36;1mcp kpm_readback.txt "$GITHUB_WORKSPACE/kpm_readback.txt"[0m
+2026-11-20T12:23:09.9669384Z shell: /usr/bin/bash -e {0}
+2026-11-20T12:23:09.9669788Z env:
+2026-11-20T12:23:09.9670317Z   KERNEL_REPO: https://github.com/LineageOS/android_kernel_oneplus_sm8750.git
+2026-11-20T12:23:09.9671042Z   KSU_REPO: https://github.com/SukiSU-Nova/SukiSU-Nova.git
+2026-11-20T12:23:09.9671886Z   AOSP_CLANG_REPO: https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86
+2026-11-20T12:23:09.9672609Z   AOSP_CLANG_DIR: clang-r596125
+2026-11-20T12:23:09.9673014Z   AOSP_CLANG_BUILD: 15071444
+2026-11-20T12:23:09.9673623Z   KP_REL: https://github.com/SukiSU-Nova/SukiSU_KernelPatch_patch/releases/download/0.14.0
+2026-11-20T12:23:09.9676273Z   UNICODE_URLS: https://raw.githubusercontent.com/xingmihai/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Vesper-1215/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Numbersf/Action-Build/SukiSU-Nova/patches/unicode_bypass_fix_6.1%2B.patch
+2026-11-20T12:23:09.9678295Z ##[endgroup]
+2026-11-20T12:23:09.9780691Z   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+2026-11-20T12:23:09.9781335Z                                  Dload  Upload  Total   Spent   Left   Speed
+2026-11-20T12:23:09.9781636Z 
+2026-11-20T12:23:10.0863769Z   0      0   0      0   0      0      0      0                              0
+2026-11-20T12:23:10.0864249Z   0      0   0      0   0      0      0      0                              0
+2026-11-20T12:23:10.0865426Z   0      0   0      0   0      0      0      0                              0
+2026-11-20T12:23:10.0865859Z 
+2026-11-20T12:23:10.1398034Z   0      0   0      0   0      0      0      0                              0
+2026-11-20T12:23:10.1398553Z 100  1.59M 100  1.59M   0      0  9.86M      0                              0
+2026-11-20T12:23:10.1398976Z 100  1.59M 100  1.59M   0      0  9.85M      0                              0
+2026-11-20T12:23:10.1399366Z 100  1.59M 100  1.59M   0      0  9.85M      0                              0
+2026-11-20T12:23:10.1487430Z   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+2026-11-20T12:23:10.1488090Z                                  Dload  Upload  Total   Spent   Left   Speed
+2026-11-20T12:23:10.1488638Z 
+2026-11-20T12:23:10.2431556Z   0      0   0      0   0      0      0      0                              0
+2026-11-20T12:23:10.2432187Z   0      0   0      0   0      0      0      0                              0
+2026-11-20T12:23:10.2432630Z   0      0   0      0   0      0      0      0                              0
+2026-11-20T12:23:10.2433483Z 
+2026-11-20T12:23:10.2834403Z   0      0   0      0   0      0      0      0                              0
+2026-11-20T12:23:10.2835257Z 100 287.4k 100 287.4k   0      0  2.08M      0                              0
+2026-11-20T12:23:10.2835959Z 100 287.4k 100 287.4k   0      0  2.08M      0                              0
+2026-11-20T12:23:10.2836795Z 100 287.4k 100 287.4k   0      0  2.08M      0                              0
+2026-11-20T12:23:12.3568802Z [+] kernel image_size: 0x02329a00
+2026-11-20T12:23:12.3569309Z [+] kernel uefi header: true
+2026-11-20T12:23:12.3569579Z [+] kernel load_offset: 0x00000000
+2026-11-20T12:23:12.3569889Z [+] kernel kernel_size: 0x02610000
+2026-11-20T12:23:12.3570236Z [+] kernel page_shift: 12
+2026-11-20T12:23:12.3570545Z [+] new kernel image ...
+2026-11-20T12:23:12.3570914Z [+] is_gki: true
+2026-11-20T12:23:12.3573556Z [+] linux_banner 1: Linux version 6.6.144-4k-g01ee97578159 (runner@runnervm0hi8g) (Android (15682573, +pgo, +bolt, +lto, +mlgo, based on r596125) clang version 22.0.2 (https://android.googlesource.com/toolchain/llvm-project de03d430485c884861198b25459851f429cbdbad), LLD 22.0.2 (/mnt/disks/build-disk/src/googleplex-android/llvm-r596125-release/out/llvm-project/llvm de03d430485c884861198b25459851f429cbdbad)) # SMP PREEMPT 
+2026-11-20T12:23:12.3575777Z [+] linux_banner offset: 0x10b01a1
+2026-11-20T12:23:12.3577815Z [+] linux_banner 2: Linux version 6.6.144-4k-g01ee97578159 (runner@runnervm0hi8g) (Android (15682573, +pgo, +bolt, +lto, +mlgo, based on r596125) clang version 22.0.2 (https://android.googlesource.com/toolchain/llvm-project de03d430485c884861198b25459851f429cbdbad), LLD 22.0.2 (/mnt/disks/build-disk/src/googleplex-android/llvm-r596125-release/out/llvm-project/llvm de03d430485c884861198b25459851f429cbdbad)) #1 SMP PREEMPT Fri Nov 20 12:22:45 UTC 2026
+2026-11-20T12:23:12.3579979Z [+] linux_banner offset: 0x12c9c70
+2026-11-20T12:23:12.3580393Z [+] kernel version major: 6, minor: 6, patch: 144
+2026-11-20T12:23:12.3580851Z [+] kallsyms_token_table offset: 0x01468728
+2026-11-20T12:23:12.3581221Z [+] endian: little
+2026-11-20T12:23:12.3581536Z [+] kallsyms_token_index offset: 0x01468ab8
+2026-11-20T12:23:12.3582030Z [+] kallsyms_markers range: [0x01467fe0, 0x01468730), count: 0x000001d3
+2026-11-20T12:23:12.3582516Z [+] kallsyms_names offset: 0x012c9e30
+2026-11-20T12:23:12.3582953Z [+] arm64 relocation kernel_va: 0xffffffffffffffff
+2026-11-20T12:23:12.3583398Z [?] can't find arm64 relocation table
+2026-11-20T12:23:12.3583913Z [+] kallsyms_markers range: [0x01467fe0, 0x01468730), count: 0x000001d3
+2026-11-20T12:23:12.3584524Z [+] try kallsyms_offsets first for 64-bit relative-base kernel
+2026-11-20T12:23:12.3585186Z [+] approximate kallsyms_offsets range: [0x01468cb8, 0x014dd14c) count: 0x0001d125
+2026-11-20T12:23:12.3585949Z [+] kallsyms_names offset: 0x012c9e30
+2026-11-20T12:23:12.3586413Z [+] kallsyms_num_syms offset: 0x012c9e28, value: 0x0001d125
+2026-11-20T12:23:12.3587263Z [+] names table linux_banner index: 0x00011422
+2026-11-20T12:23:12.3587702Z [+] linux_banner index: 1
+2026-11-20T12:23:12.3588067Z [+] kallsyms_offsets offset: 0x01468cb8
+2026-11-20T12:23:12.3588480Z [+] pid_vnr: type: T, offset: 0x000da6c4
+2026-11-20T12:23:12.3588950Z [+] pid_vnr verfied sp_el0, insn: 0xd5384108 (off +0)
+2026-11-20T12:23:12.3589495Z [+] ikconfig gzip blob at 0x10d3d68, size 0xccc7 (runtime puff)
+2026-11-20T12:23:12.3589996Z [+] btf blob at 0x171fb74, size 0x5c758c
+2026-11-20T12:23:12.3590695Z [+] layout kimg: 0x0,0x2329a00, kpimg: 0x232a000,0x47df0, extra: 0x2371df0,0x80, end: 0x2371e70, start: 0x2610000
+2026-11-20T12:23:12.3591403Z [+] image_size: 0x2610000 -> 0x2658000
+2026-11-20T12:23:12.3591797Z [+] kpimg version: e00
+2026-11-20T12:23:12.3592163Z [+] kpimg compile time: 19:40:23 Oct 26 2026
+2026-11-20T12:23:12.3592602Z [+] kpimg config: android, release, arm64
+2026-11-20T12:23:12.3593048Z [+] tcp_init_sock: type: T, offset: 0x00eb3818
+2026-11-20T12:23:12.3593548Z [+] select map anchor: tcp_init_sock, offset: 0x00eb3818
+2026-11-20T12:23:12.3594308Z [+] map_start: 0xeb3810, max_size: 0x1000
+2026-11-20T12:23:12.3594991Z [+] Synced NOP modifications from kallsym_kimg to output file (offset: 0xeb3810, size: 0x2000)
+2026-11-20T12:23:12.3595833Z [+] sprintf: type: T, offset: 0x0105117c
+2026-11-20T12:23:12.3596245Z [+] show_stack: type: T, offset: 0x00020e68
+2026-11-20T12:23:12.3596700Z [+] kallsyms_lookup_name: type: T, offset: 0x001a5db8
+2026-11-20T12:23:12.3597337Z [+] prefer runtime forward scan anchor for kallsyms_lookup_name: show_stack, offset: 0x00020e68
+2026-11-20T12:23:12.3597912Z [?] no symbol: printk
+2026-11-20T12:23:12.3598211Z [+] _printk: type: T, offset: 0x0106015c
+2026-11-20T12:23:12.3598736Z [+] memblock_reserve: type: T, offset: 0x00361a7c
+2026-11-20T12:23:12.3599185Z [+] memblock_free: type: T, offset: 0x00361854
+2026-11-20T12:23:12.3599615Z [+] memblock_mark_nomap: type: T, offset: 0x00361d94
+2026-11-20T12:23:12.3600130Z [+] memblock_phys_alloc_try_nid: type: T, offset: 0x01d23520
+2026-11-20T12:23:12.3600633Z [?] no symbol: memblock_virt_alloc_try_nid
+2026-11-20T12:23:12.3601042Z [+] memblock_alloc_try_nid: type: T, offset: 0x01d237a4
+2026-11-20T12:23:12.3601491Z [+] kallsyms_lookup_name: type: T, offset: 0x001a5db8
+2026-11-20T12:23:12.3601874Z [?] no symbol: printk
+2026-11-20T12:23:12.3602185Z [+] _printk: type: T, offset: 0x0106015c
+2026-11-20T12:23:12.3602601Z [+] panic: type: T, offset: 0x0105cd68
+2026-11-20T12:23:12.3602987Z [+] rest_init: type: T, offset: 0x01077bf8
+2026-11-20T12:23:12.3603513Z [+] kernel_init: type: t, offset: 0x01077ce0
+2026-11-20T12:23:12.3603977Z [+] report_cfi_failure: type: T, offset: 0x010611b0
+2026-11-20T12:23:12.3604433Z [?] no symbol: __cfi_slowpath_diag
+2026-11-20T12:23:12.3604765Z [?] no symbol: __cfi_slowpath
+2026-11-20T12:23:12.3605123Z [+] copy_process: type: T, offset: 0x000ab034
+2026-11-20T12:23:12.3605656Z [+] avc_denied: type: t, offset: 0x0062c5bc
+2026-11-20T12:23:12.3606060Z [+] slow_avc_audit: type: T, offset: 0x0062b2c0
+2026-11-20T12:23:12.3606415Z [+] input_handle_event: type: T, offset: 0x00ac90a4
+2026-11-20T12:23:12.3606780Z [+] root_key mode with empty superkey: root_superkey zeroed
+2026-11-20T12:23:12.3607131Z [+] paging_init: type: T, offset: 0x01d0b4b8
+2026-11-20T12:23:12.3607401Z [+] patch done: oImage
+2026-11-20T12:23:12.4555462Z [kernel]
+2026-11-20T12:23:12.4558231Z banner=Linux version 6.6.144-4k-g01ee97578159 (runner@runnervm0hi8g) (Android (15682573, +pgo, +bolt, +lto, +mlgo, based on r596125) clang version 22.0.2 (https://android.googlesource.com/toolchain/llvm-project de03d430485c884861198b25459851f429cbdbad), LLD 22.0.2 (/mnt/disks/build-disk/src/googleplex-android/llvm-r596125-release/out/llvm-project/llvm de03d430485c884861198b25459851f429cbdbad)) # SMP PREEMPT 
+2026-11-20T12:23:12.4560212Z patched=true
+2026-11-20T12:23:12.4560638Z [kpimg]
+2026-11-20T12:23:12.4560915Z version=0xe00
+2026-11-20T12:23:12.4561216Z compile_time=19:40:23 Oct 26 2026
+2026-11-20T12:23:12.4561954Z config=android,release
+2026-11-20T12:23:12.4562428Z arch=arm64
+2026-11-20T12:23:12.4562835Z superkey=<redacted>
+2026-11-20T12:23:12.4563232Z root_superkey=<redacted>
+2026-11-20T12:23:12.4563585Z [additional]
+2026-11-20T12:23:12.4563792Z [extras]
+2026-11-20T12:23:12.4563982Z num=0

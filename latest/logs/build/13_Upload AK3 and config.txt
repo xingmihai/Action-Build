@@ -1,0 +1,37 @@
+﻿2026-11-20T12:23:18.7682988Z ##[group]Run actions/upload-artifact@v4
+2026-11-20T12:23:18.7683301Z with:
+2026-11-20T12:23:18.7683522Z   name: AK3_LOS24_r596125_full
+2026-11-20T12:23:18.7683820Z   path: AK3_LOS24_r596125_full.zip
+los_full.config
+
+2026-11-20T12:23:18.7684149Z   if-no-files-found: warn
+2026-11-20T12:23:18.7684398Z   compression-level: 6
+2026-11-20T12:23:18.7684630Z   overwrite: false
+2026-11-20T12:23:18.7684860Z   include-hidden-files: false
+2026-11-20T12:23:18.7685105Z env:
+2026-11-20T12:23:18.7685672Z   KERNEL_REPO: https://github.com/LineageOS/android_kernel_oneplus_sm8750.git
+2026-11-20T12:23:18.7686154Z   KSU_REPO: https://github.com/SukiSU-Nova/SukiSU-Nova.git
+2026-11-20T12:23:18.7686668Z   AOSP_CLANG_REPO: https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86
+2026-11-20T12:23:18.7687123Z   AOSP_CLANG_DIR: clang-r596125
+2026-11-20T12:23:18.7687496Z   AOSP_CLANG_BUILD: 15071444
+2026-11-20T12:23:18.7688104Z   KP_REL: https://github.com/SukiSU-Nova/SukiSU_KernelPatch_patch/releases/download/0.14.0
+2026-11-20T12:23:18.7689775Z   UNICODE_URLS: https://raw.githubusercontent.com/xingmihai/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Vesper-1215/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Numbersf/Action-Build/SukiSU-Nova/patches/unicode_bypass_fix_6.1%2B.patch
+2026-11-20T12:23:18.7691219Z ##[endgroup]
+2026-11-20T12:23:18.9554544Z (node:60581) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-20T12:23:18.9555851Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-20T12:23:18.9607818Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-20T12:23:18.9610344Z The least common ancestor is /home/runner/work/Action-Build/Action-Build. This will be the root directory of the artifact
+2026-11-20T12:23:18.9611464Z With the provided path, there will be 2 files uploaded
+2026-11-20T12:23:18.9616533Z Artifact name is valid!
+2026-11-20T12:23:18.9617049Z Root directory input is valid!
+2026-11-20T12:23:19.3969203Z Beginning upload of artifact content to blob storage
+2026-11-20T12:23:20.0302230Z (node:60581) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-20T12:23:20.3558770Z Uploaded bytes 8388608
+2026-11-20T12:23:20.6954193Z Uploaded bytes 16777216
+2026-11-20T12:23:20.7798982Z Uploaded bytes 18402465
+2026-11-20T12:23:20.8136097Z Finished uploading artifact content to blob storage!
+2026-11-20T12:23:20.8137608Z SHA256 digest of uploaded artifact zip is ee8ce80d283e6eed7541b965166d7caf2f44740069e44565acabbc346b325aa3
+2026-11-20T12:23:20.8139146Z Finalizing artifact upload
+2026-11-20T12:23:21.1599066Z Artifact AK3_LOS24_r596125_full.zip successfully finalized. Artifact ID 14627238937
+2026-11-20T12:23:21.1600123Z Artifact AK3_LOS24_r596125_full has been successfully uploaded! Final size is 18402465 bytes. Artifact ID is 14627238937
+2026-11-20T12:23:21.1606560Z Artifact download URL: https://github.com/xingmihai/Action-Build/actions/runs/44732291826/artifacts/14627238937

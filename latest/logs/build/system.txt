@@ -1,0 +1,8 @@
+2026-11-20T12:01:14.8240000Z Requested labels: ubuntu-26.04
+2026-11-20T12:01:14.8240000Z Job defined at: xingmihai/Action-Build/.github/workflows/Build_Kernel_LOS_r596125.yml@refs/heads/SukiSU-Ultra
+2026-11-20T12:01:14.8240000Z Waiting for a runner to pick up this job...
+2026-11-20T12:01:14.8370000Z Job is about to start running on the hosted runner: GitHub Actions 1000012552
+2026-11-20T12:01:14.8350000Z Job is waiting for a hosted runner to come online.
+2026-11-20T12:01:14.8190000Z Evaluating build.if
+2026-11-20T12:01:14.8190000Z Evaluating: success()
+2026-11-20T12:01:14.8190000Z Result: true

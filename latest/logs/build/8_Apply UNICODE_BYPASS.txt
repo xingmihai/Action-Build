@@ -1,0 +1,38 @@
+﻿2026-11-20T12:09:40.7298594Z ##[group]Run set -e
+2026-11-20T12:09:40.7299033Z [36;1mset -e[0m
+2026-11-20T12:09:40.7299329Z [36;1mcd kernel[0m
+2026-11-20T12:09:40.7299654Z [36;1mP=/tmp/unicode.patch[0m
+2026-11-20T12:09:40.7300019Z [36;1mGOT=0[0m
+2026-11-20T12:09:40.7300388Z [36;1mfor U in $UNICODE_URLS; do[0m
+2026-11-20T12:09:40.7300862Z [36;1m  if curl -fL --retry 2 --max-time 120 "$U" -o "$P" && [ -s "$P" ]; then[0m
+2026-11-20T12:09:40.7301360Z [36;1m    echo "Unicode 补丁来源: $U"; GOT=1; break[0m
+2026-11-20T12:09:40.7301764Z [36;1m  fi[0m
+2026-11-20T12:09:40.7302085Z [36;1mdone[0m
+2026-11-20T12:09:40.7302468Z [36;1m[ "$GOT" = 1 ] || { echo "::error::所有 Unicode 源都拉不到，拒绝产出漏洞态包" >&2; exit 1; }[0m
+2026-11-20T12:09:40.7302979Z [36;1mpatch -p1 --dry-run --batch --forward < "$P"[0m
+2026-11-20T12:09:40.7303400Z [36;1mpatch -p1 --batch --forward < "$P"[0m
+2026-11-20T12:09:40.7303850Z [36;1mif find . -name '*.rej' -print -quit | grep -q .; then[0m
+2026-11-20T12:09:40.7304374Z [36;1m  echo "::error::存在 .rej" >&2; exit 1[0m
+2026-11-20T12:09:40.7304975Z [36;1mfi[0m
+2026-11-20T12:09:40.7326767Z shell: /usr/bin/bash -e {0}
+2026-11-20T12:09:40.7327193Z env:
+2026-11-20T12:09:40.7327638Z   KERNEL_REPO: https://github.com/LineageOS/android_kernel_oneplus_sm8750.git
+2026-11-20T12:09:40.7328186Z   KSU_REPO: https://github.com/SukiSU-Nova/SukiSU-Nova.git
+2026-11-20T12:09:40.7329168Z   AOSP_CLANG_REPO: https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86
+2026-11-20T12:09:40.7329698Z   AOSP_CLANG_DIR: clang-r596125
+2026-11-20T12:09:40.7330062Z   AOSP_CLANG_BUILD: 15071444
+2026-11-20T12:09:40.7330544Z   KP_REL: https://github.com/SukiSU-Nova/SukiSU_KernelPatch_patch/releases/download/0.14.0
+2026-11-20T12:09:40.7332001Z   UNICODE_URLS: https://raw.githubusercontent.com/xingmihai/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Vesper-1215/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Numbersf/Action-Build/SukiSU-Nova/patches/unicode_bypass_fix_6.1%2B.patch
+2026-11-20T12:09:40.7333462Z ##[endgroup]
+2026-11-20T12:09:41.0731771Z   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+2026-11-20T12:09:41.0732681Z                                  Dload  Upload  Total   Spent   Left   Speed
+2026-11-20T12:09:41.0733079Z 
+2026-11-20T12:09:41.2336382Z   0      0   0      0   0      0      0      0                              0
+2026-11-20T12:09:41.2337180Z 100 549.5k 100 549.5k   0      0  3.33M      0                              0
+2026-11-20T12:09:41.2338081Z 100 549.5k 100 549.5k   0      0  3.33M      0                              0
+2026-11-20T12:09:41.2338839Z 100 549.5k 100 549.5k   0      0  3.33M      0                              0
+2026-11-20T12:09:41.2358748Z Unicode 补丁来源: https://raw.githubusercontent.com/xingmihai/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch
+2026-11-20T12:09:41.2370578Z checking file fs/unicode/mkutf8data.c
+2026-11-20T12:09:41.2376614Z checking file fs/unicode/utf8data.c_shipped
+2026-11-20T12:09:41.2420531Z patching file fs/unicode/mkutf8data.c
+2026-11-20T12:09:41.2424154Z patching file fs/unicode/utf8data.c_shipped

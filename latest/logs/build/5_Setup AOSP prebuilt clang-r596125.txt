@@ -1,0 +1,111 @@
+﻿2026-11-20T12:02:47.9684311Z ##[group]Run set -e
+2026-11-20T12:02:47.9684927Z [36;1mset -e[0m
+2026-11-20T12:02:47.9685549Z [36;1msudo apt-get update -qq[0m
+2026-11-20T12:02:47.9686201Z [36;1msudo apt-get install -y -qq bc bison flex libssl-dev libelf-dev cpio \[0m
+2026-11-20T12:02:47.9686724Z [36;1m  python3 pahole lz4 zstd rsync device-tree-compiler[0m
+2026-11-20T12:02:47.9687177Z [36;1mgit clone --depth=1 --filter=blob:none --no-checkout \[0m
+2026-11-20T12:02:47.9687666Z [36;1m  "$AOSP_CLANG_REPO" /tmp/aosp-clang[0m
+2026-11-20T12:02:47.9688110Z [36;1mgit -C /tmp/aosp-clang sparse-checkout init --cone[0m
+2026-11-20T12:02:47.9688597Z [36;1mgit -C /tmp/aosp-clang sparse-checkout set "$AOSP_CLANG_DIR"[0m
+2026-11-20T12:02:47.9689201Z [36;1mgit -C /tmp/aosp-clang checkout[0m
+2026-11-20T12:02:47.9689590Z [36;1mtest -d "/tmp/aosp-clang/$AOSP_CLANG_DIR/bin" \[0m
+2026-11-20T12:02:47.9690111Z [36;1m  || { echo "::error::prebuilt clang-r596125 目录不存在" >&2; exit 1; }[0m
+2026-11-20T12:02:47.9690620Z [36;1mCB="/tmp/aosp-clang/$AOSP_CLANG_DIR/bin/clang"[0m
+2026-11-20T12:02:47.9691201Z [36;1mtest -x "$CB" || { echo "::error::clang 不可执行" >&2; exit 1; }[0m
+2026-11-20T12:02:47.9691648Z [36;1mVER="$($CB --version)"[0m
+2026-11-20T12:02:47.9691993Z [36;1mecho "$VER"[0m
+2026-11-20T12:02:47.9692401Z [36;1m# 决定符号 CRC 的是 LLVM 代际：22.0.2 + r596125 两项硬闸门。[0m
+2026-11-20T12:02:47.9692823Z [36;1m# build 号(15071444)是官方编译器自身的打包号，prebuilt 仓库里[0m
+2026-11-20T12:02:47.9693260Z [36;1m# 可能不同；+pgo/+bolt/+lto/+mlgo 只影响编译器自身速度，不改变[0m
+2026-11-20T12:02:47.9693651Z [36;1m# 生成代码的 ABI。故降级为警告并记录，不再阻断构建。[0m
+2026-11-20T12:02:47.9694013Z [36;1mecho "$VER" | grep -q '22.0.2' \[0m
+2026-11-20T12:02:47.9694779Z [36;1m  || { echo "::error::不是 clang 22.0.2" >&2; exit 1; }[0m
+2026-11-20T12:02:47.9695239Z [36;1mecho "$VER" | grep -q 'r596125' \[0m
+2026-11-20T12:02:47.9695933Z [36;1m  || { echo "::error::不是 r596125" >&2; exit 1; }[0m
+2026-11-20T12:02:47.9696395Z [36;1mif echo "$VER" | grep -q "$AOSP_CLANG_BUILD"; then[0m
+2026-11-20T12:02:47.9696848Z [36;1m  echo "build 号: 与官方一致 ($AOSP_CLANG_BUILD)"[0m
+2026-11-20T12:02:47.9697287Z [36;1melse[0m
+2026-11-20T12:02:47.9697709Z [36;1m  echo "::warning::prebuilt build 号与官方 $AOSP_CLANG_BUILD 不同；LLVM 代际一致，继续"[0m
+2026-11-20T12:02:47.9698342Z [36;1m  echo "prebuilt build 号与官方不同（LLVM 22.0.2 / r596125 一致）" > /tmp/toolchain_note[0m
+2026-11-20T12:02:47.9698842Z [36;1mfi[0m
+2026-11-20T12:02:47.9699281Z [36;1m"/tmp/aosp-clang/$AOSP_CLANG_DIR/bin/ld.lld" --version | head -1[0m
+2026-11-20T12:02:47.9699806Z [36;1mdirname "$CB" > /tmp/clang_bin_path[0m
+2026-11-20T12:02:47.9700349Z [36;1mecho "AOSP prebuilt clang-r596125 (clang 22.0.2, LLVM r596125)" > /tmp/toolchain_src[0m
+2026-11-20T12:02:47.9700945Z [36;1mecho "TOOLCHAIN_OK: $(cat /tmp/toolchain_src)"[0m
+2026-11-20T12:02:47.9722573Z shell: /usr/bin/bash -e {0}
+2026-11-20T12:02:47.9722995Z env:
+2026-11-20T12:02:47.9723463Z   KERNEL_REPO: https://github.com/LineageOS/android_kernel_oneplus_sm8750.git
+2026-11-20T12:02:47.9724078Z   KSU_REPO: https://github.com/SukiSU-Nova/SukiSU-Nova.git
+2026-11-20T12:02:47.9724749Z   AOSP_CLANG_REPO: https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86
+2026-11-20T12:02:47.9725679Z   AOSP_CLANG_DIR: clang-r596125
+2026-11-20T12:02:47.9726072Z   AOSP_CLANG_BUILD: 15071444
+2026-11-20T12:02:47.9726587Z   KP_REL: https://github.com/SukiSU-Nova/SukiSU_KernelPatch_patch/releases/download/0.14.0
+2026-11-20T12:02:47.9728179Z   UNICODE_URLS: https://raw.githubusercontent.com/xingmihai/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Vesper-1215/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Numbersf/Action-Build/SukiSU-Nova/patches/unicode_bypass_fix_6.1%2B.patch
+2026-11-20T12:02:47.9729465Z ##[endgroup]
+2026-11-20T12:04:40.4973905Z Selecting previously unselected package libdwarves1:amd64.
+2026-11-20T12:04:41.2947781Z (Reading database ... 
+2026-11-20T12:04:41.2949598Z (Reading database ... 5%
+2026-11-20T12:04:41.2950545Z (Reading database ... 10%
+2026-11-20T12:04:41.2951045Z (Reading database ... 15%
+2026-11-20T12:04:41.2951370Z (Reading database ... 20%
+2026-11-20T12:04:41.2951771Z (Reading database ... 25%
+2026-11-20T12:04:41.2952144Z (Reading database ... 30%
+2026-11-20T12:04:41.2952448Z (Reading database ... 35%
+2026-11-20T12:04:41.2952815Z (Reading database ... 40%
+2026-11-20T12:04:41.2953154Z (Reading database ... 45%
+2026-11-20T12:04:41.2953477Z (Reading database ... 50%
+2026-11-20T12:04:43.5920878Z (Reading database ... 55%
+2026-11-20T12:04:44.8891433Z (Reading database ... 60%
+2026-11-20T12:04:45.7793702Z (Reading database ... 65%
+2026-11-20T12:04:47.0309401Z (Reading database ... 70%
+2026-11-20T12:04:49.6556323Z (Reading database ... 75%
+2026-11-20T12:04:57.9126854Z (Reading database ... 80%
+2026-11-20T12:05:09.9147724Z (Reading database ... 85%
+2026-11-20T12:05:19.4528893Z (Reading database ... 90%
+2026-11-20T12:05:29.6201551Z (Reading database ... 95%
+2026-11-20T12:05:29.6204026Z (Reading database ... 100%
+2026-11-20T12:05:29.6204894Z (Reading database ... 214296 files and directories currently installed.)
+2026-11-20T12:05:29.6248762Z Preparing to unpack .../libdwarves1_1.31-2ubuntu1_amd64v3.deb ...
+2026-11-20T12:05:29.6355737Z Unpacking libdwarves1:amd64 (1.31-2ubuntu1) ...
+2026-11-20T12:05:29.7023985Z Selecting previously unselected package libelf-dev:amd64.
+2026-11-20T12:05:29.7198842Z Preparing to unpack .../libelf-dev_0.194-4_amd64v3.deb ...
+2026-11-20T12:05:29.7210322Z Unpacking libelf-dev:amd64 (0.194-4) ...
+2026-11-20T12:05:30.2374642Z Selecting previously unselected package pahole.
+2026-11-20T12:05:30.2509506Z Preparing to unpack .../pahole_1.31-2ubuntu1_amd64v3.deb ...
+2026-11-20T12:05:30.2520548Z Unpacking pahole (1.31-2ubuntu1) ...
+2026-11-20T12:05:30.4482318Z Selecting previously unselected package libfdt1:amd64.
+2026-11-20T12:05:30.4614296Z Preparing to unpack .../libfdt1_1.7.2-2ubuntu1_amd64v3.deb ...
+2026-11-20T12:05:30.5304874Z Unpacking libfdt1:amd64 (1.7.2-2ubuntu1) ...
+2026-11-20T12:05:30.5503726Z Selecting previously unselected package device-tree-compiler.
+2026-11-20T12:05:30.5636479Z Preparing to unpack .../device-tree-compiler_1.7.2-2ubuntu1_amd64v3.deb ...
+2026-11-20T12:05:30.5644369Z Unpacking device-tree-compiler (1.7.2-2ubuntu1) ...
+2026-11-20T12:05:30.9003837Z Setting up libdwarves1:amd64 (1.31-2ubuntu1) ...
+2026-11-20T12:05:30.9025799Z Setting up libfdt1:amd64 (1.7.2-2ubuntu1) ...
+2026-11-20T12:05:30.9046121Z Setting up libelf-dev:amd64 (0.194-4) ...
+2026-11-20T12:05:30.9065879Z Setting up device-tree-compiler (1.7.2-2ubuntu1) ...
+2026-11-20T12:05:30.9084790Z Setting up pahole (1.31-2ubuntu1) ...
+2026-11-20T12:05:30.9105148Z Processing triggers for man-db (2.13.1-1build1) ...
+2026-11-20T12:05:31.0061614Z Not building database; man-db/auto-update is not 'true'.
+2026-11-20T12:05:31.0078388Z Processing triggers for libc-bin (2.43-2ubuntu2.7) ...
+2026-11-20T12:05:41.0442955Z 
+2026-11-20T12:05:41.0443931Z Running kernel seems to be up-to-date.
+2026-11-20T12:05:41.0444442Z 
+2026-11-20T12:05:41.0444696Z Restarting services...
+2026-11-20T12:05:41.0540930Z 
+2026-11-20T12:05:41.0542671Z Service restarts being deferred:
+2026-11-20T12:05:41.0544450Z  systemctl restart hosted-compute-agent.service
+2026-11-20T12:05:41.0545023Z 
+2026-11-20T12:05:41.0546081Z No containers need to be restarted.
+2026-11-20T12:05:41.0546311Z 
+2026-11-20T12:05:41.0546510Z No user sessions are running outdated binaries.
+2026-11-20T12:05:41.0547194Z 
+2026-11-20T12:05:41.0547983Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-11-20T12:05:42.0323241Z Cloning into '/tmp/aosp-clang'...
+2026-11-20T12:09:36.0124785Z Your branch is up to date with 'origin/main-kernel'.
+2026-11-20T12:09:36.7416278Z Android (15682573, +pgo, +bolt, +lto, +mlgo, based on r596125) clang version 22.0.2 (https://android.googlesource.com/toolchain/llvm-project de03d430485c884861198b25459851f429cbdbad)
+2026-11-20T12:09:36.7417194Z Target: x86_64-unknown-linux-gnu
+2026-11-20T12:09:36.7417765Z Thread model: posix
+2026-11-20T12:09:36.7418510Z InstalledDir: /tmp/aosp-clang/clang-r596125/bin
+2026-11-20T12:09:36.7494557Z ##[warning]prebuilt build 号与官方 15071444 不同；LLVM 代际一致，继续
+2026-11-20T12:09:36.7521324Z LLD 22.0.2 (/mnt/disks/build-disk/src/googleplex-android/llvm-r596125-release/out/llvm-project/llvm de03d430485c884861198b25459851f429cbdbad) (compatible with GNU linkers)
+2026-11-20T12:09:36.7579215Z TOOLCHAIN_OK: AOSP prebuilt clang-r596125 (clang 22.0.2, LLVM r596125)

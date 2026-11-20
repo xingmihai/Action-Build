@@ -1,0 +1,143 @@
+﻿2026-11-20T12:09:41.3328881Z ##[group]Run set -e
+2026-11-20T12:09:41.3329399Z [36;1mset -e[0m
+2026-11-20T12:09:41.3329699Z [36;1mcd kernel[0m
+2026-11-20T12:09:41.3330037Z [36;1mS="full"[0m
+2026-11-20T12:09:41.3330387Z [36;1mexport PATH="$(cat /tmp/clang_bin_path):$PATH"[0m
+2026-11-20T12:09:41.3330817Z [36;1m# .scmversion 仅作双保险：实测这棵树的 setlocalversion 在[0m
+2026-11-20T12:09:41.3331379Z [36;1m# .scmversion 存在时仍会追加 -dirty。真正的钉死在 Step 10 的[0m
+2026-11-20T12:09:41.3331859Z [36;1m# 命令行 KERNELRELEASE，与源码树 dirty 与否、git HEAD 均无关。[0m
+2026-11-20T12:09:41.3332531Z [36;1mE="6.6.144-4k-g01ee97578159"[0m
+2026-11-20T12:09:41.3332894Z [36;1mif [ "$S" != "pure" ]; then[0m
+2026-11-20T12:09:41.3333293Z [36;1m  SCM=$(printf '%s\n' "$E" | grep -oE '\-g[0-9a-f]+$' || true)[0m
+2026-11-20T12:09:41.3333756Z [36;1m  if [ -z "$SCM" ]; then[0m
+2026-11-20T12:09:41.3334181Z [36;1m    echo "::error::EXPECT_VERSION 无法解析 -g<hash> 后缀: $E" >&2; exit 1[0m
+2026-11-20T12:09:41.3334630Z [36;1m  fi[0m
+2026-11-20T12:09:41.3334998Z [36;1m  printf '%s\n' "$SCM" > .scmversion[0m
+2026-11-20T12:09:41.3335723Z [36;1m  echo "固定 .scmversion: $(cat .scmversion)（忽略 dirty）"[0m
+2026-11-20T12:09:41.3336205Z [36;1mfi[0m
+2026-11-20T12:09:41.3336523Z [36;1mCFG="config/los_official.config"[0m
+2026-11-20T12:09:41.3336962Z [36;1mif [ ! -s "$GITHUB_WORKSPACE/self/$CFG" ]; then[0m
+2026-11-20T12:09:41.3337399Z [36;1m  echo "::error::缺少官方 IKCONFIG。在原版 LOS 本机执行：" >&2[0m
+2026-11-20T12:09:41.3337945Z [36;1m  echo "::error::  su -c \"zcat /proc/config.gz > /data/local/tmp/los_official.config\"" >&2[0m
+2026-11-20T12:09:41.3338471Z [36;1m  echo "::error::再放到仓库 $CFG" >&2[0m
+2026-11-20T12:09:41.3338839Z [36;1m  exit 1[0m
+2026-11-20T12:09:41.3339192Z [36;1mfi[0m
+2026-11-20T12:09:41.3339982Z [36;1mC="$GITHUB_WORKSPACE/self/$CFG"[0m
+2026-11-20T12:09:41.3340428Z [36;1mecho "== IKCONFIG 指纹硬校验（与官方 /proc/version 对齐） =="[0m
+2026-11-20T12:09:41.3340957Z [36;1mchk() { grep -Fq "$1" "$C" || { echo "::error::IKCONFIG 指纹不符: $1" >&2; exit 1; }; }[0m
+2026-11-20T12:09:41.3341668Z [36;1mchk 'CONFIG_CC_VERSION_TEXT="Android (15071444, +pgo, +bolt, +lto, +mlgo, based on r596125) clang version 22.0.2'[0m
+2026-11-20T12:09:41.3342299Z [36;1mchk 'CONFIG_CLANG_VERSION=220002'[0m
+2026-11-20T12:09:41.3342685Z [36;1mchk 'CONFIG_LOCALVERSION="-4k"'[0m
+2026-11-20T12:09:41.3343650Z [36;1mchk 'CONFIG_LOCALVERSION_AUTO=y'[0m
+2026-11-20T12:09:41.3344093Z [36;1mchk 'CONFIG_MODVERSIONS=y'[0m
+2026-11-20T12:09:41.3344482Z [36;1mchk 'CONFIG_MODULE_SIG=y'[0m
+2026-11-20T12:09:41.3344873Z [36;1mchk 'CONFIG_MODULE_SIG_SHA1=y'[0m
+2026-11-20T12:09:41.3345237Z [36;1mchk 'CONFIG_LTO_NONE=y'[0m
+2026-11-20T12:09:41.3345692Z [36;1mchk 'CONFIG_CFI_CLANG=y'[0m
+2026-11-20T12:09:41.3346092Z [36;1mchk 'CONFIG_ARM64_4K_PAGES=y'[0m
+2026-11-20T12:09:41.3346486Z [36;1mchk 'CONFIG_ARM64_PAGE_SHIFT=12'[0m
+2026-11-20T12:09:41.3346860Z [36;1mchk 'CONFIG_KALLSYMS_ALL=y'[0m
+2026-11-20T12:09:41.3347274Z [36;1mchk 'CONFIG_IKCONFIG_PROC=y'[0m
+2026-11-20T12:09:41.3347680Z [36;1mif grep -qE '^CONFIG_(KSU|KPM|KSU_SUSFS)=' "$C"; then[0m
+2026-11-20T12:09:41.3348206Z [36;1m  echo "::error::导出的 config 已含 KSU 项，不是原版 LOS" >&2; exit 1[0m
+2026-11-20T12:09:41.3348644Z [36;1mfi[0m
+2026-11-20T12:09:41.3349003Z [36;1mif grep -q '^CONFIG_TRIM_UNUSED_KSYMS=y' "$C"; then[0m
+2026-11-20T12:09:41.3349524Z [36;1m  echo "::error::官方启用了 TRIM_UNUSED_KSYMS，单 Image 混搭不成立" >&2; exit 1[0m
+2026-11-20T12:09:41.3349964Z [36;1mfi[0m
+2026-11-20T12:09:41.3350286Z [36;1mecho "IKCONFIG 指纹: 13 项 OK"[0m
+2026-11-20T12:09:41.3350696Z [36;1m[0m
+2026-11-20T12:09:41.3350995Z [36;1mmkdir -p out[0m
+2026-11-20T12:09:41.3351342Z [36;1mcp "$C" out/.config[0m
+2026-11-20T12:09:41.3351735Z [36;1mecho "IKCONFIG bytes: $(stat -c%s out/.config)"[0m
+2026-11-20T12:09:41.3352227Z [36;1m# pure 阶段源码树必须干净：LOCALVERSION_AUTO=y 时 dirty 会追加 "-dirty"[0m
+2026-11-20T12:09:41.3352681Z [36;1mif [ "$S" = "pure" ]; then[0m
+2026-11-20T12:09:41.3353072Z [36;1m  if [ -n "$(git status --porcelain | head -1)" ]; then[0m
+2026-11-20T12:09:41.3353731Z [36;1m    echo "::error::pure 阶段源码树不干净，vermagic 会带 -dirty" >&2[0m
+2026-11-20T12:09:41.3354425Z [36;1m    git status --porcelain | head -20 >&2; exit 1[0m
+2026-11-20T12:09:41.3354863Z [36;1m  fi[0m
+2026-11-20T12:09:41.3355175Z [36;1m  echo "pure 源码树: clean"[0m
+2026-11-20T12:09:41.3355581Z [36;1mfi[0m
+2026-11-20T12:09:41.3355927Z [36;1m# 打印但不改动这些决定 CRC 的项；改动即等于偏离官方构建[0m
+2026-11-20T12:09:41.3356324Z [36;1mecho "== 官方 config 中影响 modversions 的关键项（只读） =="[0m
+2026-11-20T12:09:41.3357206Z [36;1mgrep -E '^CONFIG_(MODVERSIONS|MODULE_SIG|LTO_CLANG|CFI_CLANG|LOCALVERSION|KALLSYMS_ALL|TRIM_UNUSED_KSYMS)=' out/.config || true[0m
+2026-11-20T12:09:41.3357891Z [36;1mgrep -q '^CONFIG_MODVERSIONS=y' out/.config \[0m
+2026-11-20T12:09:41.3358365Z [36;1m  || { echo "::error::官方 config 未启用 MODVERSIONS，导出可能有误" >&2; exit 1; }[0m
+2026-11-20T12:09:41.3358840Z [36;1mKV=()[0m
+2026-11-20T12:09:41.3359144Z [36;1mcase "$S" in[0m
+2026-11-20T12:09:41.3359486Z [36;1m  pure)[0m
+2026-11-20T12:09:41.3359800Z [36;1m    : ;;[0m
+2026-11-20T12:09:41.3360115Z [36;1m  ksu_susfs)[0m
+2026-11-20T12:09:41.3360566Z [36;1m    KV+=(CONFIG_KSU=y CONFIG_KALLSYMS=y CONFIG_KALLSYMS_ALL=y[0m
+2026-11-20T12:09:41.3361052Z [36;1m         CONFIG_KSU_SUSFS=y CONFIG_KSU_SUSFS_SUS_MAP=y[0m
+2026-11-20T12:09:41.3361575Z [36;1m         CONFIG_KSU_SUSFS_SUS_PATH=y CONFIG_KSU_SUSFS_SUS_MOUNT=y[0m
+2026-11-20T12:09:41.3362119Z [36;1m         CONFIG_KSU_SUSFS_SUS_KSTAT=y CONFIG_KSU_SUSFS_SPOOF_UNAME=y[0m
+2026-11-20T12:09:41.3362669Z [36;1m         CONFIG_KSU_SUSFS_OPEN_REDIRECT=y CONFIG_OPLUS_DEVICE_DTBS=y) ;;[0m
+2026-11-20T12:09:41.3363129Z [36;1m  full)[0m
+2026-11-20T12:09:41.3363529Z [36;1m    KV+=(CONFIG_KSU=y CONFIG_KPM=y CONFIG_KALLSYMS=y CONFIG_KALLSYMS_ALL=y[0m
+2026-11-20T12:09:41.3364193Z [36;1m         CONFIG_KSU_SUSFS=y CONFIG_KSU_SUSFS_SUS_MAP=y[0m
+2026-11-20T12:09:41.3364698Z [36;1m         CONFIG_KSU_SUSFS_SUS_PATH=y CONFIG_KSU_SUSFS_SUS_MOUNT=y[0m
+2026-11-20T12:09:41.3365221Z [36;1m         CONFIG_KSU_SUSFS_SUS_KSTAT=y CONFIG_KSU_SUSFS_SPOOF_UNAME=y[0m
+2026-11-20T12:09:41.3365858Z [36;1m         CONFIG_KSU_SUSFS_OPEN_REDIRECT=y CONFIG_OPLUS_DEVICE_DTBS=y) ;;[0m
+2026-11-20T12:09:41.3366321Z [36;1mesac[0m
+2026-11-20T12:09:41.3366690Z [36;1mfor kv in "${KV[@]}"; do echo "$kv" >> out/.config; done[0m
+2026-11-20T12:09:41.3367227Z [36;1mmake O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 olddefconfig[0m
+2026-11-20T12:09:41.3367661Z [36;1mecho "== STAGE=$S 关键 CONFIG =="[0m
+2026-11-20T12:09:41.3368211Z [36;1mgrep -E '^CONFIG_(KSU|KPM|KALLSYMS_ALL|KSU_SUSFS|MODVERSIONS|LTO_CLANG)=' out/.config || true[0m
+2026-11-20T12:09:41.3368783Z [36;1mif [ "$S" = "ksu_susfs" ] || [ "$S" = "full" ]; then[0m
+2026-11-20T12:09:41.3369223Z [36;1m  grep -q '^CONFIG_KSU_SUSFS=y' out/.config \[0m
+2026-11-20T12:09:41.3369710Z [36;1m    || { echo "::error::$S 阶段 CONFIG_KSU_SUSFS 未启用" >&2; exit 1; }[0m
+2026-11-20T12:09:41.3370120Z [36;1mfi[0m
+2026-11-20T12:09:41.3370425Z [36;1mif [ "$S" = "pure" ]; then[0m
+2026-11-20T12:09:41.3370911Z [36;1m  if grep -qE '^CONFIG_(KSU|KPM|KSU_SUSFS)' out/.config; then[0m
+2026-11-20T12:09:41.3371353Z [36;1m    echo "::error::pure 包被污染" >&2; exit 1[0m
+2026-11-20T12:09:41.3371746Z [36;1m  fi[0m
+2026-11-20T12:09:41.3372071Z [36;1m  echo "pure 闸门: 无 KSU/KPM/SUSFS 配置 OK"[0m
+2026-11-20T12:09:41.3372442Z [36;1mfi[0m
+2026-11-20T12:09:41.3372800Z [36;1mcp out/.config "$GITHUB_WORKSPACE/los_${S}.config"[0m
+2026-11-20T12:09:41.3394186Z shell: /usr/bin/bash -e {0}
+2026-11-20T12:09:41.3394584Z env:
+2026-11-20T12:09:41.3395055Z   KERNEL_REPO: https://github.com/LineageOS/android_kernel_oneplus_sm8750.git
+2026-11-20T12:09:41.3395741Z   KSU_REPO: https://github.com/SukiSU-Nova/SukiSU-Nova.git
+2026-11-20T12:09:41.3396360Z   AOSP_CLANG_REPO: https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86
+2026-11-20T12:09:41.3396949Z   AOSP_CLANG_DIR: clang-r596125
+2026-11-20T12:09:41.3397308Z   AOSP_CLANG_BUILD: 15071444
+2026-11-20T12:09:41.3397787Z   KP_REL: https://github.com/SukiSU-Nova/SukiSU_KernelPatch_patch/releases/download/0.14.0
+2026-11-20T12:09:41.3399387Z   UNICODE_URLS: https://raw.githubusercontent.com/xingmihai/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Vesper-1215/Action-Build/SukiSU-Ultra/patches/unicode_bypass_fix_6.1%2B.patch https://raw.githubusercontent.com/Numbersf/Action-Build/SukiSU-Nova/patches/unicode_bypass_fix_6.1%2B.patch
+2026-11-20T12:09:41.3400810Z ##[endgroup]
+2026-11-20T12:09:41.3515129Z 固定 .scmversion: -g01ee97578159（忽略 dirty）
+2026-11-20T12:09:41.3516240Z == IKCONFIG 指纹硬校验（与官方 /proc/version 对齐） ==
+2026-11-20T12:09:41.3670467Z IKCONFIG 指纹: 13 项 OK
+2026-11-20T12:09:41.3730170Z IKCONFIG bytes: 244219
+2026-11-20T12:09:41.3730973Z == 官方 config 中影响 modversions 的关键项（只读） ==
+2026-11-20T12:09:41.3753553Z CONFIG_LOCALVERSION="-4k"
+2026-11-20T12:09:41.3754231Z CONFIG_KALLSYMS_ALL=y
+2026-11-20T12:09:41.3754611Z CONFIG_CFI_CLANG=y
+2026-11-20T12:09:41.3755242Z CONFIG_MODVERSIONS=y
+2026-11-20T12:09:41.3756117Z CONFIG_MODULE_SIG=y
+2026-11-20T12:09:41.6270908Z make[1]: Entering directory '/home/runner/work/Action-Build/Action-Build/kernel/out'
+2026-11-20T12:09:41.8442477Z   GEN     Makefile
+2026-11-20T12:09:41.8785549Z   HOSTCC  scripts/basic/fixdep
+2026-11-20T12:09:44.7992825Z   HOSTCC  scripts/kconfig/conf.o
+2026-11-20T12:09:45.5929527Z   HOSTCC  scripts/kconfig/confdata.o
+2026-11-20T12:09:45.8870540Z   HOSTCC  scripts/kconfig/expr.o
+2026-11-20T12:09:46.0033531Z   LEX     scripts/kconfig/lexer.lex.c
+2026-11-20T12:09:46.4298139Z   YACC    scripts/kconfig/parser.tab.[ch]
+2026-11-20T12:09:47.2999465Z   HOSTCC  scripts/kconfig/lexer.lex.o
+2026-11-20T12:09:47.4895889Z   HOSTCC  scripts/kconfig/menu.o
+2026-11-20T12:09:47.6029794Z   HOSTCC  scripts/kconfig/parser.tab.o
+2026-11-20T12:09:47.7096198Z   HOSTCC  scripts/kconfig/preprocess.o
+2026-11-20T12:09:47.7840498Z   HOSTCC  scripts/kconfig/symbol.o
+2026-11-20T12:09:48.0041096Z   HOSTCC  scripts/kconfig/util.o
+2026-11-20T12:09:48.0364325Z   HOSTLD  scripts/kconfig/conf
+2026-11-20T12:10:07.4742014Z .config:8773:warning: override: reassigning to symbol KALLSYMS
+2026-11-20T12:10:07.4742691Z .config:8774:warning: override: reassigning to symbol KALLSYMS_ALL
+2026-11-20T12:10:07.5230901Z #
+2026-11-20T12:10:07.5231348Z # configuration written to .config
+2026-11-20T12:10:07.5231933Z #
+2026-11-20T12:10:07.5253624Z make[1]: Leaving directory '/home/runner/work/Action-Build/Action-Build/kernel/out'
+2026-11-20T12:10:07.5257610Z == STAGE=full 关键 CONFIG ==
+2026-11-20T12:10:07.5276084Z CONFIG_KALLSYMS_ALL=y
+2026-11-20T12:10:07.5276549Z CONFIG_MODVERSIONS=y
+2026-11-20T12:10:07.5276994Z CONFIG_KSU=y
+2026-11-20T12:10:07.5277406Z CONFIG_KPM=y
+2026-11-20T12:10:07.5277746Z CONFIG_KSU_SUSFS=y
